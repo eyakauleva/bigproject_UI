@@ -1,0 +1,113 @@
+.body{
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow:auto;
+    background-image: url("../images/login_background.png");
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
+
+.auth-form{
+    height: 70%;
+    width: 60%;    
+    display: flex;
+}
+
+.left{
+    background-color: #DCDCDC;
+    border-radius: 5% 0 0 5%;
+    height: 100%;
+    width: 65%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.left .title{
+    color: #580BE4;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.left .image-wrapper{
+    height: 65%;
+    width: 85%;
+}
+
+.left .image-wrapper .image{
+    height: 100%;
+    width: 100%;
+}
+
+.right{
+    background-color: white;
+    border-radius: 0 5% 5% 0;
+    height: 100%;
+    width: 35%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.right .form{
+    width: 100%; 
+}
+
+.right .input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.right input[type="text"],
+.right input[type="password"] {
+  height: 30px;
+  border: 1px solid #918e8c;
+  border-radius: 3%;
+  padding-left: 10px;
+  margin: 0 10%;
+}
+
+.right input[type="submit"] {
+  margin: 30px 0;
+  cursor: pointer;
+  font-size: 15px;
+  color: white;
+  border: none;
+  background-color: #1a95db;
+  border-radius: 8%;
+  padding:10px 20px;
+}
+
+.right input[type="submit"]:hover {
+  background: #8ccded;
+}
+
+.right .button-container {
+  display: flex;
+  justify-content: center;
+}
+
+.right .error {
+  color: red;
+  font-size: 12px;
+  margin: 0 15%;
+}
+
+.right .hint{
+    margin: 0 20%;
+    font-size: 12px;
+    color: #918e8c;
+    text-align: center;
+}
