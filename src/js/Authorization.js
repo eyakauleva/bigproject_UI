@@ -33,7 +33,7 @@ function Authorization(props){
 
     axios.post('auth', requestOptions)
       .then(response => {
-        props.navigate('/main');        
+        props.navigate('/app');        
       })
       .catch((error) => {
         setErrorMessage(error.response.data.errorMessage);
