@@ -1,0 +1,5 @@
+.dashboard{
+    background-color: aqua;
+    float: right;
+    width: calc(100% - 160px);
+}
