@@ -1,4 +1,4 @@
-import '../../css/App.css';
+// import '../../css/App.css';
 import { useState } from 'react';
 
 import initialData from './initial-data';
