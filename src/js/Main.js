@@ -3,7 +3,6 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 
 import Sidebar from './Sidebar';
 import Profile from './Profile';
-import Dashboard from './dashboard/Dashboard';
 
 import '.././css/Main.css';
 
@@ -16,7 +15,6 @@ function Main(props){
             <Routes>
                 <Route path="/*" element={<Navigate to="profile" />} />
                 <Route path="profile" element={<Profile navigate={navigate}  /> } />
-                <Route path="hui" element={<Dashboard navigate={navigate}  /> } />
             </Routes> 
         </div>               
     );
