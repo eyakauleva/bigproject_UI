@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 
 import Authorization from './Authorization';
 import Main from './Main';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App(){
     const navigate = useNavigate();
