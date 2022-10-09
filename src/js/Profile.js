@@ -1,184 +1,273 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import '.././css/Profile.css';
-import {
-  MDBCol,
-  MDBContainer,
-  MDBRow,
-  MDBCard,
-  MDBCardText,
-  MDBCardBody,
-  MDBCardImage,
-  MDBBtn,
-  MDBBreadcrumb,
-  MDBBreadcrumbItem,
-  MDBProgress,
-  MDBProgressBar,
-  MDBIcon,
-  MDBListGroup,
-  MDBListGroupItem
-} from 'mdb-react-ui-kit';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 
 export default function Profile() {
+    const[employee, setEmployee] = useState({});
+    const[user, setUser] = useState({});
+    const[login, setLogin] = useState("");
+    const[name, setName] = useState("");
+    const[surname, setSurname] = useState("");
+    const[email, setEmail] = useState("");
+    const[phone, setPhone] = useState("");
+    const[birthday, setBirthday] = useState("");
+    const[technologies, setTechnologies] = useState("");
+    const [selectedImage, setSelectedImage] = useState(null);
+    const[editMode, setEditmode] = useState(false);    
+
+    useEffect(() => {        
+        getEmployee();
+    }, []);
+
+    const getEmployee = async () => {
+        await axios
+            .get("/employee/1")
+            .then(response => response.data)
+            .then((data) =>{
+                if(data)
+                    setEmployee(data);
+                    setUser(data.user);
+            })
+            .catch((error) => {
+                
+            });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+    }
+
+    const editProfile = () => {
+        let config = {
+        headers: {
+            //Authorization: 'Bearer ' + token
+        }
+        };
+
+        let user = {
+            login: login,
+            name: name,
+            surname: surname,
+            email: email,
+            phone: phone
+        };
+
+        let employee = {
+            user: user,
+            birthDate: birthday,
+            technologies: technologies
+        };
+
+        const update = async() => {
+            await axios
+            .put("employee/1", 
+                employee,
+                config)
+            .then(() => {
+                getEmployee();
+            })
+            .catch((error) => {
+            
+            });        
+        }      
+        update();
+    }
+
+    const uploadPhoto = (e) => {
+        const file = e.target.files[0];
+        let reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            setSelectedImage(reader.result);
+            console.log(selectedImage);
+        };
+    }
+
   return (
     <div className="profile">
-      <div class="container emp-profile">
-            <form method="post">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="profile-img">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52y5aInsxSm31CvHOFHWujqUx_wWTS9iM6s7BAm21oEN_RiGoog" alt=""/>
-                            <div class="file btn btn-lg btn-primary">
-                                Change Photo
-                                <input type="file" name="file"/>
-                            </div>
+      <div className="container emp-profile">
+            <form onSubmit={handleSubmit}>
+                <div className="row">
+                    <div className="col-md-4">
+                        <div className="profile-img">
+                            {editMode && selectedImage
+                            ? <img src={`${selectedImage}`} />
+                            : <img src={`data:image/jpeg;base64,${employee.photo}`} />}
+                            {editMode ? 
+                                <div class="file btn btn-lg btn-primary " id="editPhoto">
+                                    Change Photo    setSelectedImage(e.target.files[0]);                            
+                                    <input type="file" name="file" accept="image/*" onChange={uploadPhoto}/>
+                                </div>
+                                : ""}
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="profile-head">
-                                    <h5>
-                                        Kshiti Ghelani
-                                    </h5>
-                                    <h6>
-                                        Web Developer and Designer
-                                    </h6>
-                                    <p class="proile-rating">RANKINGS : <span>8/10</span></p>
-
-                                    
-                            {/* <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">About</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Timeline</a>
-                                </li>
-                            </ul> */}
+                    <div className="col-md-6">
+                        <div className="profile-head">
+                                <h5>
+                                    {user.name} {user.surname}
+                                </h5>
+                                <h6>
+                                    {employee.position}
+                                </h6>
+                                <p className="proile-rating">Work experience : <span>{employee.experience}</span></p>
                         </div>
                     </div>
-                    <div class="col-md-2">
-                        <input type="submit" class="profile-edit-btn" name="btnAddMore" value="Edit Profile"/>
+                    <div className="col-md-2">
+                        <button onClick={()=>setEditmode(true)} className="profile-edit-btn">Edit Profile</button>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="profile-work">
-                            <p>WORK LINK</p>
-                            <a href="">Website Link</a><br/>
-                            <a href="">Bootsnipp Profile</a><br/>
-                            <a href="">Bootply Profile</a>
-                            <p>SKILLS</p>
-                            <a href="">Web Designer</a><br/>
-                            <a href="">Web Developer</a><br/>
-                            <a href="">WordPress</a><br/>
-                            <a href="">WooCommerce</a><br/>
-                            <a href="">PHP, .Net</a><br/>
+                <div className="row">
+                    <div className="col-md-4">
+                        <div className="profile-work">
+                            <p>Current project</p>
+                            <a href="">[???Current project name with link ???]</a><br/>
                         </div>
                     </div>
-                    <div class="col-md-8">
-                            
+                    <div className="col-md-8">                            
                                     <Tabs
-                                      defaultActiveKey="home"
+                                      defaultActiveKey="profile"
                                       id="uncontrolled-tab-example"
-                                      className="mb-3"
-                                    >
-                                      <Tab eventKey="home" title="Home">
-                                        <div class="tab-pane fade show active" id="home" aria-labelledby="home-tab">
-                                          <div class="row">
-                                              <div class="col-md-6">
-                                                  <label>User Id</label>
-                                              </div>
-                                              <div class="col-md-6">
-                                                  <p>Kshiti123</p>
-                                              </div>
+                                      className="mb-3">
+                                      <Tab eventKey="profile" title="Profile">
+                                        <div className="tab-pane fade show active" id="home" aria-labelledby="home-tab">
+                                          <div className="row">
+                                                <div className="col-md-6">
+                                                    <label>Login</label>
+                                                </div>
+                                                <div className="col-md-6">
+                                                    {editMode ? <input type="text"
+                                                        defaultValue={user.login} 
+                                                        onChange={e => setLogin(e.target.value)}/> 
+                                                        : <p>{user.login}</p>} 
+                                                </div>
                                           </div>
-                                          <div class="row">
-                                              <div class="col-md-6">
-                                                  <label>Name</label>
-                                              </div>
-                                              <div class="col-md-6">
-                                                  <p>Kshiti Ghelani</p>
-                                              </div>
-                                          </div>
-                                          <div class="row">
-                                              <div class="col-md-6">
+                                          {editMode ?
+                                        <div>
+                                           <div className="row">
+                                               <div className="col-md-6">
+                                                   <label>Name</label>
+                                               </div>
+                                               <div className="col-md-6">
+                                                   <input type="text"
+                                                   defaultValue={user.name} 
+                                                   onChange={e => setName(e.target.value)}/>
+                                               </div>
+                                           </div>
+                                           <div className="row">
+                                               <div className="col-md-6">
+                                                   <label>Surname</label>
+                                               </div>
+                                               <div className="col-md-6">
+                                                   <input type="text"
+                                                   defaultValue={user.surname} 
+                                                   onChange={e => setSurname(e.target.value)}/>
+                                               </div>
+                                           </div>
+                                       </div>
+                                        : <div className="row">
+                                        <div className="col-md-6">
+                                            <label>Full name</label>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <p>{user.name} {user.surname}</p>
+                                        </div>
+                                    </div>
+                                          }
+                                          
+                                          
+                                          <div className="row">
+                                              <div className="col-md-6">
                                                   <label>Email</label>
                                               </div>
-                                              <div class="col-md-6">
-                                                  <p>kshitighelani@gmail.com</p>
+                                              <div className="col-md-6">
+                                              {editMode ? <input type="text"
+                                                        defaultValue={user.email} 
+                                                        onChange={e => setEmail(e.target.value)}/> 
+                                                        : <p>{user.email}</p>} 
                                               </div>
                                           </div>
-                                          <div class="row">
-                                              <div class="col-md-6">
+                                          <div className="row">
+                                              <div className="col-md-6">
                                                   <label>Phone</label>
                                               </div>
-                                              <div class="col-md-6">
-                                                  <p>123 456 7890</p>
+                                              <div className="col-md-6">
+                                              {editMode ? <input type="text"
+                                                        defaultValue={user.phone} 
+                                                        onChange={e => setPhone(e.target.value)}/> 
+                                                        : <p>{user.phone}</p>} 
                                               </div>
                                           </div>
-                                          <div class="row">
-                                              <div class="col-md-6">
-                                                  <label>Profession</label>
+                                          <div className="row">
+                                              <div className="col-md-6">
+                                                  <label>Date of birth</label>
                                               </div>
-                                              <div class="col-md-6">
-                                                  <p>Web Developer and Designer</p>
+                                              <div className="col-md-6">
+                                              {editMode ? <input type="text"
+                                                        defaultValue={employee.birthDate} 
+                                                        onChange={e => setBirthday(e.target.value)}/> 
+                                                        : <p>{employee.birthDate}</p>} 
                                               </div>
                                           </div>
                                         </div>
                                       </Tab>
-                                      <Tab eventKey="profile" title="Profile">
+                                      <Tab eventKey="work" title="Work">
                                         <div>
-                                          <div class="row">
-                                              <div class="col-md-6">
+                                          <div className="row">
+                                              <div className="col-md-6">
                                                   <label>Experience</label>
                                               </div>
-                                              <div class="col-md-6">
-                                                  <p>Expert</p>
+                                              <div className="col-md-6">
+                                                  <p>{employee.experience}</p>
                                               </div>
                                           </div>
-                                          <div class="row">
-                                              <div class="col-md-6">
-                                                  <label>Hourly Rate</label>
+                                          <div className="row">
+                                              <div className="col-md-6">
+                                                  <label>Position</label>
                                               </div>
-                                              <div class="col-md-6">
-                                                  <p>10$/hr</p>
+                                              <div className="col-md-6">
+                                                  <p>{employee.position}</p>
                                               </div>
                                           </div>
-                                          <div class="row">
-                                              <div class="col-md-6">
+                                          <div className="row">
+                                              <div className="col-md-6">
+                                                  <label>Technologies</label>
+                                              </div>
+                                              <div className="col-md-6">
+                                                    {editMode ? <textarea
+                                                        defaultValue={employee.technologies} 
+                                                        onChange={e => setTechnologies(e.target.value)}/> 
+                                                        : <p>{employee.technologies}</p>} 
+                                              </div>
+                                          </div>
+                                          <div className="row">
+                                              <div className="col-md-6">
                                                   <label>Total Projects</label>
                                               </div>
-                                              <div class="col-md-6">
-                                                  <p>230</p>
-                                              </div>
-                                          </div>
-                                          <div class="row">
-                                              <div class="col-md-6">
-                                                  <label>English Level</label>
-                                              </div>
-                                              <div class="col-md-6">
-                                                  <p>Expert</p>
-                                              </div>
-                                          </div>
-                                          <div class="row">
-                                              <div class="col-md-6">
-                                                  <label>Availability</label>
-                                              </div>
-                                              <div class="col-md-6">
-                                                  <p>6 months</p>
-                                              </div>
-                                          </div>
-                                          <div class="row">
-                                              <div class="col-md-12">
-                                                  <label>Your Bio</label><br/>
-                                                  <p>Your detail description</p>
+                                              <div className="col-md-6">
+                                                  <p>?????????????????</p>
                                               </div>
                                           </div>
                                         </div>
                                       </Tab>
                                     </Tabs>
+
+                                    
                     </div>
+
+                </div>  
+                {editMode ?
+                <div className="row">
+                <div className="col-md-6">
+                    <input onClick={editProfile} type="submit" className="profile-edit-btn" value="Save" />
                 </div>
+                <div className="col-md-6">
+                    <button onClick={()=>{setEditmode(false); setSelectedImage(null);}} style={{background: '#D5D5D5'}} className="profile-edit-btn">Cancel</button>
+                </div>                                        
+            </div>
+            :""}  
+
             </form>           
         </div>
   </div>    

@@ -1,11 +1,19 @@
-.profile{
-    
+.profile{    
     float: right;
     width: calc(100% - 160px);
 }
 
+input[type="text"], textarea{
+    border:1px solid #D5D5D5;
+    padding-left: 10px;
+}
+
+#editPhoto:hover{
+    background-color: #17F1D7;
+}
+
 body{
-    background: -webkit-linear-gradient(left, #3931af, #00c6ff);
+    background: -webkit-linear-gradient(left, #A400FF, #3F0B81);
 }
 .emp-profile{
     padding: 3%;
@@ -49,7 +57,8 @@ body{
     width: 70%;
     padding: 2%;
     font-weight: 600;
-    color: #6c757d;
+    color: #FFFFFF;
+    background-color: #17F1D7;
     cursor: pointer;
 }
 .proile-rating{
