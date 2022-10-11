@@ -13,7 +13,7 @@ input[type="text"], textarea{
 }
 
 body{
-    background: -webkit-linear-gradient(left, #A400FF, #3F0B81);
+    background-image: url("../images/login_background.png");
 }
 .emp-profile{
     padding: 3%;

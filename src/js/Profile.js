@@ -23,7 +23,7 @@ export default function Profile() {
 
     const getEmployee = async () => {
         await axios
-            .get("/employee/1")
+            .get("/employee/2")
             .then(response => response.data)
             .then((data) =>{
                 if(data)
@@ -62,7 +62,7 @@ export default function Profile() {
 
         const update = async() => {
             await axios
-            .put("employee/1", 
+            .put("employee/2", 
                 employee,
                 config)
             .then(() => {
