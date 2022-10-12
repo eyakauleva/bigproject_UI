@@ -13,7 +13,7 @@ function Main(props){
 
     return(
         <div className="main">
-            <Sidebar />
+            <Sidebar navigate={navigate} />
             <Routes>
                 <Route path="/*" element={<Navigate to="profile" />} />
                 <Route path="profile" element={<Profile navigate={navigate}  /> } />

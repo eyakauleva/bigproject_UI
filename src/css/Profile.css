@@ -5,16 +5,30 @@
 
 input[type="text"], textarea{
     border:1px solid #D5D5D5;
-    padding-left: 10px;
+    padding:2px 10px;
 }
 
 #editPhoto:hover{
     background-color: #17F1D7;
 }
 
+.tab-panel .row label, 
+.tab-panel .row input[type="text"], 
+.tab-panel .row p, 
+.tab-panel .row textarea{
+    margin-top: 5%;
+}
+
+.tickets p{
+    font-size: 13px;
+    color: #818182;
+    font-weight: 600;
+}
+
 body{
     background-image: url("../images/login_background.png");
 }
+
 .emp-profile{
     padding: 3%;
     margin-top: 3%;
@@ -26,8 +40,10 @@ body{
     text-align: center;
 }
 .profile-img img{
-    width: 70%;
-    height: 100%;
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 50%;
 }
 .profile-img .file {
     position: relative;
@@ -53,20 +69,19 @@ body{
 }
 .profile-edit-btn{
     border: none;
-    border-radius: 1.5rem;
-    width: 70%;
-    padding: 2%;
+    border-radius: 0.3rem;
+    width: 100%;
+    padding: 5px 2%;
     font-weight: 600;
     color: #FFFFFF;
-    background-color: #17F1D7;
+    background-color: #1771F1;
     cursor: pointer;
 }
-.proile-rating{
-    font-size: 12px;
+.profile-rating{
+    font-size: 13px;
     color: #818182;
-    margin-top: 5%;
 }
-.proile-rating span{
+.profile-rating span{
     color: #495057;
     font-size: 15px;
     font-weight: 600;
@@ -87,7 +102,7 @@ body{
     margin-top: -15%;
 }
 .profile-work p{
-    font-size: 12px;
+    font-size: 13px;
     color: #818182;
     font-weight: 600;
     margin-top: 10%;
@@ -108,3 +123,48 @@ body{
     font-weight: 600;
     color: #0062cc;
 }
+
+.mybtn {
+  border: none;
+  border-radius: 0.3rem;
+  display: block;
+  text-align: center;
+  cursor: pointer;
+  text-transform: uppercase;
+  outline: none;
+  overflow: hidden;
+  position: relative;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  background-color: #64C7FF;
+  padding: 12px 35px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.20);
+  margin-left: 25% !important;
+}
+
+.mybtn span {
+  position: relative; 
+  z-index: 1;
+}
+
+.mybtn:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 490%;
+  width: 140%;
+  background: #AFCFEA;
+  -webkit-transition: all .5s ease-in-out;
+  transition: all .5s ease-in-out;
+  -webkit-transform: translateX(-99%) translateY(-20%) rotate(45deg);
+  transform: translateX(-99%) translateY(-20%) rotate(45deg);
+}
+
+.mybtn:hover:after {
+  -webkit-transform: translateX(-9%) translateY(-25%) rotate(45deg);
+  transform: translateX(-9%) translateY(-25%) rotate(45deg);
+}
+
+

@@ -3,6 +3,7 @@ import axios from "axios";
 import '.././css/Profile.css';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
+import { format, parseISO } from "date-fns";
 
 export default function Profile() {
     const[employee, setEmployee] = useState({});
@@ -12,9 +13,8 @@ export default function Profile() {
     const[surname, setSurname] = useState("");
     const[email, setEmail] = useState("");
     const[phone, setPhone] = useState("");
-    const[birthday, setBirthday] = useState("");
     const[technologies, setTechnologies] = useState("");
-    const [selectedImage, setSelectedImage] = useState(null);
+    const[selectedImage, setSelectedImage] = useState(null);
     const[editMode, setEditmode] = useState(false);    
 
     useEffect(() => {        
@@ -23,12 +23,13 @@ export default function Profile() {
 
     const getEmployee = async () => {
         await axios
-            .get("/employee/2")
+            .get("/employee/1")
             .then(response => response.data)
             .then((data) =>{
-                if(data)
+                if(data){
                     setEmployee(data);
                     setUser(data.user);
+                }                    
             })
             .catch((error) => {
                 
@@ -39,7 +40,7 @@ export default function Profile() {
         e.preventDefault();
     }
 
-    const editProfile = () => {
+    const editProfileRequest = () => {
         let config = {
         headers: {
             //Authorization: 'Bearer ' + token
@@ -54,19 +55,26 @@ export default function Profile() {
             phone: phone
         };
 
+        let res = null;
+        if(selectedImage!=null){
+            res = selectedImage;
+            res = res.substring(res.indexOf(',') + 1);
+        }
+
         let employee = {
             user: user,
-            birthDate: birthday,
-            technologies: technologies
+            technologies: technologies,
+            photo: res
         };
 
         const update = async() => {
             await axios
-            .put("employee/2", 
+            .put("employee/1", 
                 employee,
                 config)
             .then(() => {
                 getEmployee();
+                setEditmode(false);
             })
             .catch((error) => {
             
@@ -79,10 +87,19 @@ export default function Profile() {
         const file = e.target.files[0];
         let reader = new FileReader();
         reader.readAsDataURL(file);
-        reader.onload = () => {
+        reader.onload = () => {            
             setSelectedImage(reader.result);
-            console.log(selectedImage);
         };
+    }
+
+    const editProfileOnUI = (e) => {
+        setLogin(user.login);
+        setName(user.name);
+        setSurname(user.surname);
+        setEmail(user.email);
+        setPhone(user.phone);
+        setTechnologies(employee.technologies);
+        setEditmode(true);
     }
 
   return (
@@ -96,42 +113,44 @@ export default function Profile() {
                             ? <img src={`${selectedImage}`} />
                             : <img src={`data:image/jpeg;base64,${employee.photo}`} />}
                             {editMode ? 
-                                <div class="file btn btn-lg btn-primary " id="editPhoto">
-                                    Change Photo    setSelectedImage(e.target.files[0]);                            
+                                <div className="file btn btn-lg btn-primary " id="editPhoto">
+                                    Change Photo                           
                                     <input type="file" name="file" accept="image/*" onChange={uploadPhoto}/>
                                 </div>
                                 : ""}
                         </div>
-                    </div>
-                    <div className="col-md-6">
-                        <div className="profile-head">
-                                <h5>
-                                    {user.name} {user.surname}
-                                </h5>
-                                <h6>
-                                    {employee.position}
-                                </h6>
-                                <p className="proile-rating">Work experience : <span>{employee.experience}</span></p>
-                        </div>
-                    </div>
-                    <div className="col-md-2">
-                        <button onClick={()=>setEditmode(true)} className="profile-edit-btn">Edit Profile</button>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-md-4">
                         <div className="profile-work">
+                            <br/>
                             <p>Current project</p>
+                            <hr/>
                             <a href="">[???Current project name with link ???]</a><br/>
                         </div>
                     </div>
-                    <div className="col-md-8">                            
-                                    <Tabs
+                    <div className="col-md-8">
+                        <div className="profile-head">
+                                <div className="row">
+                                    <div className="col-md-8">
+                                        <h5>
+                                            {user.name} {user.surname}
+                                        </h5>
+                                        <p className="profile-rating">{employee.position}</p>
+                                    </div>
+                                    {
+                                        !editMode ?
+                                        <div className="col-md-4">
+                                            <button onClick={editProfileOnUI} className="mybtn"><span>Edit Profile</span></button>
+                                        </div>
+                                        : ""
+                                    } 
+                                    
+                                </div>                                
+                                <br/>
+                                <div className="col-md-8">
+                                <Tabs
                                       defaultActiveKey="profile"
-                                      id="uncontrolled-tab-example"
                                       className="mb-3">
                                       <Tab eventKey="profile" title="Profile">
-                                        <div className="tab-pane fade show active" id="home" aria-labelledby="home-tab">
+                                        <div className="tab-panel">
                                           <div className="row">
                                                 <div className="col-md-6">
                                                     <label>Login</label>
@@ -145,7 +164,7 @@ export default function Profile() {
                                           </div>
                                           {editMode ?
                                         <div>
-                                           <div className="row">
+                                           <div className="row ">
                                                <div className="col-md-6">
                                                    <label>Name</label>
                                                </div>
@@ -204,19 +223,24 @@ export default function Profile() {
                                                   <label>Date of birth</label>
                                               </div>
                                               <div className="col-md-6">
-                                              {editMode ? <input type="text"
-                                                        defaultValue={employee.birthDate} 
-                                                        onChange={e => setBirthday(e.target.value)}/> 
-                                                        : <p>{employee.birthDate}</p>} 
-                                              </div>
+                                                {employee.birthDate != null ? <p>{format(parseISO(employee.birthDate), "do MMMM Y")}</p> : ''}
+                                              </div> 
                                           </div>
                                         </div>
                                       </Tab>
                                       <Tab eventKey="work" title="Work">
-                                        <div>
+                                        <div className="tab-panel">
+                                        <div className="row">
+                                              <div className="col-md-6">
+                                                  <label>Start date at company</label>
+                                              </div>
+                                              <div className="col-md-6">
+                                                  {employee.startDate != null ? <p>{format(parseISO(employee.startDate), "do MMMM Y")}</p> : ''}
+                                              </div>
+                                          </div>
                                           <div className="row">
                                               <div className="col-md-6">
-                                                  <label>Experience</label>
+                                                  <label>Total experience</label>
                                               </div>
                                               <div className="col-md-6">
                                                   <p>{employee.experience}</p>
@@ -246,28 +270,42 @@ export default function Profile() {
                                                   <label>Total Projects</label>
                                               </div>
                                               <div className="col-md-6">
-                                                  <p>?????????????????</p>
+                                                  <p>{employee.projectsCount}</p>
                                               </div>
                                           </div>
                                         </div>
                                       </Tab>
-                                    </Tabs>
-
+                                    </Tabs></div>
+                                    <br/>
                                     
-                    </div>
+                                    {
+                                        editMode?
+                                        <div>
+                                            <br/>
+                                            <div className="row">                                            
+                                            <div className="col-md-3"></div>
+                                            <div className="col-md-2">
+                                                <input onClick={editProfileRequest} type="submit" className="profile-edit-btn" value="Save" />
+                                            </div>
+                                            <div className="col-md-2">
+                                                <button onClick={()=>{setEditmode(false); setSelectedImage(null);}} 
+                                                    style={{background: '#FF6E4E'}} className="profile-edit-btn">Cancel</button>
+                                            </div>
+                                        </div>
+                                        </div>
+                                        : ""
+                                    }
 
-                </div>  
-                {editMode ?
-                <div className="row">
-                <div className="col-md-6">
-                    <input onClick={editProfile} type="submit" className="profile-edit-btn" value="Save" />
+                        </div>
+                    </div>                                       
                 </div>
-                <div className="col-md-6">
-                    <button onClick={()=>{setEditmode(false); setSelectedImage(null);}} style={{background: '#D5D5D5'}} className="profile-edit-btn">Cancel</button>
-                </div>                                        
-            </div>
-            :""}  
-
+                <div className="row">
+                    <div className="col-md-4"></div>
+                    <div className="col-md-8 tickets">
+                        <p>Tickets</p>
+                        <hr/>
+                    </div>
+                </div>
             </form>           
         </div>
   </div>    

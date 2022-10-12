@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useCookies } from "react-cookie";
 import axios from "axios";
 
 import '.././css/Authorization.css';
@@ -7,6 +8,7 @@ function Authorization(props){
     const[username, setUsername] = useState('');
     const[password, setPassword] = useState('');
     const[errorMessage, setErrorMessage] = useState('');
+    const[cookies, setCookie] = useCookies(["token"]);
 
   const handleUserInput = (e) => {
     const name = e.target.name;
@@ -33,6 +35,7 @@ function Authorization(props){
 
     axios.post('auth', requestOptions)
       .then(response => {
+        setCookie("token", response.data.token, { path: '/' });
         props.navigate('/app');        
       })
       .catch((error) => {
