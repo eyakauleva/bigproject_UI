@@ -1,5 +1,10 @@
 .dashboard{
-    background-color: aqua;
+    background-color: white;
     float: right;
     width: calc(100% - 160px);
+}
+
+
+.dash-container{
+    display: flex;
 }

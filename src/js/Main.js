@@ -14,8 +14,8 @@ function Main(props){
         <div className="main">
             <Sidebar navigate={navigate} />
             <Routes>
-                <Route path="/*" element={<Navigate to="profile" />} />
-                <Route path="profile" element={<Profile navigate={navigate}  /> } />
+                <Route path="/*" element={<Navigate to="profile/" />} />
+                <Route path="profile/*" element={<Profile navigate={navigate}  /> } />
                 <Route path="qqq" element={<Dashboard navigate={navigate}  /> } />
             </Routes> 
         </div>               

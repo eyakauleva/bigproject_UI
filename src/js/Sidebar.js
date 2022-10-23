@@ -1,19 +1,25 @@
 import React from "react";
 import { useCookies } from 'react-cookie';
+import jwt_decode from "jwt-decode";
 
 import '.././css/Sidebar.css';
 
 function Sidebar(props){
     const [cookies, removeCookie] = useCookies(["token"]);
 
+    const goToProfile = () => {
+        let decodedToken = jwt_decode(cookies.token);
+        props.navigate('profile/' + decodedToken.sub); 
+    }
+
     const logout = () => {
-        removeCookie("token");
+        removeCookie("token");        
         props.navigate('/login'); 
     }
 
     return(
         <div className="sidenav">
-            <a href="">
+            <a onClick={goToProfile}>
                 <i className="bi bi-person"></i>
                 <span>Profile</span>
             </a>

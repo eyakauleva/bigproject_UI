@@ -13,7 +13,7 @@ const isUserLoggedIn = (token) => {
     } else{
         let decodedToken = jwt_decode(token);
         if (decodedToken.exp < new Date().getTime()){
-            //console.log(window.location.pathname);
+            //console.log(window.location.pathname); //put in cookie and after login navidate to it
             return false;
         }            
         else return true;

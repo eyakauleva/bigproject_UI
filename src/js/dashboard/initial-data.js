@@ -1,19 +1,35 @@
-const initialData = {
-    tasks: {
-      'task-1': { id: 'task-1', content: 'Take out the garbage' },
-      'task-2': { id: 'task-2', content: 'Watch my favorite show' },
-      'task-3': { id: 'task-3', content: 'Charge my phone' },
-      'task-4': { id: 'task-4', content: 'Cook dinner' },
+let initialData = {
+    tasks: {    
     },
     columns: {
-      'column-1': {
-        id: 'column-1',
-        title: 'To do',
-        taskIds: ['task-1', 'task-2', 'task-3', 'task-4'],
+      'OPEN': {
+        id: 'OPEN',
+        title: 'OPEN',
+        taskIds: [],
       },
+      'IN_DESIGN': {
+        id: 'IN_DESIGN',
+        title: 'IN_DESIGN',
+        taskIds: [],
+      },
+      'IN_BUILD': {
+        id: 'IN_BUILD',
+        title: 'IN_BUILD',
+        taskIds: [],
+      },
+      'READY_FOR_TEST': {
+        id: 'READY_FOR_TEST',
+        title: 'READY_FOR_TEST',
+        taskIds: [],
+      },
+      'CLOSE': {
+        id: 'CLOSE',
+        title: 'CLOSE',
+        taskIds: [],
+      },
+
     },
-    // Facilitate reordering of the columns
-    columnOrder: ['column-1'],
+    columnOrder: ['OPEN', 'IN_DESIGN', 'IN_BUILD', 'READY_FOR_TEST', 'CLOSE'],
   };
   
   export default initialData;
