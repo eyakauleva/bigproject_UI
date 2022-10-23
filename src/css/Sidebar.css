@@ -23,6 +23,8 @@
 .sidenav a:hover {
     cursor: pointer;
     background-color: white;
+    border-bottom: 1px solid #b1adad;
+    border-top: 1px solid #b1adad;
     color: black;
 }
 

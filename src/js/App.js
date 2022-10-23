@@ -27,6 +27,7 @@ const ProtectedRoute = ({ redirectPath = '/login', children }) => {
 };
 
 function App(){
+    
     const navigate = useNavigate();
     const [cookies, setCookie] = useCookies(["token"]);    
 

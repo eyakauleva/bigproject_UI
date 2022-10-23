@@ -69,7 +69,7 @@ export default function Profile() {
 
         const update = async() => {
             await axios
-            .put("/employee/1", 
+            .put("employee/1", 
                 employee,
                 config)
             .then(() => {
@@ -223,8 +223,8 @@ export default function Profile() {
                                                   <label>Date of birth</label>
                                               </div>
                                               <div className="col-md-6">
-                                                {/* <p>{format(parseISO(employee.birthDate), "do MMMM Y")}</p> */}
-                                              </div>
+                                                {employee.birthDate != null ? <p>{format(parseISO(employee.birthDate), "do MMMM Y")}</p> : ''}
+                                              </div> 
                                           </div>
                                         </div>
                                       </Tab>
@@ -235,7 +235,7 @@ export default function Profile() {
                                                   <label>Start date at company</label>
                                               </div>
                                               <div className="col-md-6">
-                                                  {/* <p>{format(parseISO(employee.startDate), "do MMMM Y")}</p> */}
+                                                  {employee.startDate != null ? <p>{format(parseISO(employee.startDate), "do MMMM Y")}</p> : ''}
                                               </div>
                                           </div>
                                           <div className="row">

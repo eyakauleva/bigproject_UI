@@ -31,7 +31,7 @@ function Sidebar(props){
             <i className="bi bi-check2-square"></i>
                 <span>Tickets</span>
             </a>
-            <a href="">
+            <a href="/app/projects">
                 <i className="bi bi-list"></i>    
                 <span>Projects</span>
             </a> 
