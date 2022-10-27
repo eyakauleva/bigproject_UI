@@ -81,8 +81,6 @@ function Dashboard() {
 
       axios
       .put("/project/reorder?id=" + draggableId + "&destination=" + destination.index + "&destinationColumn=" + finish.title)
-      .then(()=>{
-      })
       .catch((error) => {
       }); 
 
@@ -103,38 +101,8 @@ function Dashboard() {
       taskIds: finishTasksIds,
     };
 
-
-    // --- maybe can be removed after backend added
-
-    // Object.keys(data.tasks).map((key, index) => {
-    //   if(data.tasks[key].order>=destination.index)
-    //     data.tasks[key].order-=1;
-    // });
-
-    // console.log(data.tasks);
-
-    // const startTask = {
-    //   ...data.tasks[draggableId],
-    //   order: destination.index,
-    // };
-
-    // const finishTask = {
-    //   ...data.tasks[destination.index], // ticket's id and order must be the same!!!!
-    //   order: source.index,
-    // };
-
-    // ---
-
-
     const newState = {
       ...data,
-      // --- maybe can be removed after backend added
-      // tasks: {
-      //   ...data.tasks,
-      //   [startTask.id]: startTask,
-      //   [finishTask.id]: finishTask,
-      // },
-      // --- 
       columns: {
         ...data.columns,
         [newStart.id]: newStart,
@@ -144,13 +112,8 @@ function Dashboard() {
 
     setData(newState);
 
-    console.log("id=" + draggableId);
-    console.log("destination=" + destination.index);
-    console.log("destinationColumn=" + finish.title);
     axios
     .put("/project/reorder?id=" + draggableId + "&destination=" + destination.index + "&destinationColumn=" + finish.title)
-    .then(()=>{
-    })
     .catch((error) => {
     }); 
     
