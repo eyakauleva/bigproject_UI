@@ -110,7 +110,7 @@
 }
 .item.list-group-item:nth-of-type(odd):hover,.item.list-group-item:hover
 {
-    background: #428bca;
+    background: #b0e6f0;
 }
 
 .item.list-group-item .list-group-image
@@ -152,3 +152,86 @@
     width: 35%;
     float: right;
 }
+.btn-custom-2 {
+    width: 25%;
+    float: right;
+    text-decoration: none;
+    border: none;
+    border-radius: 0.3rem;
+    display: block;
+    text-align: center;
+    cursor: pointer;
+    text-transform: uppercase;
+    outline: none;
+    overflow: hidden;
+    position: relative;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    background-color: #64C7FF;
+    padding: 12px 35px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.20);
+    margin-left: 25% !important;
+  }
+  .btn-grid{
+    width: 80%; 
+  }
+  .btn-custom-2:hover{
+    color: #fff;
+  }
+  .btn-custom-2 span {
+    position: relative; 
+    z-index: 1;
+  }
+  
+  .btn-custom-2:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 490%;
+    width: 150%;
+    background: #AFCFEA;
+    -webkit-transition: all .5s ease-in-out;
+    transition: all .5s ease-in-out;
+    -webkit-transform: translateX(-99%) translateY(-20%) rotate(45deg);
+    transform: translateX(-99%) translateY(-20%) rotate(45deg);
+  }
+  
+  .btn-custom-2:hover:after {
+    -webkit-transform: translateX(-9%) translateY(-25%) rotate(45deg);
+    transform: translateX(-9%) translateY(-25%) rotate(45deg);
+  }
+  .list-group-item-heading:first-letter {
+    text-transform: uppercase;
+  }
+  .list-group-item-heading {
+    word-wrap: break-word;
+    margin-left: 5%;
+    margin-top: 2%;
+  }
+  .list-group-item-heading-list {
+    margin-left: 2%;
+    margin-top: 0%;
+  }
+  .line {
+    margin: 5% 1% 5% 1%;
+    border-top: 2.1px solid rgb(0, 0, 0);
+  }
+  .line-list {
+    margin: 2% 0% 2% 0%;
+  }
+  .list-group-item-text {
+    margin: 2% 2% 10%;
+  }
+  .list-group-item-text-list {
+    margin: 2% 0% 3%;
+  }
+  .container-custom {
+    padding: 0 2%;
+    margin-bottom: 1%;
+  }
+  .container-custom-list {
+    padding: 0;
+    margin-bottom: 1%;
+  }

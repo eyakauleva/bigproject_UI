@@ -26,7 +26,7 @@ function Dashboard() {
     .then((_data) =>{
         if(_data){
           _data.map(ticket => {
-            let ticket_id_toString = ''+ticket.id;
+            let ticket_id_toString = '' + ticket.id;
             let task = {id: ticket_id_toString, content: ticket.name, order: ticket.order};
             const {tasks} = data;
             tasks[ticket_id_toString] = task;
