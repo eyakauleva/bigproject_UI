@@ -4,21 +4,39 @@ import { FaList, FaTh } from 'react-icons/fa';
 import { IconContext } from 'react-icons';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
+import axios from "axios";
 
 export default function Projects() {
     const [isList, setIsList] = useState(false);
+    const[projects, setProjects] = useState([{}]);
     const [inputText, setInputText] = useState("");
+    useEffect(() => {        
+        getProjects();
+    }, []);
+    const getProjects = () => {
+         axios
+            .get("/project/all")
+            .then(response => response.data)
+            .then((data) =>{
+                if(data){
+                    setProjects(data);
+                }                    
+            })
+            .catch((error) => {
+            });
+    };
     let inputHandler = (e) => {
         var lowerCase = e.target.value.toLowerCase();
         setInputText(lowerCase);
       };
-      const list =  ['asda', 'asdad', 'asdasd'].filter((item) =>{
+      const filteredProjects =  Object.values(projects).filter((project) =>{
         if(inputText === ''){
-            return item;
+            return project;
         } else {
-            return item.toLowerCase().includes(inputText);
+            return project.name.toLowerCase().includes(inputText);
         }
     });
+
     return(
         <div className="projects">
             <div className="container">
@@ -61,49 +79,28 @@ export default function Projects() {
                     </div>
                 </div>
                 <div id="products" className={isList ? '' : 'row'}>
-                {/* {list.map(item => (
-                    <div key={item}>{item}</div>
-                    ))} */}
-                    <div className={isList ? 'item col-md-4 col-lg-4 list-group-item' : 'item col-md-4 col-lg-4 grid-group-item'}>
-                        <div className="thumbnail">
-                            <div className="caption">
-                                <h4 className="group inner list-group-item-heading">
-                                    Product title</h4>
-                                <p className="group inner list-group-item-text">
-                                    Product description... Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
-                                    sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
-                                <div className="row">
-                                    <div className="col-xs-12 col-md-6">
-                                        <p className="lead">
-                                            $21.000</p>
-                                    </div>
-                                    <div className="col-xs-12 col-md-6">
-                                        <a className="btn btn-success" href="http://www.jquery2dotnet.com">Add to cart</a>
+                    {
+                        filteredProjects.map((project) => 
+                        <div className={isList ? 'item col-md-4 col-lg-4 list-group-item' : 'item col-md-4 col-lg-4 grid-group-item'}> 
+                            <div className="thumbnail">
+                                <div className="caption">
+                                    <h4 className={isList ? 'group inner list-group-item-heading list-group-item-heading-list' : 'group inner list-group-item-heading'}>{project.name}</h4>
+                                    <hr className={isList ? 'line line-list' : 'line'}/>
+                                    <p className={isList ? 'group inner list-group-item-text-list' : 'group inner list-group-item-text'}>{project.description}</p>
+                                    <div className={isList ? 'row container-custom-list' : 'row container-custom'}>
+                                        <div className="col-xs-12 col-md-6">
+                                            <p className="lead">
+                                                $21.000</p>
+                                        </div>
+                                        <div className="col-xs-12 col-md-6">
+                                            <a className={isList ? 'btn-custom-2' : 'btn-custom-2 btn-grid'} href=""><span>More</span></a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div className={isList ? 'item col-md-4 col-lg-4 list-group-item' : 'item col-md-4 col-lg-4 grid-group-item'}>
-                        <div className="thumbnail">
-                            <div className="caption">
-                                <h4 className="group inner list-group-item-heading">
-                                    Product title</h4>
-                                <p className="group inner list-group-item-text">
-                                    Product description... Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
-                                    sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
-                                <div className="row">
-                                    <div className="col-xs-12 col-md-6">
-                                        <p className="lead">
-                                            $21.000</p>
-                                    </div>
-                                    <div className="col-xs-12 col-md-6">
-                                        <a className="btn btn-success" href="http://www.jquery2dotnet.com">Add to cart</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                        )
+                    }
                 </div>
             </div>
         </div>
