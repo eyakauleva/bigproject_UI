@@ -1,6 +1,34 @@
 .task-container{
     margin-bottom: 8px;
-    padding: 8px;
-    border: 1px lightgray solid;
-    border-radius: 0.5rem;
+    padding: 12px;
+    border-radius: 0.2rem;
+    background-color: white;
+}
+
+.task-container .name{
+    font-weight: bold;
+    color: #404040;
+    cursor: pointer;
+}
+
+.task-container .name:hover {
+    color: white;
+    background-color: #404040;
+}
+
+.task-container .due-date{
+    font-size: 12px;
+}
+
+.task-container .icon-panel{
+    display: flex;
+    justify-content: space-between;
+}
+
+.task-container .assignee-pic{
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+    cursor: pointer;
 }

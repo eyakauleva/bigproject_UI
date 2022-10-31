@@ -1,0 +1,66 @@
+.submit-button{
+    border: 0;
+    background: #B22222;
+    color: white;
+    width: 70px;
+}
+
+.cancel-button {
+    border: 0;
+    background: #DCDCDC;
+    color: black;
+    width: 70px;
+    margin-right: 6%;
+}
+
+.submit-button:hover{
+    background: #B22222;
+    opacity: 0.7;
+}
+
+.cancel-button:hover{
+    background: #DCDCDC;
+    opacity: 0.7;
+}
+
+.inner-text{
+    text-align: center;
+}
+
+.modal-title{
+    display: flex;
+    justify-content: center;
+    background: #DCDCDC;
+}
+
+.form-wrapper{
+    padding:2% 6%;
+    display: flex;
+    justify-content: center;
+}
+
+.form tr{
+    border: 0;
+}
+
+.form td{
+    word-wrap: unset;
+    width: max-content; 
+    padding: 2% 0;  
+    border: 0;
+}
+
+.form .input{
+    margin-left: 50px;
+    width: 400px;
+}
+
+.form textarea{
+    resize: none;
+}
+
+.form .errorMsg{
+    color: red;
+    font-size: 10px;
+    margin-left: 50px;
+}

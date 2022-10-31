@@ -1,33 +1,45 @@
 import { useState, useEffect } from 'react';
-
-import initialData from './initial-data';
-import Column from './Column';
 import { DragDropContext } from '@hello-pangea/dnd';
 import { useCookies } from "react-cookie";
 import axios from "axios";
+import { FaList, FaTh } from 'react-icons/fa';
+import { IconContext } from 'react-icons';
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
+
+import initialData from './initial-data';
+import Column from './Column';
+import TaskModal from './TaskModal';
 
 import '../../css/Dashboard.css';
+import '../../css/Projects.css';
 
-function Dashboard() {
+function Dashboard(props) {
   const[data, setData] = useState(initialData);
-  const[initFlag, setInitFlag] = useState(false); // flag to rerender component after data initialization
+  const[initFlag, setInitFlag] = useState(false); // flag to rerender component after data initialization  
 
   // const[cookies, setCookie] = useCookies(["token"]);
 
   useEffect(() => {
-    getTickets(); 
-    
+    getTickets();     
   }, []);
 
-  function getTickets(){    
+  function getTickets(){  
     axios
     .get("/project/1/tickets")
     .then(response => response.data)
     .then((_data) =>{
-        if(_data){
+        if(_data){          
           _data.map(ticket => {
             let ticket_id_toString = '' + ticket.id;
-            let task = {id: ticket_id_toString, content: ticket.name, order: ticket.order};
+            let task = {
+              id: ticket_id_toString, 
+              content: ticket.name, 
+              order: ticket.order, 
+              dueDate: ticket.dueDate,
+              severity: ticket.severity,
+              assigneePhoto: ticket.assignee.photo,
+              assigneeName: ticket.assignee.user.name + " " + ticket.assignee.user.surname};
             const {tasks} = data;
             tasks[ticket_id_toString] = task;
             data.columns[ticket.status].taskIds.push(task.id);
@@ -37,9 +49,7 @@ function Dashboard() {
     })
     .catch((error) => {
         
-    }); 
-    
-    
+    });   
   }
 
   const onDragEnd = result => {
@@ -82,6 +92,7 @@ function Dashboard() {
       axios
       .put("/project/reorder?id=" + draggableId + "&destination=" + destination.index + "&destinationColumn=" + finish.title)
       .catch((error) => {
+        //TODO
       }); 
 
       return;
@@ -115,24 +126,65 @@ function Dashboard() {
     axios
     .put("/project/reorder?id=" + draggableId + "&destination=" + destination.index + "&destinationColumn=" + finish.title)
     .catch((error) => {
-    }); 
-    
-  };
+      // TODO
+    });     
+  };  
 
   return (
-    <div className="dashboard">
-      <DragDropContext onDragEnd={onDragEnd}>
-        <div className='dash-container'>
-        {
-          data.columnOrder.map(columnId => {
-            const column = data.columns[columnId];
-            const tasks = column.taskIds.map(taskId => data.tasks[taskId]);    
-            return <div className='wrapper'><Column key={column.id} column={column} tasks={tasks} /></div>;
-          }) 
-        }
+    <div className="projects">
+        <div className="container">
+                <div className="well well-sm">
+                  <strong className="col-md-3">Display:</strong>
+                    <div className="btn-group col-md-3">
+                       <a href="#" id="list" className="btn-custom btn-custom-default btn-sm">
+                           <IconContext.Provider
+                                value={{ 
+                                    className: "glyphicon glyphicon-th-list",
+                                    size: '15px'
+                                }}
+                            >
+                           <FaList/>
+                           </IconContext.Provider>
+                           List
+                        </a> 
+                        <a href="#" id="grid" className="btn-custom btn-custom-default btn-sm">
+                            <IconContext.Provider
+                                value={{ 
+                                    className: "glyphicon glyphicon-th",
+                                    size: '15px'
+                                }}
+                            >
+                           <FaTh/>
+                           </IconContext.Provider>
+                            Grid
+                        </a>
+                    </div>
+                    <div className="search">
+                    <InputGroup>
+                        <Form.Control
+                            placeholder="Username"
+                            aria-label="Username"
+                            aria-describedby="basic-addon1"
+                        />
+                        <InputGroup.Text id="basic-addon1"><i className="bi bi-search"></i></InputGroup.Text>
+                    </InputGroup>
+                    </div>
+                </div>
+                <div className="dashboard">
+                  <DragDropContext onDragEnd={onDragEnd}>
+                    <div className='dash-container'>
+                    {
+                      data.columnOrder.map(columnId => {
+                        const column = data.columns[columnId];
+                        const tasks = column.taskIds.map(taskId => data.tasks[taskId]);    
+                        return <div className='wrapper'><Column key={column.id} column={column} tasks={tasks} navigate={props.navigate}/></div>;
+                      }) 
+                    }
+                    </div>
+                  </DragDropContext>                  
+                </div>  
         </div>
-      </DragDropContext>
-    </div>        
+    </div>
   );
 }
 

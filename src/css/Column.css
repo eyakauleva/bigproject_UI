@@ -1,12 +1,15 @@
-.col-container{
-    margin: 8px;
-    border: 1px lightgray solid;
-    border-radius: 0.5rem;
-    width:250px;
+.col-container{    
+    border-radius: 0.3rem;
+    width:240px;
+    background-color: #E6E7E8;
 }
 
 .title{
     padding: 8px;
+    padding-bottom: 0px;
+    font-size: 15px;
+    font-weight: bold;
+    color: #414042;
 }
 
 .tasks-list{

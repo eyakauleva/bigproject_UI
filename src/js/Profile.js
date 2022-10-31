@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import '.././css/Profile.css';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import { format, parseISO } from "date-fns";
 
+import '.././css/Profile.css';
+
 export default function Profile() {
     const[employee, setEmployee] = useState({});
     const[user, setUser] = useState({});
+    const[currProject, setCurrProject] = useState({});
     const[login, setLogin] = useState("");
     const[name, setName] = useState("");
     const[surname, setSurname] = useState("");
@@ -29,6 +31,7 @@ export default function Profile() {
                 if(data){
                     setEmployee(data);
                     setUser(data.user);
+                    setCurrProject(data.currentProject);
                 }                    
             })
             .catch((error) => {
@@ -69,7 +72,7 @@ export default function Profile() {
 
         const update = async() => {
             await axios
-            .put("employee/1", 
+            .put("/employee/1", 
                 employee,
                 config)
             .then(() => {
@@ -123,7 +126,7 @@ export default function Profile() {
                             <br/>
                             <p>Current project</p>
                             <hr/>
-                            <a href="">[???Current project name with link ???]</a><br/>
+                            <a href="">{currProject.name}</a><br/>
                         </div>
                     </div>
                     <div className="col-md-8">
@@ -307,7 +310,7 @@ export default function Profile() {
                     </div>
                 </div>
             </form>           
-        </div>
-  </div>    
+      </div>
+    </div>    
   );
 }
