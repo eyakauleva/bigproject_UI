@@ -8,8 +8,15 @@ function Sidebar(props){
     const [cookies, removeCookie] = useCookies(["token"]);
 
     const goToProfile = () => {
-        let decodedToken = jwt_decode(cookies.token);
-        props.navigate('profile/' + decodedToken.sub); 
+        // let decodedToken = jwt_decode(cookies.token);
+        // props.navigate('profile/' + decodedToken.sub);
+        props.navigate('profile/1'); 
+    }
+
+    const goToDashboard = () => {
+        // let decodedToken = jwt_decode(cookies.token);
+        // props.navigate('profile/' + decodedToken.sub);
+        props.navigate('dashboard/1');
     }
 
     const logout = () => {
@@ -27,7 +34,7 @@ function Sidebar(props){
                 <i className="bi bi-search"></i>
                 <span>Search...</span>
             </a>
-            <a href="">
+            <a onClick={goToDashboard}>
             <i className="bi bi-check2-square"></i>
                 <span>Tickets</span>
             </a>

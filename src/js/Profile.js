@@ -3,6 +3,7 @@ import axios from "axios";
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import { format, parseISO } from "date-fns";
+import { useParams } from 'react-router-dom';
 
 import '.././css/Profile.css';
 
@@ -17,15 +18,17 @@ export default function Profile() {
     const[phone, setPhone] = useState("");
     const[technologies, setTechnologies] = useState("");
     const[selectedImage, setSelectedImage] = useState(null);
-    const[editMode, setEditmode] = useState(false);    
+    const[editMode, setEditmode] = useState(false);  
+    const {id} = useParams();    
 
     useEffect(() => {        
         getEmployee();
     }, []);
 
     const getEmployee = async () => {
-        await axios
-            .get("/employee/1")
+        if(id){
+            await axios
+            .get("/employee/" + id)
             .then(response => response.data)
             .then((data) =>{
                 if(data){
@@ -37,6 +40,7 @@ export default function Profile() {
             .catch((error) => {
                 
             });
+        }        
     };
 
     const handleSubmit = (e) => {
@@ -72,7 +76,7 @@ export default function Profile() {
 
         const update = async() => {
             await axios
-            .put("/employee/1", 
+            .put("/employee/" + id, 
                 employee,
                 config)
             .then(() => {

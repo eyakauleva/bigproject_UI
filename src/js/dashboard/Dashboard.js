@@ -6,6 +6,7 @@ import { FaList, FaTh } from 'react-icons/fa';
 import { IconContext } from 'react-icons';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
+import { useParams } from 'react-router-dom';
 
 import initialData from './initial-data';
 import Column from './Column';
@@ -17,6 +18,7 @@ import '../../css/Projects.css';
 function Dashboard(props) {
   const[data, setData] = useState(initialData);
   const[initFlag, setInitFlag] = useState(false); // flag to rerender component after data initialization  
+  const {id} = useParams(); 
 
   // const[cookies, setCookie] = useCookies(["token"]);
 
@@ -25,31 +27,37 @@ function Dashboard(props) {
   }, []);
 
   function getTickets(){  
-    axios
-    .get("/project/1/tickets")
-    .then(response => response.data)
-    .then((_data) =>{
-        if(_data){          
-          _data.map(ticket => {
-            let ticket_id_toString = '' + ticket.id;
-            let task = {
-              id: ticket_id_toString, 
-              content: ticket.name, 
-              order: ticket.order, 
-              dueDate: ticket.dueDate,
-              severity: ticket.severity,
-              assigneePhoto: ticket.assignee.photo,
-              assigneeName: ticket.assignee.user.name + " " + ticket.assignee.user.surname};
-            const {tasks} = data;
-            tasks[ticket_id_toString] = task;
-            data.columns[ticket.status].taskIds.push(task.id);
-            setInitFlag(true);
-          })  
-        }                    
-    })
-    .catch((error) => {
-        
-    });   
+    if(id){
+
+      //TODO get current project by userId
+      let projectId = 1;
+
+      axios
+      .get("/project/" + projectId + "/tickets")
+      .then(response => response.data)
+      .then((_data) =>{
+          if(_data){          
+            _data.map(ticket => {
+              let ticket_id_toString = '' + ticket.id;
+              let task = {
+                id: ticket_id_toString, 
+                content: ticket.name, 
+                order: ticket.order, 
+                dueDate: ticket.dueDate,
+                severity: ticket.severity,
+                assigneePhoto: ticket.assignee.photo,
+                assigneeName: ticket.assignee.user.name + " " + ticket.assignee.user.surname};
+              const {tasks} = data;
+              tasks[ticket_id_toString] = task;
+              data.columns[ticket.status].taskIds.push(task.id);
+              setInitFlag(true);
+            })  
+          }                    
+      })
+      .catch((error) => {
+          //TODO
+      });
+    }       
   }
 
   const onDragEnd = result => {

@@ -14,34 +14,88 @@ function SingleTask(props) {
   const [ticket, setTicket] = useState({}); 
   const[name, setName] = useState(""); 
   const[description, setDescription] = useState(""); 
-  const[createDate, setCreateDate] = useState(""); 
   const[dueDate, setDueDate] = useState("");
   const[estimatedTime, setEstimatedTime] = useState("");
   const[status, setStatus] = useState("");
   const[severity, setSeverity] = useState("");
   const[assignee, setAssignee] = useState({});
-  const[reporter, setReporter] = useState({});
   const[gitLink, setGitLink] = useState("");  
   const[editMode, setEditMode] = useState(false); 
   const {id} = useParams();  
   const severities = ["LOW", "NORMAL", "HIGH", "CRITICAL"];
 
   useEffect(() => {
+    getTicket();              
+  }, [id]);
+
+  const getTicket = () => {
     if(id){
         axios
         .get("/project/tickets/" + id)
         .then(response => response.data)
         .then(data =>{
             if(data){
-                setTicket(data);
+                setTicket(data);                
             }                 
         })
         .catch((error) => {
             //TODO
         });   
     }
-              
-  }, [id]);
+  }
+
+  const editProfileOnUI = () => {
+    setName(ticket.name);
+    setDescription(ticket.description);
+    setDueDate(ticket.dueDate);
+    setEstimatedTime(ticket.estimatedTime);
+    setStatus(ticket.status);
+    setSeverity(ticket.severity);
+    setGitLink(ticket.gitRef);
+    setAssignee({id: ticket.assignee.id});
+    setEditMode(true);
+  }
+
+  const submitEdit = () => {
+    let config = {
+        headers: {
+            //Authorization: 'Bearer ' + token
+        }
+        };
+
+        //TODO
+        // let assignee_ = {
+        //     id: 0 
+        // };
+
+        let ticket = {
+            name: name,
+            description: description,
+            dueDate: dueDate,
+            estimatedTime: estimatedTime,
+            status: status,
+            severity: severity,
+            gitLink: gitLink,
+            assignee: assignee //TODO
+        };
+
+        console.log(ticket);
+
+        const update = async() => {
+            await axios
+            .put("/project/tickets/" + id, 
+                ticket,
+                config)
+            .then(() => {
+                getTicket();
+                setEditMode(false);
+            })
+            .catch((error) => {
+            
+            });        
+        }      
+        update();
+  }
 
   return (
     <div className="profile">
@@ -60,7 +114,7 @@ function SingleTask(props) {
             {
                 !editMode 
                 ?<div className="col-md-3">
-                    <button onClick={() => setEditMode(true)} className="mybtn"><span>Edit Ticket</span></button>
+                    <button onClick={() => editProfileOnUI()} className="mybtn"><span>Edit Ticket</span></button>
                 </div>
                 : ""
             } 
@@ -70,8 +124,12 @@ function SingleTask(props) {
                 <label>Description:</label>
             </div>
             <div className="col-md-6">
-                <textarea className='textarea' disabled={editMode ? false : true}
+            {
+                editMode 
+                ?<textarea className='textarea'
                     defaultValue={ticket.description} onChange={e => setDescription(e.target.value)} cols="80" rows="6"/>
+                : <textarea className='textarea' disabled value={ticket.description} cols="80" rows="6"/>
+            } 
             </div>
         </div><hr/>
         <div className="row">
@@ -174,7 +232,7 @@ function SingleTask(props) {
                 ? <input type="text" style={{width:'100%'}} defaultValue={ticket.gitRef} onChange={e => setGitLink(e.target.value)}/> 
                 : <a target="_blank" href={ticket.gitRef}>{ticket.gitRef}</a>}                    
             </div>
-        </div>
+        </div><hr/>
         {
             editMode
             ?<div>
@@ -182,7 +240,7 @@ function SingleTask(props) {
                 <div className="row">                                            
                     <div className="col-md-6"></div>
                     <div className="col-md-2">
-                        <input type="submit" className="profile-edit-btn" value="Save" />
+                        <input type="submit" onClick={()=>{submitEdit()}} className="profile-edit-btn" value="Save" />
                     </div>
                     <div className="col-md-2">
                         <button onClick={()=>{setEditMode(false);}} 
@@ -190,10 +248,8 @@ function SingleTask(props) {
                     </div>
                 </div>
             </div>
-            : ""
-        }        
-        <hr/>
-        <h3>Comments</h3>
+            : <h3>Comments</h3>
+        }
       </div>    
     </div>
   );  

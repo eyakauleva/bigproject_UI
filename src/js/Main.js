@@ -16,9 +16,9 @@ function Main(props){
         <div className="main">
             <Sidebar navigate={navigate} />
             <Routes>
-                <Route path="/*" element={<Navigate to="profile/" />} />
-                <Route path="profile" element={<Profile navigate={navigate}  /> } />
-                <Route path="dashboard" element={<Dashboard navigate={navigate}  /> } />
+                <Route path="/*" element={<Navigate to="profile/" />} /> {/* TODO set user id*/}
+                <Route path="profile/:id" element={<Profile navigate={navigate}  /> } />
+                <Route path="dashboard/:id" element={<Dashboard navigate={navigate}  /> } />
                 <Route exact path="ticket/:id" element={<SingleTask navigate={navigate}  /> } />
                 <Route path="projects" element={<Projects navigate={navigate}  /> } />
             </Routes> 
