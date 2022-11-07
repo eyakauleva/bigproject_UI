@@ -8,11 +8,13 @@ import axios from "axios";
 
 export default function Projects() {
     const [isList, setIsList] = useState(false);
-    const[projects, setProjects] = useState([{}]);
+    const[projects, setProjects] = useState([]);
     const [inputText, setInputText] = useState("");
+
     useEffect(() => {        
         getProjects();
     }, []);
+
     const getProjects = () => {
          axios
             .get("/project/all")
@@ -25,11 +27,13 @@ export default function Projects() {
             .catch((error) => {
             });
     };
+
     let inputHandler = (e) => {
         var lowerCase = e.target.value.toLowerCase();
         setInputText(lowerCase);
-      };
-      const filteredProjects =  Object.values(projects).filter((project) =>{
+    };
+
+    const filteredProjects =  Object.values(projects).filter((project) =>{
         if(inputText === ''){
             return project;
         } else {
@@ -69,8 +73,8 @@ export default function Projects() {
                     <div className="search">
                     <InputGroup>
                         <Form.Control
-                            placeholder="Username"
-                            aria-label="Username"
+                            placeholder="Project name"
+                            aria-label="Project name"
                             aria-describedby="basic-addon1"
                             onChange={inputHandler}
                         />
@@ -89,8 +93,7 @@ export default function Projects() {
                                     <p className={isList ? 'group inner list-group-item-text-list' : 'group inner list-group-item-text'}>{project.description}</p>
                                     <div className={isList ? 'row container-custom-list' : 'row container-custom'}>
                                         <div className="col-xs-12 col-md-6">
-                                            <p className="lead">
-                                                $21.000</p>
+                                            <p className="lead">$21.000</p>
                                         </div>
                                         <div className="col-xs-12 col-md-6">
                                             <a className={isList ? 'btn-custom-2' : 'btn-custom-2 btn-grid'} href=""><span>More</span></a>

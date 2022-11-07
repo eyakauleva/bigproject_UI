@@ -8,14 +8,23 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { useParams } from 'react-router-dom';
 
-import initialData from './initial-data';
 import Column from './Column';
-import TaskModal from './TaskModal';
 
 import '../../css/Dashboard.css';
 import '../../css/Projects.css';
 
 function Dashboard(props) {
+  const initialData = {
+    tasks: {},
+    columns: {
+      'OPEN': {id: 'OPEN', title: 'OPEN', taskIds: [], },
+      'IN_DESIGN': {id: 'IN_DESIGN', title: 'IN_DESIGN', taskIds: [], },
+      'IN_BUILD': {id: 'IN_BUILD', title: 'IN_BUILD', taskIds: [], },
+      'READY_FOR_TEST': {id: 'READY_FOR_TEST', itle: 'READY_FOR_TEST', taskIds: [], },
+      'CLOSE': {id: 'CLOSE', title: 'CLOSE', taskIds: [], },
+    },
+    columnOrder: ['OPEN', 'IN_DESIGN', 'IN_BUILD', 'READY_FOR_TEST', 'CLOSE'],
+  };
   const[data, setData] = useState(initialData);
   const[initFlag, setInitFlag] = useState(false); // flag to rerender component after data initialization  
   const {id} = useParams(); 
@@ -26,9 +35,9 @@ function Dashboard(props) {
     getTickets();     
   }, []);
 
-  function getTickets(){  
+  function getTickets(){ 
     if(id){
-
+      
       //TODO get current project by userId
       let projectId = 1;
 
@@ -49,9 +58,9 @@ function Dashboard(props) {
                 assigneeName: ticket.assignee.user.name + " " + ticket.assignee.user.surname};
               const {tasks} = data;
               tasks[ticket_id_toString] = task;
-              data.columns[ticket.status].taskIds.push(task.id);
-              setInitFlag(true);
+              data.columns[ticket.status].taskIds.push(task.id);              
             })  
+            setInitFlag(true);
           }                    
       })
       .catch((error) => {

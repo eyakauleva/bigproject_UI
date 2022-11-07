@@ -5,7 +5,6 @@ import { format, parseISO } from "date-fns";
 import { useParams } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 
-import initialData from './initial-data';
 import '../../css/SingleTask.css';
 import '../../css/Profile.css';
 
@@ -23,6 +22,7 @@ function SingleTask(props) {
   const[editMode, setEditMode] = useState(false); 
   const {id} = useParams();  
   const severities = ["LOW", "NORMAL", "HIGH", "CRITICAL"];
+  const columnOrder = ['OPEN', 'IN_DESIGN', 'IN_BUILD', 'READY_FOR_TEST', 'CLOSE'];
 
   useEffect(() => {
     getTicket();              
@@ -79,8 +79,6 @@ function SingleTask(props) {
             assignee: assignee //TODO
         };
 
-        console.log(ticket);
-
         const update = async() => {
             await axios
             .put("/project/tickets/" + id, 
@@ -102,7 +100,8 @@ function SingleTask(props) {
       <div className="container emp-profile">
         <div className="row">
             <div className="col-md-4">
-                <svg onClick={()=> props.navigate("dashboard/")} className="arrow-back bi bi-arrow-left" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
+                {/** set project ID dynamically to navigate */}
+                <svg onClick={()=> props.navigate("dashboard/1")} className="arrow-back bi bi-arrow-left" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
                 </svg>
             </div>
@@ -174,7 +173,7 @@ function SingleTask(props) {
                 ? <Form.Select onChange={e => setStatus(e.target.value)}>
                     <option selected value={ticket.status}>{ticket.status}</option>                    
                     {
-                        initialData.columnOrder.map(column => {
+                        columnOrder.map(column => {
                             if(column != ticket.status)
                                 return <option value={column}>{column}</option>;
                         })

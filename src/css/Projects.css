@@ -171,7 +171,7 @@
     background-color: #64C7FF;
     padding: 12px 35px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.20);
-    margin-left: 25% !important;
+    margin-left: 25%;
   }
   .btn-grid{
     width: 80%; 

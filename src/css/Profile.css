@@ -167,4 +167,23 @@ body{
   transform: translateX(-9%) translateY(-25%) rotate(45deg);
 }
 
+.block-btn{
+    border: none;
+    border-radius: 0.3rem;
+    display: block;
+    text-align: center;
+    cursor: pointer;
+    text-transform: uppercase;
+    outline: none;
+    overflow: hidden;
+    position: relative;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 12px 35px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.20);
+    margin-left: 25% !important;
+    background: #F6522E;
+}
+
 

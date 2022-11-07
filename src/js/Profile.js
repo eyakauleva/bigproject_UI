@@ -99,7 +99,7 @@ export default function Profile() {
         };
     }
 
-    const editProfileOnUI = (e) => {
+    const editProfileOnUI = () => {
         setLogin(user.login);
         setName(user.name);
         setSurname(user.surname);
@@ -107,6 +107,21 @@ export default function Profile() {
         setPhone(user.phone);
         setTechnologies(employee.technologies);
         setEditmode(true);
+    }
+
+    const blockUser = () => {
+        let config = {
+            headers: {
+                //Authorization: 'Bearer ' + token
+            }
+        };
+
+        axios
+        .put("/user/" + id + "/block",
+            config)
+        .catch((error) => {
+        
+        });   
     }
 
   return (
@@ -130,7 +145,9 @@ export default function Profile() {
                             <br/>
                             <p>Current project</p>
                             <hr/>
-                            <a href="">{currProject.name}</a><br/>
+                            {currProject
+                            ? <div><a href={"/app/dashboard/"+currProject.id}>{currProject.name}</a><br/></div>
+                            : <div>No current project</div>}                            
                         </div>
                     </div>
                     <div className="col-md-8">
@@ -150,6 +167,12 @@ export default function Profile() {
                                         : ""
                                     } 
                                     
+                                    {
+                                        // TODO: condition (admin is logged)
+                                        <div className="col-md-4">
+                                            <button onClick={blockUser} className="block-btn"><span>Block user</span></button>
+                                        </div>
+                                    }                                    
                                 </div>                                
                                 <br/>
                                 <div className="col-md-8">

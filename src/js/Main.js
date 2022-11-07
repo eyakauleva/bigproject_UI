@@ -6,6 +6,7 @@ import Profile from './Profile';
 import Dashboard from './dashboard/Dashboard';
 import SingleTask from './dashboard/SingleTask';
 import Projects from './Projects';
+import Users from './Users';
 
 import '.././css/Main.css';
 
@@ -16,11 +17,12 @@ function Main(props){
         <div className="main">
             <Sidebar navigate={navigate} />
             <Routes>
-                <Route path="/*" element={<Navigate to="profile/" />} /> {/* TODO set user id*/}
+                <Route path="/*" element={<Navigate to="profile/1" />} /> {/* TODO set user id dynamically*/}
                 <Route path="profile/:id" element={<Profile navigate={navigate}  /> } />
                 <Route path="dashboard/:id" element={<Dashboard navigate={navigate}  /> } />
                 <Route exact path="ticket/:id" element={<SingleTask navigate={navigate}  /> } />
                 <Route path="projects" element={<Projects navigate={navigate}  /> } />
+                <Route path="users" element={<Users navigate={navigate}  /> } />
             </Routes> 
         </div>               
     );
