@@ -6,7 +6,7 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import axios from "axios";
 
-export default function Projects() {
+export default function Projects(props) {
     const [isList, setIsList] = useState(false);
     const[projects, setProjects] = useState([]);
     const [inputText, setInputText] = useState("");
@@ -88,15 +88,19 @@ export default function Projects() {
                         <div className={isList ? 'item col-md-4 col-lg-4 list-group-item' : 'item col-md-4 col-lg-4 grid-group-item'}> 
                             <div className="thumbnail">
                                 <div className="caption">
-                                    <h4 className={isList ? 'group inner list-group-item-heading list-group-item-heading-list' : 'group inner list-group-item-heading'}>{project.name}</h4>
+                                    <h4 className={isList ? 'group inner list-group-item-heading list-group-item-heading-list' : 'group inner list-group-item-heading'}>
+                                        {project.name}
+                                    </h4>
                                     <hr className={isList ? 'line line-list' : 'line'}/>
                                     <p className={isList ? 'group inner list-group-item-text-list' : 'group inner list-group-item-text'}>{project.description}</p>
                                     <div className={isList ? 'row container-custom-list' : 'row container-custom'}>
                                         <div className="col-xs-12 col-md-6">
-                                            <p className="lead">$21.000</p>
+                                            {/* <p className="lead">$21.000</p> */}
                                         </div>
                                         <div className="col-xs-12 col-md-6">
-                                            <a className={isList ? 'btn-custom-2' : 'btn-custom-2 btn-grid'} href=""><span>More</span></a>
+                                            <a className={isList ? 'btn-custom-2' : 'btn-custom-2 btn-grid'} onClick={() => props.navigate("project/" + project.id)}>
+                                                <span>More</span>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
