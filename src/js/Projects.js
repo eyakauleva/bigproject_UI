@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import '.././css/Projects.css';
 import { FaList, FaTh } from 'react-icons/fa';
 import { IconContext } from 'react-icons';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import axios from "axios";
+
+import '.././css/Projects.css';
 
 export default function Projects(props) {
     const [isList, setIsList] = useState(false);
@@ -44,9 +45,9 @@ export default function Projects(props) {
     return(
         <div className="projects">
             <div className="container">
-                <div className="well well-sm">
-                    <strong className="col-md-3">Display:</strong>
-                    <div className="btn-group col-md-3">
+                <div className="well well-sm row" style={{fontFamily:"sans-serif"}}>
+                    <strong className="col-md-1">Display:</strong>
+                    <div className="btn-group col-md-4">
                        <a href="#" id="list" className="btn-custom btn-custom-default btn-sm" onClick={() => setIsList(true)}>
                            <IconContext.Provider
                                 value={{ 
@@ -70,7 +71,11 @@ export default function Projects(props) {
                             Grid
                         </a>
                     </div>
-                    <div className="search">
+                    {/**TODO for managers only: */}
+                    <div className="col-md-3">
+                        <button onClick={()=>props.navigate('projects/new')} className="add-btn"><span>New Project</span></button>
+                    </div>
+                    <div className="search col-md-4">
                     <InputGroup>
                         <Form.Control
                             placeholder="Project name"

@@ -4,16 +4,19 @@ import { useCookies } from 'react-cookie';
 import { format, parseISO } from "date-fns";
 import { useParams } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
+import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 
+import ChooseEmployeeModal from './ChooseEmployeeModal'
 import '../../css/SingleTask.css';
 import '../../css/Profile.css';
 
-function SingleTask(props) {
+export default function SingleTask(props) {
   const [cookies, setCookie, removeCookie] = useCookies(["token"]);
   const [ticket, setTicket] = useState({}); 
   const[name, setName] = useState(""); 
   const[description, setDescription] = useState(""); 
-  const[dueDate, setDueDate] = useState("");
+  const[dueDate, setDueDate] = useState(new Date());
   const[estimatedTime, setEstimatedTime] = useState("");
   const[status, setStatus] = useState("");
   const[severity, setSeverity] = useState("");
@@ -23,6 +26,7 @@ function SingleTask(props) {
   const {id} = useParams();  
   const severities = ["LOW", "NORMAL", "HIGH", "CRITICAL"];
   const columnOrder = ['OPEN', 'IN_DESIGN', 'IN_BUILD', 'READY_FOR_TEST', 'CLOSE'];
+  const[showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     getTicket();              
@@ -35,7 +39,7 @@ function SingleTask(props) {
         .then(response => response.data)
         .then(data =>{
             if(data){
-                setTicket(data);                
+                setTicket(data);                          
             }                 
         })
         .catch((error) => {
@@ -52,31 +56,27 @@ function SingleTask(props) {
     setStatus(ticket.status);
     setSeverity(ticket.severity);
     setGitLink(ticket.gitRef);
-    setAssignee({id: ticket.assignee.id});
+    setAssignee(ticket.assignee);
     setEditMode(true);
   }
 
   const submitEdit = () => {
     let config = {
         headers: {
-            //Authorization: 'Bearer ' + token
+            //TODO Authorization: 'Bearer ' + token
         }
-        };
+    };
 
-        //TODO
-        // let assignee_ = {
-        //     id: 0 
-        // };
-
+        alert(dueDate);
         let ticket = {
             name: name,
             description: description,
-            dueDate: dueDate,
+            dueDate: format(dueDate, "yyyy-MM-dd HH:mm:ss"), //error if do NOT change due date
             estimatedTime: estimatedTime,
             status: status,
             severity: severity,
             gitLink: gitLink,
-            assignee: assignee //TODO
+            assignee: {id: assignee.id}
         };
 
         const update = async() => {
@@ -89,10 +89,15 @@ function SingleTask(props) {
                 setEditMode(false);
             })
             .catch((error) => {
-            
+                //TODO
             });        
         }      
         update();
+  }
+
+  const editAssignee = (employee) => {
+    setAssignee(employee);
+    setShowModal(false);
   }
 
   return (
@@ -100,7 +105,7 @@ function SingleTask(props) {
       <div className="container emp-profile">
         <div className="row">
             <div className="col-md-4">
-                {/** set project ID dynamically to navigate */}
+                {/** TODO set project ID dynamically to navigate */}
                 <svg onClick={()=> props.navigate("dashboard/1")} className="arrow-back bi bi-arrow-left" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
                 </svg>
@@ -119,7 +124,8 @@ function SingleTask(props) {
             } 
         </div>
         <div className="row">
-           <div className="col-md-4">
+            <div className="col-md-1"></div>
+           <div className="col-md-3">
                 <label>Description:</label>
             </div>
             <div className="col-md-6">
@@ -132,7 +138,8 @@ function SingleTask(props) {
             </div>
         </div><hr/>
         <div className="row">
-           <div className="col-md-4">
+            <div className="col-md-1"></div>            
+           <div className="col-md-3">
                 <label>Create time:</label>
             </div>
             <div className="col-md-6">
@@ -140,17 +147,23 @@ function SingleTask(props) {
             </div>
         </div><hr/>
         <div className="row">
-           <div className="col-md-4">
+            <div className="col-md-1"></div>
+           <div className="col-md-3">
                 <label>Due time:</label>
             </div>
             <div className="col-md-6">
                 {editMode 
-                ? <input type="text" defaultValue={ticket.dueDate} onChange={e => setDueDate(e.target.value)}/> 
-                : ticket.dueDate != null ? <p>{format(parseISO(ticket.dueDate), "do MMMM Y HH:mm:ss")}</p> : ''}                    
+                ? <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <DateTimePicker style={{width:'100%'}} value={dueDate} onChange={setDueDate} format="do MMMM Y HH:mm:ss" />
+                  </MuiPickersUtilsProvider> 
+                : ticket.dueDate != null 
+                ? <p>{format(parseISO(ticket.dueDate), "do MMMM Y HH:mm:ss")}</p> 
+                : ''}                    
             </div>
         </div><hr/>
         <div className="row">
-           <div className="col-md-4">
+            <div className="col-md-1"></div>
+           <div className="col-md-3">
                 <label>Estimated time:</label>
             </div>
             <div className="col-md-6">
@@ -165,7 +178,8 @@ function SingleTask(props) {
             </div>
         </div><hr/>
         <div className="row">
-           <div className="col-md-4">
+            <div className="col-md-1"></div>
+           <div className="col-md-3">
                 <label>Status:</label>
             </div>
             <div className="col-md-6">
@@ -183,7 +197,8 @@ function SingleTask(props) {
             </div>
         </div><hr/>
         <div className="row">
-           <div className="col-md-4">
+            <div className="col-md-1"></div>
+           <div className="col-md-3">
                 <label>Severity:</label>
             </div>
             <div className="col-md-6">
@@ -201,29 +216,45 @@ function SingleTask(props) {
             </div>
         </div><hr/>
         <div className="row">
-           <div className="col-md-4">
+            <div className="col-md-1"></div>
+           <div className="col-md-3">
                 <label>Assignee:</label>
             </div>
             <div className="col-md-6">
-                {editMode 
-                ? "" // TODO
-                : ticket.assignee 
-                ? <div><img className="photo" src={`data:image/jpeg;base64,${ticket.assignee.photo}`} />&nbsp;&nbsp;{ticket.assignee.user.name+' '+ticket.assignee.user.surname}</div>
+                {
+                editMode
+                ? (
+                    assignee != null
+                    ? <div onClick={editMode ? ()=>setShowModal(true) : {}} 
+                            style={editMode ? {border:'1px solid #D5D5D5', borderRadius:'5px', cursor:'pointer'} : {}}>
+                        <img className="photo" src={`data:image/jpeg;base64,${assignee.photo}`} />
+                        &nbsp;&nbsp;{assignee.user.name+' '+ assignee.user.surname}
+                    </div>
+                    : ''
+                )
+                : ticket.assignee != null
+                ? <div onClick={editMode ? ()=>setShowModal(true) : {}} 
+                        style={editMode ? {border:'1px solid #D5D5D5', borderRadius:'5px', cursor:'pointer'} : {}}>
+                    <img className="photo" src={`data:image/jpeg;base64,${ticket.assignee.photo}`} />
+                    &nbsp;&nbsp;{ticket.assignee.user.name+' '+ticket.assignee.user.surname}
+                  </div>
                 : "" }           
             </div>
         </div><hr/>
         <div className="row">
-           <div className="col-md-4">
+            <div className="col-md-1"></div>
+           <div className="col-md-3">
                 <label>Reporter:</label>
             </div>
             <div className="col-md-6">
-                {ticket.reporter 
+                {ticket.reporter != null
                 ? <div><img className="photo" src={`data:image/jpeg;base64,${ticket.reporter.photo}`} />&nbsp;&nbsp;{ticket.reporter.user.name+' '+ticket.assignee.user.surname}</div>
                 : "" }           
             </div>
         </div><hr/>        
         <div className="row">
-           <div className="col-md-4">
+            <div className="col-md-1"></div>
+           <div className="col-md-3">
                 <label>Git link:</label>
             </div>
             <div className="col-md-6">
@@ -247,11 +278,11 @@ function SingleTask(props) {
                     </div>
                 </div>
             </div>
-            : <h3>Comments</h3>
+            : ''
         }
-      </div>    
+      </div>  
+      <ChooseEmployeeModal show={showModal} onHide={()=>setShowModal(false)} submitChange={(employee)=>editAssignee(employee)} 
+                           assignee={ticket.assignee} reporter={ticket.reporter} />  
     </div>
   );  
 }
-
-export default SingleTask;

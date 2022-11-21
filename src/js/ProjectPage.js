@@ -98,7 +98,6 @@ export default function ProjectPage(props) {
     <div className="container emp-profile">
       <div className="row">
           <div className="col-md-4">
-              {/** set project ID dynamically to navigate */}
               <svg onClick={()=> props.navigate("projects")} className="arrow-back bi bi-arrow-left" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
                   <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
               </svg>
@@ -108,14 +107,16 @@ export default function ProjectPage(props) {
           </div>
       </div>
       <div className="row">
+        <div className="col-md-1"></div>
          <div className="col-md-4">
-              <label>Description:</label>
-              <textarea className='textarea' disabled value={project.description} cols="80" rows="6"/>
+              <label>Description:</label>              
           </div>
           <div className="col-md-6">
+            <textarea className='textarea' disabled value={project.description} cols="70" rows="6"/>
           </div>
       </div><hr/>
       <div className="row">
+        <div className="col-md-1"></div>
          <div className="col-md-4">
               <label>Create time:</label>
           </div>
@@ -124,6 +125,7 @@ export default function ProjectPage(props) {
           </div>
       </div><hr/>
       <div className="row">
+        <div className="col-md-1"></div>
          <div className="col-md-4">
               <label>Due time:</label>
           </div>
@@ -132,6 +134,7 @@ export default function ProjectPage(props) {
           </div>
       </div><hr/>
       <div className="row">
+        <div className="col-md-1"></div>
          <div className="col-md-4">
               <label>Estimated time:</label>
           </div>
@@ -140,6 +143,7 @@ export default function ProjectPage(props) {
           </div>
       </div><hr/>
       <div className="row">
+        <div className="col-md-1"></div>
          <div className="col-md-4">
               <label>Status:</label>
           </div>
@@ -148,6 +152,7 @@ export default function ProjectPage(props) {
           </div>
       </div><hr/>
       <div className="row">
+        <div className="col-md-1"></div>
          <div className="col-md-4">
               <label>Severity:</label>
           </div>
@@ -156,6 +161,7 @@ export default function ProjectPage(props) {
           </div>
       </div><hr/>
       <div className="row">
+        <div className="col-md-1"></div>
          <div className="col-md-4">
               <label>Assignee:</label>
           </div>
@@ -166,6 +172,7 @@ export default function ProjectPage(props) {
           </div>
       </div><hr/>
       <div className="row">
+        <div className="col-md-1"></div>
          <div className="col-md-4">
               <label>Reporter:</label>
           </div>
@@ -176,17 +183,21 @@ export default function ProjectPage(props) {
           </div>
       </div><hr/>        
       <div className="row">
+        <div className="col-md-1"></div>
          <div className="col-md-4">
               <label>Git link:</label>
           </div>
           <div className="col-md-6">
             <a target="_blank" href={project.gitRef}>{project.gitRef}</a>
           </div>
-      </div><hr/>
+      </div><hr/><br/>
+      <div className="row">
+        <div className="col-md-1"></div>
+        <div className="col-md-4">
         <h4>Related tickets</h4>
         {
             tickets.map((ticket) =>
-            <div className='pretty-link' onClick={() => props.navigate("ticket/" + ticket.id)}>
+            <div className='pretty-link' style={{cursor:'pointer'}} onClick={() => props.navigate("ticket/" + ticket.id)}>
             {/* <IconContext.Provider
                 value={{ 
                     className: "glyphicon glyphicon-th",
@@ -200,6 +211,8 @@ export default function ProjectPage(props) {
             <a className='' onClick={() => props.navigate("ticket/" + ticket.id)}>{ticket.name}</a>
        </div>
         )}
+        </div>
+       </div>
     </div>    
   </div>);
 }

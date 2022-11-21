@@ -4,6 +4,8 @@ import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import { format, parseISO } from "date-fns";
 import { useParams } from 'react-router-dom';
+import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 
 import '.././css/Profile.css';
 
@@ -16,6 +18,7 @@ export default function Profile() {
     const[surname, setSurname] = useState("");
     const[email, setEmail] = useState("");
     const[phone, setPhone] = useState("");
+    const[birthDate, setBirthDate] = useState(new Date());
     const[technologies, setTechnologies] = useState("");
     const[selectedImage, setSelectedImage] = useState(null);
     const[editMode, setEditmode] = useState(false);  
@@ -34,11 +37,11 @@ export default function Profile() {
                 if(data){
                     setEmployee(data);
                     setUser(data.user);
-                    setCurrProject(data.currentProject);
+                    setCurrProject(data.currentProject);                    
                 }                    
             })
             .catch((error) => {
-                
+                //TODO
             });
         }        
     };
@@ -70,6 +73,7 @@ export default function Profile() {
 
         let employee = {
             user: user,
+            birthDate: format(birthDate, "yyyy-MM-dd"),
             technologies: technologies,
             photo: res
         };
@@ -105,6 +109,7 @@ export default function Profile() {
         setSurname(user.surname);
         setEmail(user.email);
         setPhone(user.phone);
+        setBirthDate(employee.birthDate);
         setTechnologies(employee.technologies);
         setEditmode(true);
     }
@@ -253,7 +258,15 @@ export default function Profile() {
                                                   <label>Date of birth</label>
                                               </div>
                                               <div className="col-md-6">
-                                                {employee.birthDate != null ? <p>{format(parseISO(employee.birthDate), "do MMMM Y")}</p> : ''}
+                                                {
+                                                    editMode 
+                                                    ? <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                        <DatePicker style={{width:'100%'}} value={birthDate} onChange={setBirthDate} format="do MMMM Y" />
+                                                      </MuiPickersUtilsProvider> 
+                                                    : employee.birthDate != null
+                                                    ? <p>{format(parseISO(employee.birthDate), "do MMMM Y")}</p> 
+                                                    : ''
+                                                }
                                               </div> 
                                           </div>
                                         </div>
@@ -289,7 +302,7 @@ export default function Profile() {
                                                   <label>Technologies</label>
                                               </div>
                                               <div className="col-md-6">
-                                                    {editMode ? <textarea
+                                                    {editMode ? <textarea style={{maxHeight:'350px'}}
                                                         defaultValue={employee.technologies} 
                                                         onChange={e => setTechnologies(e.target.value)}/> 
                                                         : <p>{employee.technologies}</p>} 
@@ -313,15 +326,15 @@ export default function Profile() {
                                         <div>
                                             <br/>
                                             <div className="row">                                            
-                                            <div className="col-md-3"></div>
-                                            <div className="col-md-2">
-                                                <input onClick={editProfileRequest} type="submit" className="profile-edit-btn" value="Save" />
+                                                <div className="col-md-3"></div>
+                                                <div className="col-md-2">
+                                                    <input onClick={editProfileRequest} type="submit" className="profile-edit-btn" value="Save" />
+                                                </div>
+                                                <div className="col-md-2">
+                                                    <button onClick={()=>{setEditmode(false); setSelectedImage(null);}} 
+                                                        style={{background: '#FF6E4E'}} className="profile-edit-btn">Cancel</button>
+                                                </div>
                                             </div>
-                                            <div className="col-md-2">
-                                                <button onClick={()=>{setEditmode(false); setSelectedImage(null);}} 
-                                                    style={{background: '#FF6E4E'}} className="profile-edit-btn">Cancel</button>
-                                            </div>
-                                        </div>
                                         </div>
                                         : ""
                                     }

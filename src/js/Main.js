@@ -8,6 +8,7 @@ import SingleTask from './dashboard/SingleTask';
 import Projects from './Projects';
 import Users from './Users';
 import ProjectPage from './ProjectPage';
+import CreateProject from './CreateProject';
 
 import '.././css/Main.css';
 
@@ -25,6 +26,7 @@ function Main(props){
                 <Route path="projects" element={<Projects navigate={navigate}  /> } />
                 <Route path="users" element={<Users navigate={navigate}  /> } />
                 <Route path="project/:id" element={<ProjectPage navigate={navigate}  /> } />
+                <Route path="projects/new" element={<CreateProject navigate={navigate}  /> } />
             </Routes> 
         </div>               
     );

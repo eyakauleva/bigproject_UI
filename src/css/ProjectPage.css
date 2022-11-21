@@ -13,3 +13,16 @@
     border: 1px solid rgb(206, 204, 204);
     background-color: rgb(235, 233, 233);
 }
+
+.col-md-4{
+    font-weight: bold;
+}
+
+.textarea{
+    resize:both;
+    max-width:700px;
+    max-height:600px;
+    min-width:200px; 
+    min-height:100px;
+    outline: none;
+}

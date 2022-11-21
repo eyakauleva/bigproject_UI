@@ -39,6 +39,8 @@ function Authorization(props){
         props.navigate('/app');        
       })
       .catch((error) => {
+        console.log(error.toJSON());
+        console.log(error.status);
         setErrorMessage(error.response.data.errorMessage);
       })
   }

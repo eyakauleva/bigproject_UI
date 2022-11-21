@@ -29,6 +29,7 @@ export default function Users() {
              }                                   
          })
          .catch((error) => {
+            //TODO
          });    
     };
 
@@ -80,15 +81,15 @@ export default function Users() {
                         <button onClick={()=>setShowModal(true)} className="add-btn"><span>Add User</span></button>
                     </div>
                     <div className="search col-md-4">
-                    <InputGroup>
-                        <Form.Control
-                            placeholder="Username"
-                            aria-label="Username"
-                            aria-describedby="basic-addon1"
-                            onChange={inputHandler}
-                        />
-                        <InputGroup.Text id="basic-addon1"><i className="bi bi-search"></i></InputGroup.Text>
-                    </InputGroup>
+                        <InputGroup>
+                            <Form.Control
+                                placeholder="Username"
+                                aria-label="Username"
+                                aria-describedby="basic-addon1"
+                                onChange={inputHandler}
+                            />
+                            <InputGroup.Text id="basic-addon1"><i className="bi bi-search"></i></InputGroup.Text>
+                        </InputGroup>
                     </div>
                 </div>
                 <div id="products" className={isList ? '' : 'row'}>
