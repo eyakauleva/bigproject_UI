@@ -225,16 +225,14 @@ export default function SingleTask(props) {
                 editMode
                 ? (
                     assignee != null
-                    ? <div onClick={editMode ? ()=>setShowModal(true) : {}} 
-                            style={editMode ? {border:'1px solid #D5D5D5', borderRadius:'5px', cursor:'pointer'} : {}}>
+                    ? <div className='pretty-select' onClick={editMode ? ()=>setShowModal(true) : {}} >
                         <img className="photo" src={`data:image/jpeg;base64,${assignee.photo}`} />
                         &nbsp;&nbsp;{assignee.user.name+' '+ assignee.user.surname}
                     </div>
                     : ''
                 )
                 : ticket.assignee != null
-                ? <div onClick={editMode ? ()=>setShowModal(true) : {}} 
-                        style={editMode ? {border:'1px solid #D5D5D5', borderRadius:'5px', cursor:'pointer'} : {}}>
+                ? <div className='pretty-select-non-edit' onClick={editMode ? ()=>setShowModal(true) : {}} >
                     <img className="photo" src={`data:image/jpeg;base64,${ticket.assignee.photo}`} />
                     &nbsp;&nbsp;{ticket.assignee.user.name+' '+ticket.assignee.user.surname}
                   </div>
@@ -248,7 +246,7 @@ export default function SingleTask(props) {
             </div>
             <div className="col-md-6">
                 {ticket.reporter != null
-                ? <div><img className="photo" src={`data:image/jpeg;base64,${ticket.reporter.photo}`} />&nbsp;&nbsp;{ticket.reporter.user.name+' '+ticket.assignee.user.surname}</div>
+                ? <div className='pretty-select-non-edit'><img className="photo" src={`data:image/jpeg;base64,${ticket.reporter.photo}`} />&nbsp;&nbsp;{ticket.reporter.user.name+' '+ticket.assignee.user.surname}</div>
                 : "" }           
             </div>
         </div><hr/>        

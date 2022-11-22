@@ -32,3 +32,13 @@
 .arrow-back:hover{
     cursor: pointer;
 }
+.pretty-select{
+    cursor: pointer;
+    padding-left: 5%;
+}
+.pretty-select-non-edit{
+    padding-left: 5%;
+}
+.pretty-select:hover{
+    background-color: rgba(129, 129, 129, 0.205);
+}

@@ -17,13 +17,13 @@
     width: 100%;
 }
 
-.auth-form{
+.login .auth-form{
     height: 70%;
     width: 60%;    
     display: flex;
 }
 
-.left{
+.login .left{
     background-color: #DCDCDC;
     border-radius: 5% 0 0 5%;
     height: 100%;
@@ -35,23 +35,23 @@
     gap: 10px;
 }
 
-.left .title{
+.login .left .title{
     color: #580BE4;
     font-size: 25px;
     font-weight: bold;
 }
 
-.left .image-wrapper{
+.login .left .image-wrapper{
     height: 65%;
     width: 85%;
 }
 
-.left .image-wrapper .image{
+.login .left .image-wrapper .image{
     height: 100%;
     width: 100%;
 }
 
-.right{
+.login .right{
     background-color: white;
     border-radius: 0 5% 5% 0;
     height: 100%;
@@ -63,30 +63,32 @@
     gap: 10px;
 }
 
-.right .form{
+.login .right .form{
     width: 100%; 
 }
 
-.right .input-container {
+.login .right .input-container {
   display: flex;
   flex-direction: column;
   gap: 10px;
   width: 100%;
 }
 
-.right input[type="text"]:focus,
-.right input[type="password"]:focus {
-  border-radius: 0;
+.login .right input[type="text"]:focus,
+.login .right input[type="password"]:focus {
+  border-radius: 5px;
+  outline: none;
+  border: 2px solid #4a238094;
 }
-.right input[type="text"],
-.right input[type="password"] {
+.login .right input[type="text"],
+.login .right input[type="password"] {
 height: 30px;
-border: 1px solid #918e8c;
-border-radius: 3%;
+border: 1px solid #5c5c5c67;
 padding-left: 10px;
+width: auto;
 margin: 0 10%;
 }
-.right input[type="submit"] {
+.login .right input[type="submit"] {
 margin: 10% 0;
 cursor: pointer;
 font-size: 15px;
@@ -97,24 +99,35 @@ border-radius: 8%;
 padding:10px 20px;
 }
 
-.right input[type="submit"]:hover {
+.login .right input[type="submit"]:hover {
 background: #8ccded;
 }
 
-.right .button-container {
+.login .right .button-container {
 display: flex;
 justify-content: center;
 }
 
-.right .error {
+.login .right .error {
 color: red;
 font-size: 12px;
 margin: 0 15%;
 }
 
-.right .hint{
+.login .right .hint{
     margin: 0 20%;
     font-size: 12px;
     color: #918e8c;
     text-align: center;
+}
+.login .custom-input{
+    border-radius: 5px;
+    /* margin: 0 10%;
+    width: auto !important; */
+}
+.login .custom-input:focus-visible{
+    border-radius: 5px;
+    background-color: rgba(179, 178, 178, 0.199);
+    border-color: transparent;
+    border-radius: 3px;
 }

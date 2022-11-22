@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useCookies } from "react-cookie";
 import axios from "axios";
 
-import '.././css/Authorization.css';
+import '../css/Authorization.css';
 
 function Authorization(props){ 
     const[username, setUsername] = useState('');
@@ -53,7 +53,7 @@ function Authorization(props){
 
     
     return(   
-        <div className="body">
+        <div className="login body">
                 <div className="auth-form">
                     <div className="left">
                         <div className="title">Have a productive day!</div> 
@@ -64,14 +64,12 @@ function Authorization(props){
                     </div>
                     <div className="right">
                         <div className="title"><h1>Log In</h1></div>
-                        <div className="form">
+                        <div className="form row">
                             <form onSubmit={handleSubmit}>
                                 <div className="input-container">
-                                    <input type="text" name="username" value={username} onChange={handleUserInput} 
+                                    <input className='custom-input col-lg-8' type="text" name="username" value={username} onChange={handleUserInput} 
                                             required placeholder="Username" />
-                                </div>
-                                <div className="input-container">
-                                    <input type="password" name="password" value={password} onChange={handleUserInput}
+                                    <input className='custom-input col-lg-8' type="password" name="password" value={password} onChange={handleUserInput}
                                             required placeholder="Password" />
                                 </div>
                                 {renderErrorMessage()}

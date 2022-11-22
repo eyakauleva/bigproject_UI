@@ -58,7 +58,7 @@ export default function ChooseEmployeeModal(props) {
       centered
       size="lg">
       <Modal.Header closeButton>
-        <Modal.Title style={{width:'80%'}}>
+        <Modal.Title style={{width:'80%', backgroundColor: 'transparent'}}>
         <div style={{width:'100%'}}>
           <InputGroup>
             <Form.Control placeholder="Name Surname" aria-label="Name Surname" aria-describedby="basic-addon1" onChange={inputHandler} />
@@ -73,20 +73,21 @@ export default function ChooseEmployeeModal(props) {
           filteredUsers.map((employee) => 
             <div className='item  list-group-item' style={{background:"white", cursor:'pointer'}} 
                   onClick={() => props.submitChange(employee)}> 
-              <div>
+              <div className='pretty-select'>
                 <div style={{display:"flex", alignItems:"center", justifyContent:"space-around"}}>
-                    <div className="col-md-1">
+                    <div className="col-lg-1">
                       <img className="photo" src={`data:image/jpeg;base64,${employee.photo}`} style={{width: "65px", height: "65px"}}/>
                     </div>
-                    <div className="col-md-3" style={{fontWeight:"bold", marginTop:"10px"}}>
+                    <div className="col-lg-6" style={{fontWeight:"bold", marginTop:"10px", textAlign:'center'}}>
                       {employee.user.name+' '+employee.user.surname}
                     </div>
-                    <div className="col-md-3" style={{marginTop:"5px"}}>
+                    <div className="col-lg-5" style={{marginTop:"5px"}}>
                       <i className="bi bi-briefcase"></i>&nbsp;{employee.position}
                     </div>                                 
                 </div>         
               </div>
-            </div>
+              <hr/>
+            </div> 
           )
         }
         </div>
