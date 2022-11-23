@@ -18,7 +18,7 @@ export default function Profile() {
     const[surname, setSurname] = useState("");
     const[email, setEmail] = useState("");
     const[phone, setPhone] = useState("");
-    const[birthDate, setBirthDate] = useState(new Date());
+    const[birthDate, setBirthDate] = useState(format(new Date(), 'yyyy-MM-dd'));
     const[technologies, setTechnologies] = useState("");
     const[selectedImage, setSelectedImage] = useState(null);
     const[editMode, setEditmode] = useState(false);  
@@ -70,7 +70,7 @@ export default function Profile() {
             res = selectedImage;
             res = res.substring(res.indexOf(',') + 1);
         }
-
+        
         let employee = {
             user: user,
             birthDate: format(birthDate, "yyyy-MM-dd"),
@@ -109,7 +109,7 @@ export default function Profile() {
         setSurname(user.surname);
         setEmail(user.email);
         setPhone(user.phone);
-        setBirthDate(employee.birthDate);
+        setBirthDate(parseISO(employee.birthDate));
         setTechnologies(employee.technologies);
         setEditmode(true);
     }
@@ -341,13 +341,6 @@ export default function Profile() {
 
                         </div>
                     </div>                                       
-                </div>
-                <div className="row">
-                    <div className="col-md-4"></div>
-                    <div className="col-md-8 tickets">
-                        <p>Tickets</p>
-                        <hr/>
-                    </div>
                 </div>
             </form>           
       </div>

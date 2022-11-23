@@ -1,3 +1,7 @@
+.dashboard{
+    margin-top: 20px;
+}
+
 .dash-container{
     display: flex;
     justify-content: space-between;

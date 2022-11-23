@@ -27,12 +27,12 @@ function Sidebar(props){
     return(
         <div className="sidenav">
             <a onClick={goToProfile}>
-                <i className="bi bi-person"></i>
+                <i className="bi bi-person-circle"></i>
                 <span>Profile</span>
             </a>
             <a href="/app/users">
-                <i className="bi bi-search"></i>
-                <span>Users...</span>
+                <i className="bi bi-people"></i>
+                <span>Users</span>
             </a>
             <a onClick={goToDashboard}>
             <i className="bi bi-check2-square"></i>

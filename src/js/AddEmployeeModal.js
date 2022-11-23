@@ -3,6 +3,9 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import axios from "axios";
 import { useCookies } from 'react-cookie';
+import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
+import { format, parseISO } from "date-fns";
 
 import '../css/Modal.css';
 import '../css/SingleTask.css';
@@ -14,12 +17,12 @@ function AddEmployeeModal(props) {
   const[name, setName] = useState(""); 
   const[surname, setSurname] = useState(""); 
   const[position, setPosition] = useState("");
-  const[startDate, setStartDate] = useState("");
+  const[startDate, setStartDate] = useState(new Date());
 
   const addEmployee = () => {
     let config = {
         headers: {
-            //Authorization: 'Bearer ' + token
+            //TODO Authorization: 'Bearer ' + token
         }
     };
 
@@ -32,7 +35,7 @@ function AddEmployeeModal(props) {
     let employee = {
         user: user,
         position: position,
-        startDate: startDate
+        startDate: format(parseISO(startDate), "yyyy-MM-dd")
     };        
 
     axios
@@ -98,7 +101,9 @@ function AddEmployeeModal(props) {
                 <label>Start date:</label>
             </div>
             <div className="col-md-6">
-                <input type="text" onChange={e => setStartDate(e.target.value)} style={{width:"100%"}}/>                    
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <DatePicker style={{width:'100%'}} value={startDate} onChange={setStartDate} format="do MMMM Y" />
+                </MuiPickersUtilsProvider>                     
             </div>
         </div>    
       </Modal.Body>
