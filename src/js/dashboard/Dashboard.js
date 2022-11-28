@@ -2,10 +2,6 @@ import { useState, useEffect } from 'react';
 import { DragDropContext } from '@hello-pangea/dnd';
 import { useCookies } from "react-cookie";
 import axios from "axios";
-import { FaList, FaTh } from 'react-icons/fa';
-import { IconContext } from 'react-icons';
-import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
 import { useParams } from 'react-router-dom';
 
 import Column from './Column';
@@ -37,12 +33,8 @@ function Dashboard(props) {
 
   function getTickets(){ 
     if(id){
-      
-      //TODO get current project by userId
-      let projectId = 1;
-
       axios
-      .get("/project/" + projectId + "/tickets")
+      .get("/project/" + id + "/tickets")
       .then(response => response.data)
       .then((_data) =>{
           if(_data){          

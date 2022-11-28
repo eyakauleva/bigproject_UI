@@ -51,7 +51,7 @@ export default function SingleTask(props) {
   const editProfileOnUI = () => {
     setName(ticket.name);
     setDescription(ticket.description);
-    setDueDate(ticket.dueDate);
+    setDueDate(parseISO(ticket.dueDate));
     setEstimatedTime(ticket.estimatedTime);
     setStatus(ticket.status);
     setSeverity(ticket.severity);
@@ -67,31 +67,31 @@ export default function SingleTask(props) {
         }
     };
 
-        let ticket = {
-            name: name,
-            description: description,
-            dueDate: format(parseISO(dueDate), "yyyy-MM-dd HH:mm"),
-            estimatedTime: estimatedTime,
-            status: status,
-            severity: severity,
-            gitLink: gitLink,
-            assignee: {id: assignee.id}
-        };
+    let ticket = {
+        name: name,
+        description: description,
+        dueDate: format(dueDate, "yyyy-MM-dd HH:mm"),
+        estimatedTime: estimatedTime,
+        status: status,
+        severity: severity,
+        gitRef: gitLink,
+        assignee: {id: assignee.id}
+    };
 
-        const update = async() => {
-            await axios
-            .put("/project/tickets/" + id, 
-                ticket,
-                config)
-            .then(() => {
-                getTicket();
-                setEditMode(false);
-            })
-            .catch((error) => {
-                //TODO
-            });        
-        }      
-        update();
+    const update = async() => {
+        await axios
+        .put("/project/tickets/" + id, 
+            ticket,
+            config)
+        .then(() => {
+            getTicket();
+            setEditMode(false);
+        })
+        .catch((error) => {
+            //TODO
+        });        
+    }      
+    update();
   }
 
   const editAssignee = (employee) => {
@@ -108,7 +108,7 @@ export default function SingleTask(props) {
             <div className="col-md-5">
                 {editMode 
                 ? <input type="text" style={{fontSize:'22px', width:'100%'}} defaultValue={ticket.name} onChange={e => setName(e.target.value)}/> 
-                : <p style={{fontSize:'30px', fontWeight:'bold'}}>{ticket.name}</p>}                 
+                : <h3>{ticket.name}</h3>}                 
             </div>
             {
                 !editMode 

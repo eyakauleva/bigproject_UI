@@ -36,3 +36,9 @@
 .sidenav a i{
     margin-right: 10px;
 }
+
+.sidenav #new-ticket{
+    background-color: #D7FFFE;
+    border: 2px solid white;
+    font-style: italic;
+}

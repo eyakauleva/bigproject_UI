@@ -26,6 +26,10 @@ function Sidebar(props){
 
     return(
         <div className="sidenav">
+            <a onClick={()=>props.navigate('ticket/new')} id='new-ticket'>
+                <i className="bi bi-plus-square"></i>
+                <span>NEW TICKET</span>
+            </a><hr/>
             <a onClick={goToProfile}>
                 <i className="bi bi-person-circle"></i>
                 <span>Profile</span>

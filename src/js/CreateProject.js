@@ -58,13 +58,16 @@ export default function CreateProject(props) {
         employees.forEach((employee)=>{
             employeesId.push({id: employee.id});
         });
+
+        // console.log(dueDate);
+        // console.log('---' + format(dueDate, "yyyy-MM-dd 00:00"));
     
         let project = {
             assignee: {id: assignee.id},
             reporter: {id: reporter.id},
             name: name,
             description: description,
-            dueDate: format(dueDate, "yyyy-MM-dd"),
+            dueDate: format(dueDate, "yyyy-MM-dd 00:00"),
             employees: employeesId,
             gitRef: gitLink
         };        

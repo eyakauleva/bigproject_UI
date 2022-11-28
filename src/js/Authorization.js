@@ -50,7 +50,6 @@ function Authorization(props){
         <div className="error">{errorMessage}</div>
     );
   }
-
     
     return(   
         <div className="login body">
