@@ -89,7 +89,7 @@ width: auto;
 margin: 0 10%;
 }
 .login .right input[type="submit"] {
-margin: 10% 0;
+margin: 5% 0;
 cursor: pointer;
 font-size: 15px;
 color: white;
@@ -111,7 +111,7 @@ justify-content: center;
 .login .right .error {
 color: red;
 font-size: 12px;
-margin: 0 15%;
+margin: 5% 10%;
 }
 
 .login .right .hint{

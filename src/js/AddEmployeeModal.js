@@ -11,7 +11,7 @@ import '../css/Modal.css';
 import '../css/SingleTask.css';
 import '.././css/Users.css';
 
-function AddEmployeeModal(props) {
+export default function AddEmployeeModal(props) {
   const [cookies, setCookie, removeCookie] = useCookies(["token"]);
   const [role, setRole] = useState("EMPLOYEE"); 
   const[name, setName] = useState(""); 
@@ -115,5 +115,3 @@ function AddEmployeeModal(props) {
     </Modal>
   );  
 }
-
-export default AddEmployeeModal;

@@ -45,7 +45,11 @@ function Sidebar(props){
             <a href="/app/projects">
                 <i className="bi bi-list"></i>    
                 <span>Projects</span>
-            </a> 
+            </a>
+            <a href="/app/orders">
+                <i className="bi bi-bookmarks"></i>    
+                <span>Orders</span>
+            </a>  
             <hr/>
             <a onClick={logout}>
                 <i className="bi bi-box-arrow-left"></i>

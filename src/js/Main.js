@@ -6,6 +6,7 @@ import Profile from './Profile';
 import Dashboard from './dashboard/Dashboard';
 import SingleTask from './dashboard/SingleTask';
 import Projects from './Projects';
+import Orders from './Orders';
 import Users from './Users';
 import ProjectPage from './ProjectPage';
 import CreateProject from './CreateProject';
@@ -26,6 +27,7 @@ function Main(props){
                 <Route exact path="ticket/:id" element={<SingleTask navigate={navigate}  /> } />
                 <Route exact path="ticket/new" element={<CreateTask navigate={navigate}  /> } />
                 <Route path="projects" element={<Projects navigate={navigate}  /> } />
+                <Route path="orders" element={<Orders navigate={navigate}  /> } />
                 <Route path="users" element={<Users navigate={navigate}  /> } />
                 <Route path="project/:id" element={<ProjectPage navigate={navigate}  /> } />
                 <Route path="projects/new" element={<CreateProject navigate={navigate}  /> } />
