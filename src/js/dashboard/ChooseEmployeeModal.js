@@ -20,7 +20,7 @@ export default function ChooseEmployeeModal(props) {
 
   useEffect(() => {
     setInputText("");             
-  }, [props.show]);
+  }, [props]);
 
   const getEmployees = () => {
     axios
@@ -43,12 +43,14 @@ export default function ChooseEmployeeModal(props) {
 
   const filteredUsers =  Object.values(employees).filter((employee) =>{
     let fullName = (employee.user.name + ' ' + employee.user.surname).toLowerCase();
-    if(inputText === '' && props.assignee != null && props.reporter != null){
-      let assigneeFullName = (props.assignee.user.name + ' ' + props.assignee.user.surname).toLowerCase();
-      let reporterFullName = (props.reporter.user.name + ' ' + props.reporter.user.surname).toLowerCase();
-      return fullName === assigneeFullName || fullName === reporterFullName;
-    } else{      
-      return fullName.includes(inputText);
+    if(inputText === ''){
+      if(props.assignee != null && props.reporter != null){
+        let assigneeFullName = (props.assignee.user.name + ' ' + props.assignee.user.surname).toLowerCase();
+        let reporterFullName = (props.reporter.user.name + ' ' + props.reporter.user.surname).toLowerCase();
+        return fullName === assigneeFullName || fullName === reporterFullName;
+      } else return;
+    } else {      
+      return fullName.startsWith(inputText);
     }
   });
 

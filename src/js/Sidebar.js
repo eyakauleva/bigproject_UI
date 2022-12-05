@@ -26,13 +26,17 @@ function Sidebar(props){
 
     return(
         <div className="sidenav">
+            <a onClick={()=>props.navigate('ticket/new')} id='new-ticket'>
+                <i className="bi bi-plus-square"></i>
+                <span>NEW TICKET</span>
+            </a><hr/>
             <a onClick={goToProfile}>
-                <i className="bi bi-person"></i>
+                <i className="bi bi-person-circle"></i>
                 <span>Profile</span>
             </a>
             <a href="/app/users">
-                <i className="bi bi-search"></i>
-                <span>Users...</span>
+                <i className="bi bi-people"></i>
+                <span>Users</span>
             </a>
             <a onClick={goToDashboard}>
             <i className="bi bi-check2-square"></i>
@@ -41,7 +45,11 @@ function Sidebar(props){
             <a href="/app/projects">
                 <i className="bi bi-list"></i>    
                 <span>Projects</span>
-            </a> 
+            </a>
+            <a href="/app/orders">
+                <i className="bi bi-bookmarks"></i>    
+                <span>Orders</span>
+            </a>  
             <hr/>
             <a onClick={logout}>
                 <i className="bi bi-box-arrow-left"></i>

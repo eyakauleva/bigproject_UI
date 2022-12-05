@@ -13,6 +13,7 @@ const isUserLoggedIn = (token) => {
     } else{
         let decodedToken = jwt_decode(token);
         if (decodedToken.exp < new Date().getTime()){
+            //console.log(decodedToken);
             //console.log(window.location.pathname); //put in cookie and after login navidate to it
             return false;
         }            
@@ -26,8 +27,7 @@ const ProtectedRoute = ({ redirectPath = '/login', children }) => {
     else return <Navigate to={redirectPath} replace />;
 };
 
-function App(){
-    
+function App(){    
     const navigate = useNavigate();
     const [cookies, setCookie] = useCookies(["token"]);    
 

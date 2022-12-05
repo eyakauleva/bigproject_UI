@@ -2,10 +2,6 @@ import { useState, useEffect } from 'react';
 import { DragDropContext } from '@hello-pangea/dnd';
 import { useCookies } from "react-cookie";
 import axios from "axios";
-import { FaList, FaTh } from 'react-icons/fa';
-import { IconContext } from 'react-icons';
-import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
 import { useParams } from 'react-router-dom';
 
 import Column from './Column';
@@ -20,7 +16,7 @@ function Dashboard(props) {
       'OPEN': {id: 'OPEN', title: 'OPEN', taskIds: [], },
       'IN_DESIGN': {id: 'IN_DESIGN', title: 'IN_DESIGN', taskIds: [], },
       'IN_BUILD': {id: 'IN_BUILD', title: 'IN_BUILD', taskIds: [], },
-      'READY_FOR_TEST': {id: 'READY_FOR_TEST', itle: 'READY_FOR_TEST', taskIds: [], },
+      'READY_FOR_TEST': {id: 'READY_FOR_TEST', title: 'READY_FOR_TEST', taskIds: [], },
       'CLOSE': {id: 'CLOSE', title: 'CLOSE', taskIds: [], },
     },
     columnOrder: ['OPEN', 'IN_DESIGN', 'IN_BUILD', 'READY_FOR_TEST', 'CLOSE'],
@@ -37,12 +33,8 @@ function Dashboard(props) {
 
   function getTickets(){ 
     if(id){
-      
-      //TODO get current project by userId
-      let projectId = 1;
-
       axios
-      .get("/project/" + projectId + "/tickets")
+      .get("/project/" + id + "/tickets")
       .then(response => response.data)
       .then((_data) =>{
           if(_data){          
@@ -149,44 +141,7 @@ function Dashboard(props) {
 
   return (
     <div className="projects">
-        <div className="container">
-                <div className="well well-sm">
-                  <strong className="col-md-3">Display:</strong>
-                    <div className="btn-group col-md-3">
-                       <a href="#" id="list" className="btn-custom btn-custom-default btn-sm">
-                           <IconContext.Provider
-                                value={{ 
-                                    className: "glyphicon glyphicon-th-list",
-                                    size: '15px'
-                                }}
-                            >
-                           <FaList/>
-                           </IconContext.Provider>
-                           List
-                        </a> 
-                        <a href="#" id="grid" className="btn-custom btn-custom-default btn-sm">
-                            <IconContext.Provider
-                                value={{ 
-                                    className: "glyphicon glyphicon-th",
-                                    size: '15px'
-                                }}
-                            >
-                           <FaTh/>
-                           </IconContext.Provider>
-                            Grid
-                        </a>
-                    </div>
-                    <div className="search">
-                    <InputGroup>
-                        <Form.Control
-                            placeholder="Username"
-                            aria-label="Username"
-                            aria-describedby="basic-addon1"
-                        />
-                        <InputGroup.Text id="basic-addon1"><i className="bi bi-search"></i></InputGroup.Text>
-                    </InputGroup>
-                    </div>
-                </div>
+        <div className="container">                
                 <div className="dashboard">
                   <DragDropContext onDragEnd={onDragEnd}>
                     <div className='dash-container'>

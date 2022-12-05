@@ -39,18 +39,12 @@ function Authorization(props){
         props.navigate('/app');        
       })
       .catch((error) => {
-        console.log(error.toJSON());
-        console.log(error.status);
-        setErrorMessage(error.response.data.errorMessage);
+        let code = error.toJSON().status;
+        if(code===401) setErrorMessage("Bad credentials");
+        else if(code===423) setErrorMessage("Account is locked");
+        else alert('Internal server error');
       })
   }
-
-  const renderErrorMessage = () => {
-    return(
-        <div className="error">{errorMessage}</div>
-    );
-  }
-
     
     return(   
         <div className="login body">
@@ -72,11 +66,11 @@ function Authorization(props){
                                     <input className='custom-input col-lg-8' type="password" name="password" value={password} onChange={handleUserInput}
                                             required placeholder="Password" />
                                 </div>
-                                {renderErrorMessage()}
+                                <div className="error">{errorMessage}</div>
                                 <div className="button-container">
                                     <input type="submit" value="Login"/>
                                 </div>                            
-                            </form>
+                            </form>                            
                         </div>
                         <div className="hint">Contact administrator in case you forgot your password</div>
                     </div>

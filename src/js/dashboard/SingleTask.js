@@ -51,7 +51,7 @@ export default function SingleTask(props) {
   const editProfileOnUI = () => {
     setName(ticket.name);
     setDescription(ticket.description);
-    setDueDate(ticket.dueDate);
+    setDueDate(parseISO(ticket.dueDate));
     setEstimatedTime(ticket.estimatedTime);
     setStatus(ticket.status);
     setSeverity(ticket.severity);
@@ -67,32 +67,31 @@ export default function SingleTask(props) {
         }
     };
 
-        alert(dueDate);
-        let ticket = {
-            name: name,
-            description: description,
-            dueDate: format(dueDate, "yyyy-MM-dd HH:mm:ss"), //error if do NOT change due date
-            estimatedTime: estimatedTime,
-            status: status,
-            severity: severity,
-            gitLink: gitLink,
-            assignee: {id: assignee.id}
-        };
+    let ticket = {
+        name: name,
+        description: description,
+        dueDate: format(dueDate, "yyyy-MM-dd HH:mm"),
+        estimatedTime: estimatedTime,
+        status: status,
+        severity: severity,
+        gitRef: gitLink,
+        assignee: {id: assignee.id}
+    };
 
-        const update = async() => {
-            await axios
-            .put("/project/tickets/" + id, 
-                ticket,
-                config)
-            .then(() => {
-                getTicket();
-                setEditMode(false);
-            })
-            .catch((error) => {
-                //TODO
-            });        
-        }      
-        update();
+    const update = async() => {
+        await axios
+        .put("/project/tickets/" + id, 
+            ticket,
+            config)
+        .then(() => {
+            getTicket();
+            setEditMode(false);
+        })
+        .catch((error) => {
+            //TODO
+        });        
+    }      
+    update();
   }
 
   const editAssignee = (employee) => {
@@ -105,15 +104,11 @@ export default function SingleTask(props) {
       <div className="container emp-profile">
         <div className="row">
             <div className="col-md-4">
-                {/** TODO set project ID dynamically to navigate */}
-                <svg onClick={()=> props.navigate("dashboard/1")} className="arrow-back bi bi-arrow-left" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
-                </svg>
             </div>
             <div className="col-md-5">
                 {editMode 
                 ? <input type="text" style={{fontSize:'22px', width:'100%'}} defaultValue={ticket.name} onChange={e => setName(e.target.value)}/> 
-                : <p style={{fontSize:'30px', fontWeight:'bold'}}>{ticket.name}</p>}                 
+                : <h3>{ticket.name}</h3>}                 
             </div>
             {
                 !editMode 
@@ -143,7 +138,7 @@ export default function SingleTask(props) {
                 <label>Create time:</label>
             </div>
             <div className="col-md-6">
-                {ticket.createDate != null ? <p>{format(parseISO(ticket.createDate), "do MMMM Y HH:mm:ss")}</p> : '' }             
+                {ticket.createDate != null ? <p>{format(parseISO(ticket.createDate), "do MMMM Y HH:mm")}</p> : '' }             
             </div>
         </div><hr/>
         <div className="row">
@@ -154,10 +149,10 @@ export default function SingleTask(props) {
             <div className="col-md-6">
                 {editMode 
                 ? <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <DateTimePicker style={{width:'100%'}} value={dueDate} onChange={setDueDate} format="do MMMM Y HH:mm:ss" />
+                    <DateTimePicker style={{width:'100%'}} value={dueDate} onChange={setDueDate} format="do MMMM Y HH:mm" />
                   </MuiPickersUtilsProvider> 
                 : ticket.dueDate != null 
-                ? <p>{format(parseISO(ticket.dueDate), "do MMMM Y HH:mm:ss")}</p> 
+                ? <p>{format(parseISO(ticket.dueDate), "do MMMM Y HH:mm")}</p> 
                 : ''}                    
             </div>
         </div><hr/>
@@ -174,7 +169,7 @@ export default function SingleTask(props) {
                         event.preventDefault();
                         }
                     }} /> 
-                : ticket.estimatedTime != null ? <p>{ticket.estimatedTime} h</p> : ''}                    
+                : ticket.estimatedTime != 0 ? <p>{ticket.estimatedTime} h</p> : '—'}                    
             </div>
         </div><hr/>
         <div className="row">
