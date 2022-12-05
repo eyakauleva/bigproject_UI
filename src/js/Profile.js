@@ -158,7 +158,7 @@ export default function Profile() {
                     <div className="col-md-8">
                         <div className="profile-head">
                                 <div className="row">
-                                    <div className="col-md-8">
+                                    <div className="col-md-3">
                                         <h5>
                                             {user.name} {user.surname}
                                         </h5>
@@ -166,7 +166,7 @@ export default function Profile() {
                                     </div>
                                     {
                                         !editMode ?
-                                        <div className="col-md-4">
+                                        <div className="col-md-3">
                                             <button onClick={editProfileOnUI} className="mybtn"><span>Edit Profile</span></button>
                                         </div>
                                         : ""
@@ -174,10 +174,13 @@ export default function Profile() {
                                     
                                     {
                                         // TODO: condition (admin is logged)
-                                        <div className="col-md-4">
+                                        <div className="col-md-3">
                                             <button onClick={blockUser} className="block-btn"><span>Block user</span></button>
                                         </div>
-                                    }                                    
+                                    }
+                                        <div className="col-md-3">
+                                            <button className="block-btn"><span>Block user</span></button>
+                                        </div>                                    
                                 </div>                                
                                 <br/>
                                 <div className="col-md-8">

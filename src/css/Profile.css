@@ -142,7 +142,6 @@ body{
   background-color: #64C7FF;
   padding: 12px 35px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.20);
-  margin-left: 25% !important;
 }
 
 .mybtn span {
@@ -184,7 +183,6 @@ body{
     font-size: 14px;
     padding: 12px 35px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.20);
-    margin-left: 25% !important;
     background: #F6522E;
 }
 
