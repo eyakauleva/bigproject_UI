@@ -2,13 +2,13 @@ import React from 'react';
 import axios from "axios";
 import { useCookies } from 'react-cookie';
 import { useState, useEffect} from 'react';
-import { format, parseISO, formatISO } from "date-fns";
+import { format} from "date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+import { useParams } from 'react-router-dom';
 
 import ChooseEmployeeModal from './dashboard/ChooseEmployeeModal'
-import '../css/ProjectPage.css';
-import '../css/Profile.css';
+import '../css/CreateProject.css';
 
 export default function CreateProject(props) {
     const [cookies, setCookie, removeCookie] = useCookies(["token"]);
@@ -21,6 +21,7 @@ export default function CreateProject(props) {
     const[gitLink, setGitLink] = useState("");
     const[showModal, setShowModal] = useState(false);
     const[flag, setFlag] = useState(false);
+    const {id} = useParams(); 
 
     useEffect(() => {    
         //TODO set reporter automatically    
@@ -58,9 +59,6 @@ export default function CreateProject(props) {
         employees.forEach((employee)=>{
             employeesId.push({id: employee.id});
         });
-
-        // console.log(dueDate);
-        // console.log('---' + format(dueDate, "yyyy-MM-dd 00:00"));
     
         let project = {
             assignee: {id: assignee.id},
@@ -73,7 +71,7 @@ export default function CreateProject(props) {
         };        
     
         axios
-        .post("/project", project)
+        .post("/project/create/" + id, project)
         .then(() => {
             props.navigate("projects");
         })
@@ -83,11 +81,10 @@ export default function CreateProject(props) {
     }
     
     return (
-        <div className="profile">
+        <div className="create-project">
             <div className="container emp-profile">
                 <div className="row">
-                    <div className="col-md-4">
-                    </div>
+                    <div className="col-md-4"></div>
                     <div className="col-md-5">
                             <p style={{fontSize:'30px', fontWeight:'bold'}}>Create new project</p>              
                     </div>
@@ -100,7 +97,7 @@ export default function CreateProject(props) {
                     <div className="col-md-6">
                         <input type="text" onChange={(e)=>setName(e.target.value)} />
                     </div>
-                </div>
+                </div><hr/>
                 <div className="row">
                     <div className="col-md-1"></div>
                     <div className="col-md-4">
@@ -162,7 +159,7 @@ export default function CreateProject(props) {
                             <div className='pretty-select' style={{paddingLeft:'5%'}}>
                                 <img className="photo" src={`data:image/jpeg;base64,${employee != null ? employee.photo : ''}`} />
                                 <span>&nbsp;&nbsp;{ employee.user != null ? employee.user.name+' '+ employee.user.surname : ''}&nbsp;&nbsp;</span>
-                                <i onClick={()=>removeEmployeeFromList(employee.id)} className="bi bi-x-lg pretty-select" style={{padding:'2px'}}></i>
+                                <i onClick={()=>removeEmployeeFromList(employee.id)} className="bi bi-x-lg remove-employee"></i>
                             </div>)
                             :''
                         }       

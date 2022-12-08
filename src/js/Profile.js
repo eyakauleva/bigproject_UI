@@ -166,23 +166,25 @@ export default function Profile(props) {
                                         </h5>
                                         <p className="profile-rating">{employee.position}</p>
                                     </div>
+                                    <div className="col-md-3">
+                                    {
+                                        // TODO: condition (admin is logged)
+                                        <button onClick={blockUser} className="block-btn"><span>Block user</span></button>
+                                    }
+                                    </div>
+                                    <div className="col-md-3">
+                                    {
+                                        // TODO: condition (admin is logged)
+                                        <button className="block-btn" style={{background:"#FC9A40"}}><span>Deactivate</span></button>
+                                    }
+                                    </div> 
                                     {
                                         !editMode ?
                                         <div className="col-md-3">
                                             <button onClick={editProfileOnUI} className="mybtn"><span>Edit Profile</span></button>
                                         </div>
                                         : ""
-                                    } 
-                                    
-                                    {
-                                        // TODO: condition (admin is logged)
-                                        <div className="col-md-3">
-                                            <button onClick={blockUser} className="block-btn"><span>Block user</span></button>
-                                        </div>
-                                    }
-                                        <div className="col-md-3">
-                                            <button className="block-btn"><span>Block user</span></button>
-                                        </div>                                    
+                                    }                            
                                 </div>                                
                                 <br/>
                                 <div className="col-md-8">

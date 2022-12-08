@@ -1,0 +1,90 @@
+.orders{
+    float: right;
+    width: calc(100% - 160px);    
+}
+
+.orders .order-wrapper{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.orders .order-wrapper div{
+    text-align: center;
+}
+
+.orders .order-button{
+    text-decoration: none;
+    border: none;
+    border-radius: 0.3rem;
+    display: block;
+    text-align: center;
+    cursor: pointer;
+    text-transform: uppercase;
+    outline: none;
+    overflow: hidden;
+    position: relative;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    background-color: #64C7FF;
+    padding: 12px 35px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.20);
+}
+
+.orders .order-button:hover{
+    color: #fff;
+}
+
+.orders .order-button span {
+    position: relative; 
+    z-index: 1;
+}
+  
+.orders .order-button:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 490%;
+    width: 150%;
+    background: #AFCFEA;
+    -webkit-transition: all .5s ease-in-out;
+    transition: all .5s ease-in-out;
+    -webkit-transform: translateX(-99%) translateY(-20%) rotate(45deg);
+    transform: translateX(-99%) translateY(-20%) rotate(45deg);
+}
+  
+.orders .order-button:hover:after {
+    -webkit-transform: translateX(-9%) translateY(-25%) rotate(45deg);
+    transform: translateX(-9%) translateY(-25%) rotate(45deg);
+}
+
+.orders .download a {
+    z-index: 999;
+    text-decoration: none;
+    position: relative;
+    display: inline-block;
+    color: #4400B2;
+    transition: color .3s ease-out;
+}
+
+.orders .download a::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    bottom: 0;
+    left: 0;
+    height: 0px;
+    width: 100%;
+    background: white;
+    transition: height .3s ease-out;
+}
+  
+.orders .download a:hover {
+    color: #580BE4;
+}
+
+.orders .download a:hover::before {
+    height: 100%;
+}

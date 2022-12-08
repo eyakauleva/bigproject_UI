@@ -1,10 +1,10 @@
-.col-container{    
+.column-container{    
     border-radius: 0.3rem;
     width:240px;
     background-color: #E6E7E8;
 }
 
-.title{
+.column-container .title{
     padding: 8px;
     padding-bottom: 0px;
     font-size: 15px;
@@ -12,6 +12,6 @@
     color: #414042;
 }
 
-.tasks-list{
+.column-container .tasks-list{
     padding: 8px;
 }

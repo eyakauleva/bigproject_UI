@@ -1,4 +1,9 @@
-.photo{
+.single-task{    
+    float: right;
+    width: calc(100% - 160px);
+}
+
+.single-task .photo{
     width: 40px;
     height: 40px;
     object-fit: cover;
@@ -7,20 +12,15 @@
     margin: 5px 0;
 }
 
-.col-md-3{
+.single-task .col-md-3{
     font-weight: bold;
 }
 
-.row{
+.single-task .row{
     margin: 12px 0;
 }
 
-.profile{    
-    float: right;
-    width: calc(100% - 160px);
-}
-
-.textarea{
+.single-task .textarea{
     resize:both;
     max-width:800px;
     max-height:600px;
@@ -29,16 +29,30 @@
     outline: none;
 }
 
-.arrow-back:hover{
-    cursor: pointer;
-}
-.pretty-select{
+.single-task .pretty-select{
     cursor: pointer;
     padding-left: 5%;
 }
-.pretty-select-non-edit{
+
+.single-task .pretty-select-non-edit{
     padding-left: 5%;
 }
-.pretty-select:hover{
+
+.single-task .pretty-select:hover{
     background-color: rgba(129, 129, 129, 0.205);
+}
+
+.single-task .name{
+    font-size: 22px;
+    width: 100%;
+}
+
+.single-task .mybtn{
+    margin-left: 40%;
+}
+
+.single-task input[type="text"]{
+    border: 1px solid rgb(206, 204, 204);
+    border-radius: 5px;
+    padding-left: 5px;
 }

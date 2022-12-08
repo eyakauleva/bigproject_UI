@@ -12,8 +12,6 @@ import ProjectPage from './ProjectPage';
 import CreateProject from './CreateProject';
 import CreateTask from './dashboard/CreateTask';
 
-import '.././css/Main.css';
-
 function Main(props){
     const navigate = useNavigate();
 
@@ -30,7 +28,7 @@ function Main(props){
                 <Route path="orders" element={<Orders navigate={navigate}  /> } />
                 <Route path="users" element={<Users navigate={navigate}  /> } />
                 <Route path="project/:id" element={<ProjectPage navigate={navigate}  /> } />
-                <Route path="projects/new" element={<CreateProject navigate={navigate}  /> } />
+                <Route path="orders/:id/create" element={<CreateProject navigate={navigate}  /> } />
             </Routes> 
         </div>               
     );

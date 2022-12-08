@@ -16,6 +16,26 @@
     -webkit-box-shadow: inset 0 1px 1px rgb(0 0 0 / 5%);
     box-shadow: inset 0 1px 1px rgb(0 0 0 / 5%);
 }
+
+.projects .add-btn{
+  border: none;
+  border-radius: 0.3rem;
+  display: block;
+  text-align: center;
+  cursor: pointer;
+  text-transform: uppercase;
+  outline: none;
+  overflow: hidden;
+  position: relative;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 8px 30px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.20);
+  margin-left: 40%;
+  background: #580BE4;
+}
+
 .btn-custom {
     display: inline-block;
     padding: 6px 12px;
@@ -54,7 +74,11 @@
     background-color: #fff;
     border-color: #ccc;
 }
-.btn-custom-default:hover, .btn-custom-default:focus, .btn-custom-default:active, .btn-custom-default.active, .open>.dropdown-toggle.btn-custom-default {
+.btn-custom-default:hover, 
+.btn-custom-default:focus, 
+.btn-custom-default:active, 
+.btn-custom-default.active, 
+.open>.dropdown-toggle.btn-custom-default {
     color: #333;
     background-color: #e6e6e6;
     border-color: #adadad;

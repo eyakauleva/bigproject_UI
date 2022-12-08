@@ -1,4 +1,19 @@
-.add-btn{
+.users{
+    float: right;
+    width: calc(100% - 160px);    
+}
+
+.users .photo{
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    cursor: pointer;
+    margin: 5px 0;
+}
+
+.users .add-btn, 
+.add-employee-modal .add-btn{
     border: none;
     border-radius: 0.3rem;
     display: block;
@@ -15,4 +30,48 @@
     box-shadow: 0 5px 15px rgba(0,0,0,0.20);
     margin-left: 40%;
     background: #580BE4;
+}
+
+.users .users-list{
+    background-color: white;
+}
+
+.users .user-wrapper{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.users .user-wrapper-list-grid{
+    flex-direction: column;
+}
+
+.users .name{
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.users .position, .users .email{
+    margin-top: 5px;
+}
+
+.users .btn-custom-2{
+    width: 100%;
+}
+
+.users .btn-custom-2-grid{
+    float: none;
+    margin: 0;
+    margin-top: 10px;
+}
+
+.add-employee-modal input[type='text'], 
+.add-employee-modal input[type='email']{
+    border: 1px solid rgb(206, 204, 204);
+    border-radius: 5px;
+    padding-left: 5px;
+}
+
+.add-employee-modal .row{
+    margin: 12px 0;
 }

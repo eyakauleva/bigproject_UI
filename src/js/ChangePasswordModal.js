@@ -1,11 +1,7 @@
 import { useState} from 'react';
 import Modal from 'react-bootstrap/Modal';
-import Form from 'react-bootstrap/Form';
 import axios from "axios";
 import { useCookies } from 'react-cookie';
-import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
-import { format, parseISO } from "date-fns";
 
 import '../css/Modal.css';
 import '../css/SingleTask.css';

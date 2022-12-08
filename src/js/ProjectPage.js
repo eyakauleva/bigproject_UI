@@ -8,7 +8,6 @@ import { useState, useEffect} from 'react';
 import { format, parseISO } from "date-fns";
 
 import '../css/ProjectPage.css';
-import '../css/Profile.css';
 
 export default function ProjectPage(props) {
     const [cookies, setCookie, removeCookie] = useCookies(["token"]);
@@ -94,13 +93,14 @@ export default function ProjectPage(props) {
             });   
         }
       }
-    return (<div className="profile">
+    return (
+    <div className="single-project">
     <div className="container emp-profile">
       <div className="row">
           <div className="col-md-4">
           </div>
-          <div className="col-md-5">
-                <p style={{fontSize:'30px', fontWeight:'bold'}}>{project.name}</p>              
+          <div className="col-md-5 name">
+                <p>{project.name}</p>              
           </div>
       </div>
       <div className="row">

@@ -5,9 +5,7 @@ import { useCookies } from 'react-cookie';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 
-import '../../css/Modal.css';
-import '../../css/SingleTask.css';
-import '../../css/Users.css';
+import '../../css/ChooseEmployeeModal.css';
 
 export default function ChooseEmployeeModal(props) {
   const[cookies, setCookie, removeCookie] = useCookies(["token"]);
@@ -55,12 +53,12 @@ export default function ChooseEmployeeModal(props) {
   });
 
   return (
-    <Modal
+    <Modal className='choose-employee-modal'
       {...props}
       centered
       size="lg">
       <Modal.Header closeButton>
-        <Modal.Title style={{width:'80%', backgroundColor: 'transparent'}}>
+        <Modal.Title className='title'>
         <div style={{width:'100%'}}>
           <InputGroup>
             <Form.Control placeholder="Name Surname" aria-label="Name Surname" aria-describedby="basic-addon1" onChange={inputHandler} />
@@ -70,20 +68,19 @@ export default function ChooseEmployeeModal(props) {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>    
-        <div id="products">
+        <div>
         {
           filteredUsers.map((employee) => 
-            <div className='item  list-group-item' style={{background:"white", cursor:'pointer'}} 
-                  onClick={() => props.submitChange(employee)}> 
+            <div className='item  list-group-item' onClick={() => props.submitChange(employee)}> 
               <div className='pretty-select'>
-                <div style={{display:"flex", alignItems:"center", justifyContent:"space-around"}}>
-                    <div className="col-lg-1">
+                <div className='pretty-select-container'>
+                    <div className="col-lg-3">
                       <img className="photo" src={`data:image/jpeg;base64,${employee.photo}`} style={{width: "65px", height: "65px"}}/>
                     </div>
-                    <div className="col-lg-6" style={{fontWeight:"bold", marginTop:"10px", textAlign:'center'}}>
+                    <div className="col-lg-5 name">
                       {employee.user.name+' '+employee.user.surname}
                     </div>
-                    <div className="col-lg-5" style={{marginTop:"5px"}}>
+                    <div className="col-lg-4 position">
                       <i className="bi bi-briefcase"></i>&nbsp;{employee.position}
                     </div>                                 
                 </div>         

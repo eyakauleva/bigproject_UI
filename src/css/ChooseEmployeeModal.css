@@ -1,0 +1,61 @@
+.choose-employee-modal{
+    padding: 15px 0;
+}
+
+.choose-employee-modal .title{
+    width: 80%;
+    background: transparent;
+    margin-left: 20px;
+}
+
+.choose-employee-modal .list-group-item{
+    background-color: white;
+    cursor: pointer;
+    padding: 0 15px;
+}
+
+.choose-employee-modal .item.list-group-item:nth-of-type(odd){
+    background-color: white;
+    cursor: pointer;
+}
+
+.choose-employee-modal .list-group-item:hover{
+    background-color: white;
+}
+
+.choose-employee-modal .pretty-select-container{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.choose-employee-modal .pretty-select-container:hover{
+    background-color: rgba(179, 178, 178, 0.199);
+}
+
+.choose-employee-modal .item .name{
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.choose-employee-modal .item .position{
+    margin-top: 5px;
+}
+
+.choose-employee-modalk .pretty-select{
+    cursor: pointer;
+    padding-left: 5%;
+}
+
+.choose-employee-modal .pretty-select-non-edit{
+    padding-left: 5%;
+}
+
+.choose-employee-modal .photo{
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    cursor: pointer;
+    margin: 0 20px;
+}

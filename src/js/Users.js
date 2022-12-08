@@ -6,7 +6,6 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import axios from "axios";
 
 import AddEmployeeModal from './AddEmployeeModal.js';
-import '.././css/Projects.css';
 import '.././css/Users.css';
 
 export default function Users() {
@@ -48,7 +47,7 @@ export default function Users() {
     });
 
     return(
-        <div className="projects">
+        <div className="users">
             <div className="container">
                 <div className="well well-sm row" style={{fontFamily:"sans-serif"}}>
                     <strong className="col-md-1">Display:</strong>
@@ -95,32 +94,31 @@ export default function Users() {
                 <div id="products" className={isList ? '' : 'row'}>
                     {
                         filteredEmployees.map((employee) => 
-                        <div className={isList ? 'item  list-group-item' : 'item col-md-3 col-lg-3 '} 
-                            style={isList ? {background:"white"} : {}}> 
+                        <div className={isList ? 'item  list-group-item users-list' : 'item col-md-3 col-lg-3 '}> 
                             <div className={isList ? "" : "thumbnail"}>
-                                <div style={isList ? {display:"flex", alignItems:"center", justifyContent:"space-around"} 
-                                    : {display:"flex", alignItems:"center", justifyContent:"space-around", flexDirection:"column"}}>
-                                    <div className={isList ? "col-md-1" : ""}><img className="photo" src={`data:image/jpeg;base64,${employee.photo}`} 
+                                <div className={isList ? 'user-wrapper' : 'user-wrapper user-wrapper-list-grid'}>
+                                    <div className={isList ? "col-md-1" : ""}>
+                                        <img className="photo" src={`data:image/jpeg;base64,${employee.photo}`} 
                                             style={isList ? {width: "65px", height: "65px"} : {width: "120px", height:"120px"}}/></div>
-                                    <div className={isList ? "col-md-2" : ""} style={{fontWeight:"bold", marginTop:"10px"}}>
-                                        {employee.user.name+' '+employee.user.surname}</div>
-                                    <div className={isList ? "col-md-2" : ""} style={{marginTop:"5px"}}>
+                                    <div className={isList ? "col-md-2 name" : "name"}>
+                                        {employee.user.name + ' ' + employee.user.surname}</div>
+                                    <div className={isList ? "col-md-2 position" : "position"}>
                                         <i className="bi bi-briefcase"></i>&nbsp;{employee.position}</div>
-                                    <div className={isList ? "col-md-2" : ""} style={{marginTop:"5px"}}>
+                                    <div className={isList ? "col-md-2 email" : "email"}>
                                         <i className="bi bi-envelope-fill"></i>&nbsp;{employee.user.email}</div>   
                                     {isList 
                                     ? <div>
-                                        <a className='btn-custom-2' style={{width:"100%"}}
-                                            href={"/app/profile/"+employee.id}><span>More</span></a>
+                                        <a className='btn-custom-2' href={"/app/profile/"+employee.id}><span>More</span></a>
                                       </div>
                                     : ""}                                 
                                 </div>                                    
                                 <div className={isList ? 'row container-custom-list' : 'row container-custom'}>
                                     {isList
                                     ? ""
-                                    :<div>
-                                        <a className='btn-custom-2' style={{width:"100%", float:"none", margin:"0", marginTop:"10px"}}
-                                            href={"/app/profile/"+employee.id}><span>More</span></a>
+                                    : <div>
+                                        <a className='btn-custom-2 btn-custom-2-grid' href={"/app/profile/"+employee.id}>
+                                            <span>More</span>
+                                        </a>
                                      </div>}
                                 </div>
                             </div>

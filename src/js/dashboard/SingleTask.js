@@ -9,7 +9,6 @@ import DateFnsUtils from '@date-io/date-fns';
 
 import ChooseEmployeeModal from './ChooseEmployeeModal'
 import '../../css/SingleTask.css';
-import '../../css/Profile.css';
 
 export default function SingleTask(props) {
   const [cookies, setCookie, removeCookie] = useCookies(["token"]);
@@ -100,14 +99,14 @@ export default function SingleTask(props) {
   }
 
   return (
-    <div className="profile">
+    <div className="single-task">
       <div className="container emp-profile">
         <div className="row">
             <div className="col-md-4">
             </div>
             <div className="col-md-5">
                 {editMode 
-                ? <input type="text" style={{fontSize:'22px', width:'100%'}} defaultValue={ticket.name} onChange={e => setName(e.target.value)}/> 
+                ? <input type="text" className='name' defaultValue={ticket.name} onChange={e => setName(e.target.value)}/> 
                 : <h3>{ticket.name}</h3>}                 
             </div>
             {
@@ -241,7 +240,10 @@ export default function SingleTask(props) {
             </div>
             <div className="col-md-6">
                 {ticket.reporter != null
-                ? <div className='pretty-select-non-edit'><img className="photo" src={`data:image/jpeg;base64,${ticket.reporter.photo}`} />&nbsp;&nbsp;{ticket.reporter.user.name+' '+ticket.assignee.user.surname}</div>
+                ? <div className='pretty-select-non-edit'>
+                    <img className="photo" src={`data:image/jpeg;base64,${ticket.reporter.photo}`} />
+                    &nbsp;&nbsp;{ticket.reporter.user.name+' '+ticket.assignee.user.surname}
+                </div>
                 : "" }           
             </div>
         </div><hr/>        

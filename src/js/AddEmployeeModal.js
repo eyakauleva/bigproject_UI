@@ -17,6 +17,7 @@ export default function AddEmployeeModal(props) {
   const[name, setName] = useState(""); 
   const[surname, setSurname] = useState(""); 
   const[position, setPosition] = useState("");
+  const[email, setEmail] = useState("");
   const[startDate, setStartDate] = useState(new Date());
 
   const addEmployee = () => {
@@ -29,13 +30,14 @@ export default function AddEmployeeModal(props) {
     let user = {
         role: role,
         name: name,
-        surname: surname
+        surname: surname,
+        email: email
     }
 
     let employee = {
         user: user,
-        position: position,
-        startDate: format(parseISO(startDate), "yyyy-MM-dd")
+        position: position,        
+        startDate: format(startDate, "yyyy-MM-dd")
     };        
 
     axios
@@ -52,7 +54,7 @@ export default function AddEmployeeModal(props) {
   }
 
   return (
-    <Modal
+    <Modal className='add-employee-modal'
       {...props}
       centered>
       <Modal.Header closeButton>
@@ -69,6 +71,7 @@ export default function AddEmployeeModal(props) {
                 <Form.Select onChange={e => setRole(e.target.value)}>
                     <option value="MANAGER">MANAGER</option>
                     <option selected value="EMPLOYEE">EMPLOYEE</option>
+                    <option value="ADMINISTRATOR">ADMINISTRATOR</option>
                 </Form.Select>                
             </div>
         </div>        
@@ -87,7 +90,15 @@ export default function AddEmployeeModal(props) {
             <div className="col-md-6">
                 <input type="text" onChange={e => setSurname(e.target.value)} style={{width:"100%"}}/>                    
             </div>
-        </div>     
+        </div>   
+        <div className="row">
+           <div className="col-md-4">
+                <label>Email:</label>
+            </div>
+            <div className="col-md-6">
+                <input type="email" onChange={e => setEmail(e.target.value)} style={{width:"100%"}}/>                    
+            </div>
+        </div>  
         <div className="row">
            <div className="col-md-4">
                 <label>Position:</label>

@@ -1,0 +1,29 @@
+.create-project{
+    float: right;
+    width: calc(100% - 160px);    
+}
+
+.create-project input[type='text']{
+    border: 1px solid rgb(206, 204, 204);
+    border-radius: 5px;
+    padding-left: 5px;
+    width: 100%;
+}
+
+.create-project button{
+    border: 0;
+}
+
+.create-project .photo{
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    cursor: pointer;
+    margin: 5px 0;
+}
+
+.remove-employee{
+    padding: 2px;
+    cursor: pointer;
+}

@@ -20,6 +20,11 @@
     font-size: 12px;
 }
 
+.task-container .severity{
+    font-size: 14px;
+    font-weight: bold;
+}
+
 .task-container .icon-panel{
     display: flex;
     justify-content: space-between;

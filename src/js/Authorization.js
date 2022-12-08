@@ -47,7 +47,7 @@ function Authorization(props){
   }
     
     return(   
-        <div className="login body">
+        <div className="login">
                 <div className="auth-form">
                     <div className="left">
                         <div className="title">Have a productive day!</div> 

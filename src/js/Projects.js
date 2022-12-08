@@ -71,10 +71,6 @@ export default function Projects(props) {
                             Grid
                         </a>
                     </div>
-                    {/**TODO for managers only: */}
-                    <div className="col-md-3">
-                        <button onClick={()=>props.navigate('projects/new')} className="add-btn"><span>New Project</span></button>
-                    </div>
                     <div className="search col-md-4">
                     <InputGroup>
                         <Form.Control

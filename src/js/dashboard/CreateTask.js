@@ -6,9 +6,7 @@ import Form from 'react-bootstrap/Form';
 import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 
-import ChooseEmployeeModal from './ChooseEmployeeModal'
-import '../../css/SingleTask.css';
-import '../../css/Profile.css';
+import ChooseEmployeeModal from './ChooseEmployeeModal';
 
 export default function CreateTask(props) {
   const [cookies, setCookie, removeCookie] = useCookies(["token"]);
