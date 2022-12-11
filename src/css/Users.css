@@ -75,3 +75,8 @@
 .add-employee-modal .row{
     margin: 12px 0;
 }
+
+.add-employee-modal .error{
+    font-size: 12px;
+    color: red;
+}

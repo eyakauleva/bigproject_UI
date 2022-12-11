@@ -3,11 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import axios from "axios";
 import { useCookies } from 'react-cookie';
 
-import '../css/Modal.css';
-import '../css/SingleTask.css';
-import '.././css/Users.css';
 import '.././css/ChangePasswordModal.css';
-import { id } from 'date-fns/locale';
 
 export default function ChangePasswordModal(props) {
   const [cookies, setCookie, removeCookie] = useCookies(["token"]);

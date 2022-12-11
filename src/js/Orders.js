@@ -6,12 +6,13 @@ import { format, parseISO } from "date-fns";
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 
+import ClientProfileModal from './ClientProfileModal.js';
 import '.././css/Orders.css';
 
 export default function Orders(props) {
     const [cookies, setCookie, removeCookie] = useCookies(["token"]);
     const[orders, setOrders] = useState([]);
-    const[description, setDescription] = useState("");
+    const[clientId, setClientId] = useState();
     const[showModal, setShowModal] = useState(false);
 
     useEffect(() => {    
@@ -31,6 +32,17 @@ export default function Orders(props) {
            //TODO
         });    
    };
+
+   const deleteOrder = (id) => {
+        axios
+        .put("/orders/" + id + "/block")
+        .then(() =>{             
+            getOrders();                                 
+        })
+        .catch((error) => {
+        //TODO
+        }); 
+   }
     
     return (
         <div className="orders">
@@ -57,6 +69,7 @@ export default function Orders(props) {
                         <div className="col-md-1">Cost</div>
                         <div className="col-md-2"><i className="bi bi-download"></i>&nbsp;Description</div>
                         <div className="col-md-2">Action</div>
+                        <div className="col-md-1">Delete</div>
                     </div>
                 </div>
                 <div>
@@ -69,8 +82,12 @@ export default function Orders(props) {
                                     ? <i className="bi bi-patch-exclamation-fill"></i>
                                     : ''}                                
                                 </div>                        
-                                <div className="col-md-2" >{order.startDate != null ? <p>{format(parseISO(order.startDate), "do MMMM Y")}</p> : ''}</div>
-                                <div className="col-md-3">{order.client.name + ' ' + order.client.surname}</div>
+                                <div className="col-md-2 date">
+                                    {order.startDate != null ? <span>{format(parseISO(order.startDate), "do MMMM Y")}</span> : ''}
+                                </div>
+                                <div onClick={()=>{setClientId(order.client.id); setShowModal(true)}} className="col-md-3 client">
+                                    {order.client.name + ' ' + order.client.surname}
+                                </div>
                                 <div className="col-md-1"> {order.cost != null ? order.cost : '—'} </div>                                
                                 <div className="col-md-2 download">
                                     <a href={"http://localhost:8080/orders/" + order.id +"/description"}>
@@ -84,12 +101,13 @@ export default function Orders(props) {
                                     ? <a href={"project/" + order.project.id} className='order-button'><span>See project</span></a>
                                     : ''}                                        
                                 </div>
-                                   
+                                <div onClick={()=>deleteOrder(order.id)} className="col-md-1 delete">Delete</div>
                             </div>
                         </div>
                     )}
                 </div>
-            </div>         
+            </div>
+            <ClientProfileModal show={showModal} onHide={()=>setShowModal(false)} id={clientId} getOrders={()=>getOrders()} />         
         </div>
     );
 }

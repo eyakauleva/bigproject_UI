@@ -1,0 +1,26 @@
+.client-profile .footer{
+    width: 100%;
+    display: flex;
+    justify-content: end;
+}
+
+.client-profile .block{
+    border: none;
+    border-radius: 0.3rem;
+    display: block;
+    text-align: center;
+    cursor: pointer;
+    text-transform: uppercase;
+    outline: none;
+    overflow: hidden;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    background-color: #F6522E;
+    padding: 12px 35px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.20);
+}
+
+.client-profile .deactivate{
+    background:#FC9A40;
+}

@@ -13,6 +13,10 @@
     text-align: center;
 }
 
+.orders .order-wrapper .client{
+    cursor: pointer;
+}
+
 .orders .order-button{
     text-decoration: none;
     border: none;
@@ -65,7 +69,7 @@
     text-decoration: none;
     position: relative;
     display: inline-block;
-    color: #4400B2;
+    color: #58595B;
     transition: color .3s ease-out;
 }
 
@@ -87,4 +91,9 @@
 
 .orders .download a:hover::before {
     height: 100%;
+}
+
+.orders .delete{
+    cursor: pointer;
+    color: #58595B;
 }

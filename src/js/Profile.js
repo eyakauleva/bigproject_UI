@@ -126,56 +126,77 @@ export default function Profile(props) {
         axios
         .put("/user/" + id + "/block",
             config)
+        .then(()=>alert("User is blocked"))
         .catch((error) => {
         
         });   
     }
 
-  return (
-    <div className="profile">
-      <div className="container emp-profile">
-            <form onSubmit={handleSubmit}>
-                <div className="row">
-                    <div className="col-md-4">
-                        <div className="profile-img">
-                            {editMode && selectedImage
-                            ? <img src={`${selectedImage}`} />
-                            : <img src={`data:image/jpeg;base64,${employee.photo}`} />}
-                            {editMode ? 
-                                <div className="file btn btn-lg btn-primary " id="editPhoto">
-                                    Change Photo                           
-                                    <input type="file" name="file" accept="image/*" onChange={uploadPhoto}/>
-                                </div>
-                                : ""}
+    const deactivateUser = () => {
+        let config = {
+            headers: {
+                //Authorization: 'Bearer ' + token
+            }
+        };
+
+        axios
+        .put("/user/" + id + "/deactivate",
+            config)
+        .then(()=>alert("User is deactivated"))
+        .catch((error) => {
+        
+        });  
+    }
+
+    return (
+        <div className="profile">
+            <div className="container emp-profile">
+                <form onSubmit={handleSubmit}>
+                    <div className="row">
+                        <div className="col-md-4">
+                            <div className="profile-img">
+                                {editMode && selectedImage
+                                ? <img src={`${selectedImage}`} />
+                                : <img src={`data:image/jpeg;base64,${employee.photo}`} />}
+                                {editMode ? 
+                                    <div className="file btn btn-lg btn-primary " id="editPhoto">
+                                        Change Photo                           
+                                        <input type="file" name="file" accept="image/*" onChange={uploadPhoto}/>
+                                    </div>
+                                    : ""}
+                            </div>
+                            <div className="profile-work">
+                                <br/>
+                                <p>Current project</p>
+                                <hr/>
+                                {currProject
+                                ? <div><a href={"/app/dashboard/"+currProject.id}>{currProject.name}</a><br/></div>
+                                : <div>No current project</div>}                            
+                            </div>
                         </div>
-                        <div className="profile-work">
-                            <br/>
-                            <p>Current project</p>
-                            <hr/>
-                            {currProject
-                            ? <div><a href={"/app/dashboard/"+currProject.id}>{currProject.name}</a><br/></div>
-                            : <div>No current project</div>}                            
-                        </div>
-                    </div>
-                    <div className="col-md-8">
-                        <div className="profile-head">
+                        <div className="col-md-8">
+                            <div className="profile-head">
                                 <div className="row">
                                     <div className="col-md-3">
                                         <h5>
                                             {user.name} {user.surname}
                                         </h5>
                                         <p className="profile-rating">{employee.position}</p>
+                                        {/* TODO : only admin can see */ }
+                                        <p>{user.status}</p>
                                     </div>
                                     <div className="col-md-3">
                                     {
-                                        // TODO: condition (admin is logged)
+                                        // TODO: condition (admin is logged & user is NOT blocked yet)
                                         <button onClick={blockUser} className="block-btn"><span>Block user</span></button>
                                     }
                                     </div>
                                     <div className="col-md-3">
                                     {
-                                        // TODO: condition (admin is logged)
-                                        <button className="block-btn" style={{background:"#FC9A40"}}><span>Deactivate</span></button>
+                                        // TODO: condition (admin is logged & user is NOT deactivated yet)
+                                        <button onClick={deactivateUser} className="block-btn" style={{background:"#FC9A40"}}>
+                                            <span>Deactivate</span>
+                                        </button>
                                     }
                                     </div> 
                                     {
@@ -188,172 +209,171 @@ export default function Profile(props) {
                                 </div>                                
                                 <br/>
                                 <div className="col-md-8">
-                                <Tabs
-                                      defaultActiveKey="profile"
-                                      className="mb-3">
-                                      <Tab eventKey="profile" title="Profile">
-                                        <div className="tab-panel">
-                                          <div className="row">
-                                                <div className="col-md-6">
-                                                    <label>Login</label>
+                                    <Tabs
+                                        defaultActiveKey="profile"
+                                        className="mb-3">
+                                        <Tab eventKey="profile" title="Profile">
+                                            <div className="tab-panel">
+                                                <div className="row">
+                                                    <div className="col-md-6">
+                                                        <label>Login</label>
+                                                    </div>
+                                                    <div className="col-md-6">
+                                                        {editMode ? <input type="text"
+                                                            defaultValue={user.login} 
+                                                            onChange={e => setLogin(e.target.value)}/> 
+                                                            : <p>{user.login}</p>} 
+                                                    </div>
                                                 </div>
-                                                <div className="col-md-6">
-                                                    {editMode ? <input type="text"
-                                                        defaultValue={user.login} 
-                                                        onChange={e => setLogin(e.target.value)}/> 
-                                                        : <p>{user.login}</p>} 
+                                                {editMode
+                                                ? <div>
+                                                    <div className="row ">
+                                                        <div className="col-md-6">
+                                                            <label>Name</label>
+                                                        </div>
+                                                        <div className="col-md-6">
+                                                            <input type="text"
+                                                            defaultValue={user.name} 
+                                                            onChange={e => setName(e.target.value)}/>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row">
+                                                        <div className="col-md-6">
+                                                            <label>Surname</label>
+                                                        </div>
+                                                        <div className="col-md-6">
+                                                            <input type="text"
+                                                            defaultValue={user.surname} 
+                                                            onChange={e => setSurname(e.target.value)}/>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                          </div>
-                                          {editMode ?
-                                        <div>
-                                           <div className="row ">
-                                               <div className="col-md-6">
-                                                   <label>Name</label>
-                                               </div>
-                                               <div className="col-md-6">
-                                                   <input type="text"
-                                                   defaultValue={user.name} 
-                                                   onChange={e => setName(e.target.value)}/>
-                                               </div>
-                                           </div>
-                                           <div className="row">
-                                               <div className="col-md-6">
-                                                   <label>Surname</label>
-                                               </div>
-                                               <div className="col-md-6">
-                                                   <input type="text"
-                                                   defaultValue={user.surname} 
-                                                   onChange={e => setSurname(e.target.value)}/>
-                                               </div>
-                                           </div>
-                                       </div>
-                                        : <div className="row">
-                                        <div className="col-md-6">
-                                            <label>Full name</label>
-                                        </div>
-                                        <div className="col-md-6">
-                                            <p>{user.name} {user.surname}</p>
-                                        </div>
-                                    </div>
-                                          }
-                                          
-                                          
-                                          <div className="row">
-                                              <div className="col-md-6">
-                                                  <label>Email</label>
-                                              </div>
-                                              <div className="col-md-6">
-                                              {editMode ? <input type="text"
-                                                        defaultValue={user.email} 
-                                                        onChange={e => setEmail(e.target.value)}/> 
-                                                        : <p>{user.email}</p>} 
-                                              </div>
-                                          </div>
-                                          <div className="row">
-                                              <div className="col-md-6">
-                                                  <label>Phone</label>
-                                              </div>
-                                              <div className="col-md-6">
-                                              {editMode ? <input type="text"
-                                                        defaultValue={user.phone} 
-                                                        onChange={e => setPhone(e.target.value)}/> 
-                                                        : <p>{user.phone}</p>} 
-                                              </div>
-                                          </div>
-                                          <div className="row">
-                                              <div className="col-md-6">
-                                                  <label>Date of birth</label>
-                                              </div>
-                                              <div className="col-md-6">
-                                                {
-                                                    editMode 
-                                                    ? <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                                        <DatePicker style={{width:'100%'}} value={birthDate} onChange={setBirthDate} format="do MMMM Y" />
-                                                      </MuiPickersUtilsProvider> 
-                                                    : employee.birthDate != null
-                                                    ? <p>{format(parseISO(employee.birthDate), "do MMMM Y")}</p> 
-                                                    : ''
+                                                : <div className="row">
+                                                    <div className="col-md-6">
+                                                        <label>Full name</label>
+                                                    </div>
+                                                    <div className="col-md-6">
+                                                        <p>{user.name} {user.surname}</p>
+                                                    </div>
+                                                </div>
                                                 }
-                                              </div> 
-                                          </div>
-                                        </div>
-                                      </Tab>
-                                      <Tab eventKey="work" title="Work">
-                                        <div className="tab-panel">
-                                        <div className="row">
-                                              <div className="col-md-6">
-                                                  <label>Start date at company</label>
-                                              </div>
-                                              <div className="col-md-6">
-                                                  {employee.startDate != null ? <p>{format(parseISO(employee.startDate), "do MMMM Y")}</p> : ''}
-                                              </div>
-                                          </div>
-                                          <div className="row">
-                                              <div className="col-md-6">
-                                                  <label>Total experience</label>
-                                              </div>
-                                              <div className="col-md-6">
-                                                  <p>{employee.experience}</p>
-                                              </div>
-                                          </div>
-                                          <div className="row">
-                                              <div className="col-md-6">
-                                                  <label>Position</label>
-                                              </div>
-                                              <div className="col-md-6">
-                                                  <p>{employee.position}</p>
-                                              </div>
-                                          </div>
-                                          <div className="row">
-                                              <div className="col-md-6">
-                                                  <label>Technologies</label>
-                                              </div>
-                                              <div className="col-md-6">
-                                                    {editMode ? <textarea style={{maxHeight:'350px'}}
-                                                        defaultValue={employee.technologies} 
-                                                        onChange={e => setTechnologies(e.target.value)}/> 
-                                                        : <p>{employee.technologies}</p>} 
-                                              </div>
-                                          </div>
-                                          <div className="row">
-                                              <div className="col-md-6">
-                                                  <label>Total Projects</label>
-                                              </div>
-                                              <div className="col-md-6">
-                                                  <p>{employee.projectsCount}</p>
-                                              </div>
-                                          </div>
-                                        </div>
-                                      </Tab>
-                                    </Tabs></div>
-                                    <br/>                                    
-                                    {
-                                        editMode?
-                                        <div>
-                                            <br/>
-                                            <div className="row">                                            
-                                                <div className="col-md-3"></div>
-                                                <div className="col-md-2">
-                                                    <input onClick={editProfileRequest} type="submit" className="profile-edit-btn" value="Save" />
+                                                <div className="row">
+                                                    <div className="col-md-6">
+                                                        <label>Email</label>
+                                                    </div>
+                                                    <div className="col-md-6">
+                                                    {editMode 
+                                                    ? <input type="text" defaultValue={user.email} 
+                                                            onChange={e => setEmail(e.target.value)}/> 
+                                                    : <p>{user.email}</p>} 
+                                                    </div>
                                                 </div>
-                                                <div className="col-md-2">
-                                                    <button onClick={()=>{setEditmode(false); setSelectedImage(null);}} 
-                                                        style={{background: '#FF6E4E'}} className="profile-edit-btn">Cancel</button>
+                                                <div className="row">
+                                                    <div className="col-md-6">
+                                                        <label>Phone</label>
+                                                    </div>
+                                                    <div className="col-md-6">
+                                                    {editMode 
+                                                    ? <input type="text" defaultValue={user.phone}  
+                                                            onChange={e => setPhone(e.target.value)}/> 
+                                                    : <p>{user.phone}</p>} 
+                                                    </div>
+                                                </div>
+                                                <div className="row">
+                                                    <div className="col-md-6">
+                                                        <label>Date of birth</label>
+                                                    </div>
+                                                    <div className="col-md-6">
+                                                        {
+                                                            editMode 
+                                                            ? <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                                <DatePicker style={{width:'100%'}} value={birthDate} onChange={setBirthDate} format="do MMMM Y" />
+                                                            </MuiPickersUtilsProvider> 
+                                                            : employee.birthDate != null
+                                                            ? <p>{format(parseISO(employee.birthDate), "do MMMM Y")}</p> 
+                                                            : ''
+                                                        }
+                                                    </div> 
                                                 </div>
                                             </div>
+                                        </Tab>
+                                        <Tab eventKey="work" title="Work">
+                                            <div className="tab-panel">
+                                                <div className="row">
+                                                    <div className="col-md-6">
+                                                        <label>Start date at company</label>
+                                                    </div>
+                                                    <div className="col-md-6">
+                                                        {employee.startDate != null ? <p>{format(parseISO(employee.startDate), "do MMMM Y")}</p> : ''}
+                                                    </div>
+                                                </div>
+                                                <div className="row">
+                                                    <div className="col-md-6">
+                                                        <label>Total experience</label>
+                                                    </div>
+                                                    <div className="col-md-6">
+                                                        <p>{employee.experience}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="row">
+                                                    <div className="col-md-6">
+                                                        <label>Position</label>
+                                                    </div>
+                                                    <div className="col-md-6">
+                                                        <p>{employee.position}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="row">
+                                                    <div className="col-md-6">
+                                                        <label>Technologies</label>
+                                                    </div>
+                                                    <div className="col-md-6">
+                                                        {editMode 
+                                                        ? <textarea style={{maxHeight:'350px'}} defaultValue={employee.technologies} 
+                                                                onChange={e => setTechnologies(e.target.value)}/> 
+                                                        : <p>{employee.technologies}</p>} 
+                                                    </div>
+                                                </div>
+                                                <div className="row">
+                                                    <div className="col-md-6">
+                                                        <label>Total Projects</label>
+                                                    </div>
+                                                    <div className="col-md-6">
+                                                        <p>{employee.projectsCount}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Tab>
+                                    </Tabs>
+                                </div>
+                                <br/>                                    
+                                {
+                                editMode
+                                ? <div>
+                                    <br/>
+                                    <div className="row">                                            
+                                        <div className="col-md-3"></div>
+                                        <div className="col-md-2">
+                                            <input onClick={editProfileRequest} type="submit" className="profile-edit-btn" value="Save" />
                                         </div>
-                                        : ""
-                                    }
-                        </div>
-                    </div>                                       
-                </div>
-            </form>           
-      </div>
-      {
-        user.status === 'DEACTIVATED'
-        ? <ChangePasswordModal show={showModal} onHide={()=>setShowModal(false)} backdrop="static" navigate={props.navigate}/>
-        : ''
-      }
-    </div>    
-  );
+                                        <div className="col-md-2">
+                                            <button onClick={()=>{setEditmode(false); setSelectedImage(null);}} 
+                                                style={{background: '#FF6E4E'}} className="profile-edit-btn">Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                : ""
+                                }
+                            </div>
+                        </div>                                       
+                    </div>
+                </form>           
+            </div>
+            {
+                user.status === 'DEACTIVATED'
+                ? <ChangePasswordModal show={showModal} onHide={()=>setShowModal(false)} backdrop="static" navigate={props.navigate}/>
+                : ''
+            }
+        </div>    
+    );
 }

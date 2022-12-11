@@ -5,10 +5,8 @@ import axios from "axios";
 import { useCookies } from 'react-cookie';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 
-import '../css/Modal.css';
-import '../css/SingleTask.css';
 import '.././css/Users.css';
 
 export default function AddEmployeeModal(props) {
@@ -19,6 +17,7 @@ export default function AddEmployeeModal(props) {
   const[position, setPosition] = useState("");
   const[email, setEmail] = useState("");
   const[startDate, setStartDate] = useState(new Date());
+  const[errorMessage, setErrorMessage] = useState("");
 
   const addEmployee = () => {
     let config = {
@@ -47,9 +46,17 @@ export default function AddEmployeeModal(props) {
     .then(() => {
         props.onHide();
         props.getEmployees();
+        setErrorMessage("");
     })
     .catch((error) => {
-        //TODO
+        let code = error.toJSON().status;
+        if(code===400 && error.response.data !== null && error.response.data.message === "validation error"){
+            if(Array.of(error.response.data.fieldErrors).length > 0)
+                setErrorMessage(error.response.data.fieldErrors[0].defaultMessage);
+        }
+        else if(code===400 && error.response.data !== null)
+            setErrorMessage(error.response.data.message);
+        else alert('Internal server error');
     });            
   }
 
@@ -116,7 +123,12 @@ export default function AddEmployeeModal(props) {
                     <DatePicker style={{width:'100%'}} value={startDate} onChange={setStartDate} format="do MMMM Y" />
                 </MuiPickersUtilsProvider>                     
             </div>
-        </div>    
+        </div>
+        <div className="row">
+           <div className="col-md-10 error">
+                {errorMessage}
+            </div>
+        </div>     
       </Modal.Body>
       <Modal.Footer>
         <div>

@@ -18,8 +18,8 @@ export default function Users() {
         getEmployees();
     }, []);
 
-    const getEmployees = () => {
-         axios
+    const getEmployees = async() => {
+         await axios
          .get("/employee/all")
          .then(response => response.data)
          .then((data) =>{             
@@ -127,7 +127,7 @@ export default function Users() {
                     }
                 </div>
             </div>
-            <AddEmployeeModal show={showModal} onHide={()=>setShowModal(false)} getEmployees={getEmployees()} />
+            <AddEmployeeModal show={showModal} onHide={()=>setShowModal(false)} getEmployees={()=>getEmployees()} />
         </div>
     );
 }
