@@ -46,3 +46,12 @@
     font-weight: bold;
     font-size: 30px;
 }
+
+.single-project .employees{
+    border: none;
+    padding: 5px;
+}
+
+.single-project .employees:focus{
+    border: 0;
+}

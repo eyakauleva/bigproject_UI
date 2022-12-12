@@ -1,0 +1,26 @@
+.project-employees-modal .item-wrapper{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.project-employees-modal .wrapper{
+    margin-left: 30px;
+    width: 100%;
+}
+
+.project-employees-modal .photo{
+    width: 65px;
+    height: 65px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.project-employees-modal .name{
+    font-weight: bold;
+}
+
+.project-employees-modal .remove{
+    cursor: pointer;
+}

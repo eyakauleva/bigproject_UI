@@ -59,12 +59,12 @@ export default function ChooseEmployeeModal(props) {
       size="lg">
       <Modal.Header closeButton>
         <Modal.Title className='title'>
-        <div style={{width:'100%'}}>
-          <InputGroup>
-            <Form.Control placeholder="Name Surname" aria-label="Name Surname" aria-describedby="basic-addon1" onChange={inputHandler} />
-            <InputGroup.Text id="basic-addon1"><i className="bi bi-search"></i></InputGroup.Text>
-          </InputGroup>
-        </div>     
+          <div style={{width:'100%'}}>
+            <InputGroup>
+              <Form.Control placeholder="Name Surname" aria-label="Name Surname" aria-describedby="basic-addon1" onChange={inputHandler} />
+              <InputGroup.Text id="basic-addon1"><i className="bi bi-search"></i></InputGroup.Text>
+            </InputGroup>
+          </div>     
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>    

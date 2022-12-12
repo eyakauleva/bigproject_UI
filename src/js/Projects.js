@@ -47,7 +47,7 @@ export default function Projects(props) {
             <div className="container">
                 <div className="well well-sm row" style={{fontFamily:"sans-serif"}}>
                     <strong className="col-md-1">Display:</strong>
-                    <div className="btn-group col-md-4">
+                    <div className="btn-group col-md-7">
                        <a href="#" id="list" className="btn-custom btn-custom-default btn-sm" onClick={() => setIsList(true)}>
                            <IconContext.Provider
                                 value={{ 

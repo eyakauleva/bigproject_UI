@@ -7,11 +7,13 @@ import { useCookies } from 'react-cookie';
 import { useState, useEffect} from 'react';
 import { format, parseISO } from "date-fns";
 
+import ProjectEmployeesModal, {clearInput} from './ProjectEmployeesModal.js';
 import '../css/ProjectPage.css';
 
 export default function ProjectPage(props) {
     const [cookies, setCookie, removeCookie] = useCookies(["token"]);
     const [project, setProject] = useState({}); 
+    const [employees, setEmployees] = useState([]);
     const[name, setName] = useState(""); 
     const[description, setDescription] = useState(""); 
     const[dueDate, setDueDate] = useState("");
@@ -25,26 +27,29 @@ export default function ProjectPage(props) {
     const severities = ["LOW", "NORMAL", "HIGH", "CRITICAL"];
     const columnOrder = ['OPEN', 'IN_DESIGN', 'IN_BUILD', 'READY_FOR_TEST', 'CLOSE'];
     const[tickets, setTickets] = useState([]);
+    const[showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         getProject(); 
         getTickets();             
       }, [id]);
-      const getTickets = () => {
-        if(id){
-            axios
-            .get("/project/" + id + "/tickets")
-            .then(response => response.data)
-            .then(data =>{
-                if(data){
-                    setTickets(data);                
-                }                 
-            })
-            .catch((error) => {
-                //TODO
-            });   
-        }
+
+    const getTickets = () => {
+      if(id){
+          axios
+          .get("/project/" + id + "/tickets")
+          .then(response => response.data)
+          .then(data =>{
+              if(data){
+                  setTickets(data);                
+              }                 
+          })
+          .catch((error) => {
+              //TODO
+          });   
       }
+    }
+
     let showNecessaryIcon = (type) => {
      if(type === 'BUG'){
         return (<IconContext.Provider
@@ -56,7 +61,7 @@ export default function ProjectPage(props) {
         >
         <FaRegCircle/>
         </IconContext.Provider>);
-     } else if(type === 'TASK'){
+      } else if(type === 'TASK'){
         return (<IconContext.Provider
             value={{ 
                 className: "glyphicon glyphicon-th",
@@ -66,33 +71,47 @@ export default function ProjectPage(props) {
             >
             <FaRegCircle/>
             </IconContext.Provider>);
-     } else {
+      } else {
         return (<IconContext.Provider
             value={{ 
                 className: "glyphicon glyphicon-th",
                 size: '15px',
                 color:'orange'
-            }}
-            >
+            }}>
             <FaInfoCircle/>
             </IconContext.Provider>);
      }
     }
+
     const getProject = () => {
-        if(id){
-            axios
-            .get("/project/tickets/" + id)
-            .then(response => response.data)
-            .then(data =>{
-                if(data){
-                    setProject(data);                
-                }                 
-            })
-            .catch((error) => {
-                //TODO
-            });   
-        }
+      if(id){
+          axios
+          .get("/project/tickets/" + id)
+          .then(response => response.data)
+          .then(data =>{
+              if(data){
+                  setProject(data);    
+                  setEmployees(data.employees);        
+              }                 
+          })
+          .catch((error) => {
+              //TODO
+          });   
       }
+    }
+
+    //TODO submit on backend
+    const removeFromProject = (id) => {
+      setEmployees(employees.filter(function(employee) { 
+        return employee.id !== id 
+      }));
+    }
+
+    //TODO submit on backend
+    const addToProject = (newEmployee) => {
+      setEmployees([...employees, newEmployee])
+    }
+
     return (
     <div className="single-project">
     <div className="container emp-profile">
@@ -178,7 +197,16 @@ export default function ProjectPage(props) {
                 &nbsp;&nbsp;{ project.reporter != null ?project.reporter.user.name+' '+ project.reporter.user.surname : ''}
                 </div>       
           </div>
-      </div><hr/>        
+      </div><hr/>
+      <div className="row">
+        <div className="col-md-1"></div>
+         <div className="col-md-4">
+              <label>Employees:</label>
+          </div>
+          <div className="col-md-6">
+              <button onClick={()=>setShowModal(true)} className="employees">Show...</button>      
+          </div>
+      </div><hr/>
       <div className="row">
         <div className="col-md-1"></div>
          <div className="col-md-4">
@@ -194,22 +222,17 @@ export default function ProjectPage(props) {
         <h4>Related tickets</h4>
         {
             tickets.map((ticket) =>
-            <div className='pretty-link' style={{cursor:'pointer'}} onClick={() => props.navigate("ticket/" + ticket.id)}>
-            {/* <IconContext.Provider
-                value={{ 
-                    className: "glyphicon glyphicon-th",
-                    size: '15px',
-                    color:'red'
-                }}
-            >
-            <FaRegCircle/>
-            </IconContext.Provider> */}
-            {showNecessaryIcon(ticket.type)}
-            <a className='' onClick={() => props.navigate("ticket/" + ticket.id)}>{ticket.name}</a>
-       </div>
+            ticket.status !== "CLOSE"
+            ? <div className='pretty-link' style={{cursor:'pointer'}} onClick={() => props.navigate("ticket/" + ticket.id)}>
+              {showNecessaryIcon(ticket.type)}
+              <a className='' onClick={() => props.navigate("ticket/" + ticket.id)}>{ticket.name}</a>
+            </div>
+            : ""           
         )}
         </div>
        </div>
-    </div>    
+    </div>   
+    <ProjectEmployeesModal show={showModal} onHide={()=>{setShowModal(false); clearInput()}} 
+        employees={employees} removeFromProject={(id)=>removeFromProject(id)} addToProject={(employee)=>addToProject(employee)} /> 
   </div>);
 }
