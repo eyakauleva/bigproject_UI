@@ -44,7 +44,7 @@
 
 .single-project .name{
     font-weight: bold;
-    font-size: 30px;
+    font-size: 25px;
 }
 
 .single-project .employees{
@@ -54,4 +54,15 @@
 
 .single-project .employees:focus{
     border: 0;
+}
+
+.single-project .pretty-select:hover{
+    background-color: rgba(129, 129, 129, 0.205);
+    cursor: pointer;
+}
+
+.single-project input[type="text"]{
+    border: 1px solid rgb(206, 204, 204);
+    border-radius: 5px;
+    padding-left: 5px;
 }

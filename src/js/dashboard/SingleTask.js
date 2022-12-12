@@ -102,9 +102,9 @@ export default function SingleTask(props) {
     <div className="single-task">
       <div className="container emp-profile">
         <div className="row">
-            <div className="col-md-4">
-            </div>
-            <div className="col-md-5">
+            <div className="col-md-1"></div>
+            <div className="col-md-1"><h3>Ticket: </h3></div>
+            <div className="col-md-7">
                 {editMode 
                 ? <input type="text" className='name' defaultValue={ticket.name} onChange={e => setName(e.target.value)}/> 
                 : <h3>{ticket.name}</h3>}                 
