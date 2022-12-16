@@ -62,7 +62,8 @@ export default class Task extends React.Component {
                   </div>
                 : ''      
               }
-              <img className="assignee-pic" src={`data:image/jpeg;base64,${this.props.task.assigneePhoto}`} title={this.props.task.assigneeName} />
+              <img className="assignee-pic" src={`data:image/jpeg;base64,${this.props.task.assigneePhoto}`} 
+                  onClick={() => this.props.navigate("profile/"+this.props.task.assigneeId)} title={this.props.task.assigneeName} />
             </div>
           </div>
         )}

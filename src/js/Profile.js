@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useCookies } from 'react-cookie';
 import axios from "axios";
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
@@ -6,44 +7,73 @@ import { format, parseISO } from "date-fns";
 import { useParams } from 'react-router-dom';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+import jwt_decode from "jwt-decode";
 
+import {logout} from './Sidebar.js';
 import '.././css/Profile.css';
 import ChangePasswordModal from './ChangePasswordModal';
 
 export default function Profile(props) {
+    const[cookies, setCookie] = useCookies(["token", "employeeId"]);
     const[employee, setEmployee] = useState({});
     const[user, setUser] = useState({});
     const[currProject, setCurrProject] = useState({});
-    const[login, setLogin] = useState("");
     const[name, setName] = useState("");
     const[surname, setSurname] = useState("");
     const[email, setEmail] = useState("");
     const[phone, setPhone] = useState("");
     const[birthDate, setBirthDate] = useState(format(new Date(), 'yyyy-MM-dd'));
     const[technologies, setTechnologies] = useState("");
+    const[position, setPosition] = useState("");
     const[selectedImage, setSelectedImage] = useState(null);
     const[editMode, setEditmode] = useState(false);  
-    const {id} = useParams();   
+    const{id} = useParams();   
     const[showModal, setShowModal] = useState(true);
+    const[errorMessage, setErrorMessage] = useState("");
+    const[decodedToken, setDecodedToken] = useState({});
+    const[error, setError] = useState("");
 
     useEffect(() => {        
         getEmployee();
     }, []);
 
+    const displayError = () => {
+        if(error!=="")
+        {
+          alert(error);
+          logout();
+        }
+    }
+
     const getEmployee = async () => {
         if(id){
+            let config = {
+                headers: {
+                    Authorization: 'Bearer ' + cookies.token
+                }
+            };
+
             await axios
-            .get("/employee/" + id)
+            .get("/employee/" + id, config)
             .then(response => response.data)
             .then((data) =>{
                 if(data){
                     setEmployee(data);
                     setUser(data.user);
-                    setCurrProject(data.currentProject);                    
+                    setCurrProject(data.currentProject);      
+                    setPosition(data.position);      
+                    setDecodedToken(jwt_decode(cookies.token));
                 }                    
             })
-            .catch((error) => {
-                //TODO
+            .catch((error) => {                
+                let code = error.toJSON().status;
+                if(code===400 && error.response.data !== null)
+                    setErrorMessage(error.response.data.message);
+                else if(code===401)
+                    setError('Authorization is required');
+                else if(code===403)
+                    alert("Access is denied");                
+                else alert('Internal server error');
             });
         }        
     };
@@ -54,13 +84,12 @@ export default function Profile(props) {
 
     const editProfileRequest = () => {
         let config = {
-        headers: {
-            //Authorization: 'Bearer ' + token
-        }
+            headers: {
+                Authorization: 'Bearer ' + cookies.token
+            }
         };
 
         let user = {
-            login: login,
             name: name,
             surname: surname,
             email: email,
@@ -76,6 +105,7 @@ export default function Profile(props) {
         let employee = {
             user: user,
             birthDate: format(birthDate, "yyyy-MM-dd"),
+            position: position,
             technologies: technologies,
             photo: res
         };
@@ -90,7 +120,18 @@ export default function Profile(props) {
                 setEditmode(false);
             })
             .catch((error) => {
-            
+                let code = error.toJSON().status;
+                if(code===400 && error.response.data !== null && error.response.data.message === "validation error"){
+                    if(Array.of(error.response.data.fieldErrors).length > 0)
+                        setErrorMessage(error.response.data.fieldErrors[0].defaultMessage);
+                }
+                else if(code===400 && error.response.data !== null)
+                    setErrorMessage(error.response.data.message);
+                else if(code===401)
+                    setError('Authorization is required');
+                else if(code===403)
+                    alert("Access is denied");    
+                else alert('Internal server error');
             });        
         }      
         update();
@@ -106,7 +147,6 @@ export default function Profile(props) {
     }
 
     const editProfileOnUI = () => {
-        setLogin(user.login);
         setName(user.name);
         setSurname(user.surname);
         setEmail(user.email);
@@ -117,39 +157,58 @@ export default function Profile(props) {
     }
 
     const blockUser = () => {
-        let config = {
-            headers: {
-                //Authorization: 'Bearer ' + token
-            }
-        };
-
-        axios
-        .put("/user/" + id + "/block",
-            config)
-        .then(()=>alert("User is blocked"))
-        .catch((error) => {
-        
-        });   
+        if(window.confirm("Are you sure you want to block this user?")){
+            let config = {
+                headers: {
+                    Authorization: 'Bearer ' + cookies.token
+                }
+            };
+    
+            axios
+            .put("/user/" + decodedToken.id + "/block",
+                config)
+            .then(()=>alert("User is blocked"))
+            .catch((error) => {
+                let code = error.toJSON().status;
+                if(code===400 && error.response.data !== null)
+                    setErrorMessage(error.response.data.message);
+                else if(code===401)
+                    setError('Authorization is required');
+                else if(code===403)
+                    alert("Access is denied");    
+                else alert('Internal server error');
+            });   
+        }        
     }
 
     const deactivateUser = () => {
-        let config = {
-            headers: {
-                //Authorization: 'Bearer ' + token
-            }
-        };
-
-        axios
-        .put("/user/" + id + "/deactivate",
-            config)
-        .then(()=>alert("User is deactivated"))
-        .catch((error) => {
-        
-        });  
+        if(window.confirm("Are you sure you want to deactivate this user?")){
+            let config = {
+                headers: {
+                    Authorization: 'Bearer ' + cookies.token
+                }
+            };
+    
+            axios
+            .put("/user/" + decodedToken.id + "/deactivate",
+                config)
+            .then(()=>alert("User is deactivated"))
+            .catch((error) => {
+                let code = error.toJSON().status;
+                if(code===400 && error.response.data !== null)
+                    setErrorMessage(error.response.data.message);
+                else if(code===401)
+                    setError('Authorization is required');
+                else if(code===403)
+                    alert("Access is denied");    
+                else alert('Internal server error');
+            });  
+        }        
     }
 
     return (
         <div className="profile">
+            {displayError()}
             <div className="container emp-profile">
                 <form onSubmit={handleSubmit}>
                     <div className="row">
@@ -170,7 +229,7 @@ export default function Profile(props) {
                                 <p>Current project</p>
                                 <hr/>
                                 {currProject
-                                ? <div><a href={"/app/dashboard/"+currProject.id}>{currProject.name}</a><br/></div>
+                                ? <div><a href={"/app/project/"+currProject.id}>{currProject.name}</a><br/></div>
                                 : <div>No current project</div>}                            
                             </div>
                         </div>
@@ -182,26 +241,31 @@ export default function Profile(props) {
                                             {user.name} {user.surname}
                                         </h5>
                                         <p className="profile-rating">{employee.position}</p>
-                                        {/* TODO : only admin can see */ }
-                                        <p>{user.status}</p>
+                                        {
+                                            decodedToken.role === "ROLE_ADMIN"
+                                            ? <p>{user.status}</p>
+                                            : ""
+                                        }                                        
                                     </div>
                                     <div className="col-md-3">
-                                    {
-                                        // TODO: condition (admin is logged & user is NOT blocked yet)
-                                        <button onClick={blockUser} className="block-btn"><span>Block user</span></button>
+                                    {                                    
+                                        decodedToken.role === "ROLE_ADMIN" && decodedToken.status !== "BLOCKED"
+                                        ? <button onClick={blockUser} className="block-btn"><span>Block user</span></button>
+                                        : ""
                                     }
                                     </div>
                                     <div className="col-md-3">
-                                    {
-                                        // TODO: condition (admin is logged & user is NOT deactivated yet)
-                                        <button onClick={deactivateUser} className="block-btn" style={{background:"#FC9A40"}}>
+                                    {                                       
+                                        decodedToken.role === "ROLE_ADMIN" && decodedToken.status !== "DEACTIVATED"
+                                        ? <button onClick={deactivateUser} className="block-btn" style={{background:"#FC9A40"}}>
                                             <span>Deactivate</span>
                                         </button>
+                                        : ""
                                     }
                                     </div> 
                                     {
-                                        !editMode ?
-                                        <div className="col-md-3">
+                                        !editMode && decodedToken.id === user.id
+                                        ? <div className="col-md-3">
                                             <button onClick={editProfileOnUI} className="mybtn"><span>Edit Profile</span></button>
                                         </div>
                                         : ""
@@ -219,10 +283,7 @@ export default function Profile(props) {
                                                         <label>Login</label>
                                                     </div>
                                                     <div className="col-md-6">
-                                                        {editMode ? <input type="text"
-                                                            defaultValue={user.login} 
-                                                            onChange={e => setLogin(e.target.value)}/> 
-                                                            : <p>{user.login}</p>} 
+                                                        <p>{user.login}</p>
                                                     </div>
                                                 </div>
                                                 {editMode
@@ -348,21 +409,21 @@ export default function Profile(props) {
                                 </div>
                                 <br/>                                    
                                 {
-                                editMode
-                                ? <div>
-                                    <br/>
-                                    <div className="row">                                            
-                                        <div className="col-md-3"></div>
-                                        <div className="col-md-2">
-                                            <input onClick={editProfileRequest} type="submit" className="profile-edit-btn" value="Save" />
-                                        </div>
-                                        <div className="col-md-2">
-                                            <button onClick={()=>{setEditmode(false); setSelectedImage(null);}} 
-                                                style={{background: '#FF6E4E'}} className="profile-edit-btn">Cancel</button>
+                                    editMode && decodedToken.id === user.id
+                                    ? <div>
+                                        <div className='error'>{errorMessage}</div><br/>
+                                        <div className="row">                                            
+                                            <div className="col-md-4"></div>
+                                            <div className="col-md-2">
+                                                <input onClick={()=>editProfileRequest()} type="submit" className="profile-edit-btn" value="Save" />
+                                            </div>
+                                            <div className="col-md-2">
+                                                <button onClick={()=>{setEditmode(false); setSelectedImage(null); setErrorMessage("")}} 
+                                                    style={{background: '#FF6E4E'}} className="profile-edit-btn">Cancel</button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                : ""
+                                    : ""
                                 }
                             </div>
                         </div>                                       
@@ -370,7 +431,7 @@ export default function Profile(props) {
                 </form>           
             </div>
             {
-                user.status === 'DEACTIVATED'
+                user.status === 'DEACTIVATED' && decodedToken.id == user.id
                 ? <ChangePasswordModal show={showModal} onHide={()=>setShowModal(false)} backdrop="static" navigate={props.navigate}/>
                 : ''
             }

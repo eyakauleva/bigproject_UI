@@ -5,35 +5,58 @@ import axios from "axios";
 import { useCookies } from 'react-cookie';
 import InputGroup from 'react-bootstrap/InputGroup';
 
+import {logout} from './Sidebar.js';
 import '.././css/ProjectEmployeesModal.css';
 
 var clearInput;
 export {clearInput}
 export default function ProjectEmployeesModal(props) {
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const[cookies, setCookie, removeCookie] = useCookies(["token"]);
   const[allEmployees, setAllEmployees] = useState([]);
   const[inputText, setInputText] = useState("");
+  const[error, setError] = useState("");
 
     clearInput = () => {
         setInputText('');
     }
 
+    const displayError = () => {
+        if(error!=="")
+        {
+          alert(error);
+          logout();
+        }
+    }
+
     useEffect(() => {
-        console.log(props.employees);
-        getAllEmployes();           
-    }, []);
+        if(props.editMode==true)
+            getAllEmployes();           
+    }, [props.editMode]);
 
     const getAllEmployes = () => {
+        let config = {
+            headers: {
+                Authorization: 'Bearer ' + cookies.token
+            }
+        };
+
         axios
-        .get("/employee/all")
+        .get("/employee/all", config)
         .then(response => response.data)
         .then(data =>{
             if(data){
-                setAllEmployees(data);                
+                setAllEmployees(data);       
             }                 
         })
         .catch((error) => {
-            //TODO
+            let code = error.toJSON().status;
+            if(code===400 && error.response.data !== null)
+                alert(error.response.data.message);
+            else if(code===401)
+                setError('Authorization is required');
+            else if(code===403)
+                alert("Access is denied");
+            else alert('Internal server error');
         });   
     }
 
@@ -42,28 +65,42 @@ export default function ProjectEmployeesModal(props) {
         setInputText(lowerCase);
       }
 
-    const filteredUsers =  Object.values(allEmployees).filter((employee) =>{
+    const filteredAllEmployees =  Object.values(allEmployees).filter((employee) =>{
         let fullName = (employee.user.name + ' ' + employee.user.surname).toLowerCase();
         return fullName.startsWith(inputText);
     });
+
+    const filteredProjectEmployees =  Object.values(props.employees).filter((employee) =>{
+        let fullName = (employee.user.name + ' ' + employee.user.surname).toLowerCase();
+        return fullName.startsWith(inputText);
+    });
+
+    const isEmployeeInProject = (employee_) => {
+        let doContain = false;
+        Object.values(props.employees).filter((employee) =>{
+            if(employee_.id==employee.id)
+                doContain = true;
+        });
+        return doContain;       
+    }
 
     return (
         <Modal className='project-employees-modal'
         {...props}
         centered size="lg">
+        {displayError()}
         <Modal.Header closeButton>
             <div style={{width:'80%'}}>
                 <InputGroup>
-                    <Form.Control placeholder="Name Surname" aria-label="Name Surname" aria-describedby="basic-addon1" onChange={inputHandler} />
+                    <Form.Control placeholder="Name Surname" aria-label="Name Surname" aria-describedby="basic-addon1" onChange={inputHandler} value={inputText} />
                     <InputGroup.Text id="basic-addon1"><i className="bi bi-search"></i></InputGroup.Text>
                 </InputGroup>
             </div>     
         </Modal.Header>
         <Modal.Body>
             <div>
-            {
-            (inputText === '' || props.editMode===false)
-            ? props.employees.map((employee) => 
+            { inputText === '' || props.editMode==false
+            ? filteredProjectEmployees.map((employee) => 
                 <div className='item list-group-item'> 
                     <div className='item-wrapper'>
                         <div>
@@ -76,7 +113,7 @@ export default function ProjectEmployeesModal(props) {
                             <div className="position">
                                 <i className="bi bi-briefcase"></i>&nbsp;{employee.position}
                             </div>
-                        </div>
+                        </div>  
                         {
                             props.editMode===true
                             ? <div className='remove' title='Remove from project' onClick={()=>props.removeFromProject(employee.id)}>
@@ -86,10 +123,10 @@ export default function ProjectEmployeesModal(props) {
                                 </svg>
                             </div>
                             : ''
-                        }                        
+                        }                     
                     </div><hr/>               
                 </div> )
-            : filteredUsers.map((employee) => 
+            : filteredAllEmployees.map((employee) => 
                 <div className='item list-group-item'> 
                     <div className='item-wrapper'>
                         <div>
@@ -97,14 +134,14 @@ export default function ProjectEmployeesModal(props) {
                         </div>
                         <div className='wrapper'>
                             <div className="name">
-                                {employee.user.name+' '+employee.user.surname}
+                                {employee.user.name + ' ' + employee.user.surname}
                             </div>
                             <div className="position">
                                 <i className="bi bi-briefcase"></i>&nbsp;{employee.position}
                             </div>
                         </div>
                         {
-                            props.employees.includes(employee)
+                            isEmployeeInProject(employee)
                             ? <div className='remove' title='Remove from project' onClick={()=>props.removeFromProject(employee.id)}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#CE3D1D" class="bi bi-x-circle" viewBox="0 0 16 16">
                                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>

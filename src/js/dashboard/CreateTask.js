@@ -6,16 +6,17 @@ import Form from 'react-bootstrap/Form';
 import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 
+import {logout} from '../Sidebar.js';
 import ChooseEmployeeModal from './ChooseEmployeeModal';
+import '../../css/CreateTask.css';
 
 export default function CreateTask(props) {
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const [cookies] = useCookies(["token", "employeeId", "projectId"]);
   const[name, setName] = useState(""); 
   const[description, setDescription] = useState(""); 
   const[dueDate, setDueDate] = useState(new Date());
-  const[estimatedTime, setEstimatedTime] = useState("");
+  const[estimatedTime, setEstimatedTime] = useState(0);
   const[assignee, setAssignee] = useState();
-  const[reporter, setReporter] = useState();
   const[gitLink, setGitLink] = useState("");  
   const[editMode, setEditMode] = useState(false); 
   const severities = ["LOW", "NORMAL", "HIGH", "CRITICAL"];
@@ -25,47 +26,65 @@ export default function CreateTask(props) {
   const columnOrder = ['OPEN', 'IN_DESIGN', 'IN_BUILD', 'READY_FOR_TEST', 'CLOSE'];
   const[status, setStatus] = useState(columnOrder[0]);  
   const[showModal, setShowModal] = useState(false);
-  
+  const[errorMessage, setErrorMessage] = useState("");
+  const[error, setError] = useState("");
+
+  const displayError = () => {
+    if(error!=="")
+    {
+      alert(error);
+      logout();
+    }
+   }
 
   const submitEdit = () => {
-    let config = {
-        headers: {
-            //TODO Authorization: 'Bearer ' + token
-        }
-    };
-
-    //TODO reporter,  //from JWT
-    //     ticket,    //from props
-    //      order     // calculate
-
-    let ticket = {
-        name: name,
-        description: description,
-        dueDate: format(dueDate, "yyyy-MM-dd HH:mm"),
-        estimatedTime: estimatedTime,
-        status: status,
-        type: type,
-        severity: severity,
-        gitRef: gitLink,
-        assignee: {id: assignee.id},
-        reporter: {id: 2}, //TODO
-    };
-
-    console.log(ticket);
-
-    const create = async() => {
-        await axios
-        .post("/project/1/tickets/", //TODO project id
-            ticket,
-            config)
-        .then(() => {
-            props.navigate("dashboard/" + 1); //TODO set dynamically project id
-        })
-        .catch((error) => {
-            //TODO
-        });        
-    }      
-    create();
+    if(assignee != null){
+        let config = {
+            headers: {
+                Authorization: 'Bearer ' + cookies.token
+            }
+        };
+    
+        let ticket = {
+            name: name,
+            description: description,
+            dueDate: format(dueDate, "yyyy-MM-dd HH:mm"),
+            estimatedTime: estimatedTime,
+            status: status,
+            type: type,
+            severity: severity,
+            gitRef: gitLink,
+            assignee: {id: assignee.id},
+            reporter: {id: cookies.employeeId},
+        };
+    
+        const create = async() => {
+            await axios
+            .post("/project/" + cookies.projectId + "/tickets/",
+                ticket,
+                config)
+            .then(() => {
+                props.navigate("dashboard/" + cookies.projectId);
+            })
+            .catch((error) => {
+                let code = error.toJSON().status;
+                if(code===400 && error.response.data !== null && error.response.data.message === "validation error"){
+                    if(Array.of(error.response.data.fieldErrors).length > 0)
+                        setErrorMessage(error.response.data.fieldErrors[0].defaultMessage);
+                }
+                else if(code===400 && error.response.data !== null)
+                    setErrorMessage(error.response.data.message);
+                else if(code===401)
+                    setError('Authorization is required');
+                else if(code===403)
+                    alert("Access is denied");  
+                else alert('Internal server error');
+            });        
+        }      
+        create();
+    } else if(assignee == null){
+        setErrorMessage("Assignee cannot be empty");
+    }  
   }
 
   const editAssignee = (employee) => {
@@ -74,13 +93,14 @@ export default function CreateTask(props) {
   }
 
   return (
-    <div className="profile">
+    <div className="create-task">
+        {displayError()}
       <div className="container emp-profile">        
         <div className="row">
         <div className="col-md-1"></div>
            <div className="col-md-3"></div>
             <div className="col-md-5">
-                <h3>New ticket</h3>              
+                <h3>Create new ticket:</h3>              
             </div>
         </div>
         <div className="row">
@@ -88,7 +108,7 @@ export default function CreateTask(props) {
            <div className="col-md-3">
                 <label>Name:</label>
             </div>
-            <div className="col-md-5">
+            <div className="col-md-6">
                 <input type="text" style={{fontSize:'22px', width:'100%'}} onChange={e => setName(e.target.value)}/>                 
             </div>
         </div>
@@ -197,21 +217,26 @@ export default function CreateTask(props) {
             </div>
         </div><hr/>
         <div>
-            <br/>
+            <div className="row">
+                <div className="col-md-4"></div>
+                <div className="col-md-6 error">
+                    {errorMessage}
+                </div>
+            </div>
             <div className="row">                                            
                 <div className="col-md-6"></div>
                 <div className="col-md-2">
                     <input type="submit" onClick={()=>{submitEdit()}} className="profile-edit-btn" value="Save" />
                 </div>
                 <div className="col-md-2">
-                    <button onClick={()=>{props.navigate("/dashboard/" + 1);}} //TODO set project id 
+                    <button onClick={()=>props.navigate("dashboard/" + cookies.projectId)}
                         style={{background: '#FF6E4E'}} className="profile-edit-btn">Cancel</button>
                 </div>
             </div>
         </div>
       </div>  
       <ChooseEmployeeModal show={showModal} onHide={()=>setShowModal(false)} submitChange={(employee)=>editAssignee(employee)} 
-                           assignee={assignee} reporter={reporter} />  
+                           assignee={assignee} reporter={assignee} />  
     </div>
   );  
 }

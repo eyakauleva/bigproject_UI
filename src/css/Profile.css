@@ -2,7 +2,7 @@
 .profile{    
     float: right;
     width: calc(100% - 160px);
-    height: 100vh;
+    height: 100%;
 }
 
 .profile input[type="text"], textarea, input[type="number"]{
@@ -23,26 +23,19 @@
     margin-top: 5%;
 }
 
-.tickets p{
-    font-size: 13px;
-    color: #818182;
-    font-weight: 600;
-}
-
-
-
 .profile .emp-profile{
-    height: 90%;
-}
-
-.emp-profile{
     padding: 3%;
     margin-top: 1%;
     margin-bottom: 3%;
     border-radius: 0.5rem;
-    background: #fff;    
+    background: #fff; 
+    height: 90%;   
 }
 
+.profile .error{
+    font-size: 12px;
+    color: red;
+}
 
 .profile-img{
     text-align: center;

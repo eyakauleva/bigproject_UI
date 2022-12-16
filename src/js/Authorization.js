@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useCookies } from "react-cookie";
 import axios from "axios";
+import jwt_decode from "jwt-decode";
 
 import '../css/Authorization.css';
 
@@ -8,7 +9,7 @@ function Authorization(props){
   const[username, setUsername] = useState('');
   const[password, setPassword] = useState('');
   const[errorMessage, setErrorMessage] = useState('');
-  const[cookies, setCookie] = useCookies(["token"]);
+  const[cookies] = useCookies(["token", "url", "employeeId", "projectId"]);
 
   const handleUserInput = (e) => {
     const name = e.target.name;
@@ -34,16 +35,71 @@ function Authorization(props){
     }
 
     axios.post('auth', requestOptions)
-      .then(response => {
-        setCookie("token", response.data.token, { path: '/' });
-        props.navigate('/app');        
+      .then(response => {  
+        document.cookie = "token=" + response.data.token + "; path=/";   
+
+        let decodedToken = jwt_decode(response.data.token);
+
+        let config = {
+          headers: {
+              Authorization: 'Bearer ' + response.data.token
+          }
+        };
+    
+        if(decodedToken.role==="CUSTOMER"){
+          axios.get("/orders/" + decodedToken.id + "/project", config)
+          .then(response => response.data)
+          .then((data) =>{
+              if(data){
+                document.cookie = "projectId=" + data.id + "; path=/"; 
+                if(cookies.url !== "undefined")
+                  props.navigate(cookies.url);
+                else props.navigate('/app'); 
+              }                    
+          })
+          .catch((error) => {                
+              let code = error.toJSON().status;
+              if(code===400 && error.response.data !== null)
+                  setErrorMessage(error.response.data.message);
+              else if(code===401){
+                  alert('Authorization is required');
+              }
+              else alert('Internal server error');
+          });
+        } else{
+          axios.get("/employee/user/" + decodedToken.id, config)
+          .then(response => response.data)
+          .then((data) =>{
+              if(data){
+                document.cookie = "employeeId=" + data.id + "; path=/"; 
+                document.cookie = "projectId=" + data.currentProject.id + "; path=/"; 
+                if(cookies.url != null && cookies.url != undefined && cookies.url !== "undefined")
+                  props.navigate(cookies.url);
+                else props.navigate('/app'); 
+              }                    
+          })
+          .catch((error) => {                
+              let code = error.toJSON().status;
+              if(code===400 && error.response.data !== null)
+                  setErrorMessage(error.response.data.message);
+              else if(code===401){
+                  alert('Authorization is required');
+              }
+              else alert('Internal server error');
+          });
+        }        
+
+        
+        
       })
       .catch((error) => {
+        console.log(error);
         let code = error.toJSON().status;
         if(code===401) setErrorMessage("Bad credentials");
         else if(code===423) setErrorMessage("Account is locked");
+        else if(code===400 && error.response.data !== null) setErrorMessage(error.response.data.message);
         else alert('Internal server error');
-      })
+      });
   }
     
   return(   

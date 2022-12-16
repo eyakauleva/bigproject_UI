@@ -1,32 +1,58 @@
 import React, { useState, useEffect } from "react";
+import { useCookies } from 'react-cookie';
 import { FaList, FaTh } from 'react-icons/fa';
 import { IconContext } from 'react-icons';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import axios from "axios";
 
+import {logout} from './Sidebar.js';
 import '.././css/Projects.css';
 
 export default function Projects(props) {
-    const [isList, setIsList] = useState(false);
+    const[cookies] = useCookies(["token"]);
+    const[isList, setIsList] = useState(false);
     const[projects, setProjects] = useState([]);
-    const [inputText, setInputText] = useState("");
+    const[inputText, setInputText] = useState("");
+    const[error, setError] = useState("");
 
     useEffect(() => {        
         getProjects();
     }, []);
 
+    const displayError = () => {
+        if(error!=="")
+        {
+          alert(error);
+          logout();
+        }
+    }
+
     const getProjects = () => {
-         axios
-            .get("/project/all")
-            .then(response => response.data)
-            .then((data) =>{
-                if(data){
-                    setProjects(data);
-                }                    
-            })
-            .catch((error) => {
-            });
+        let config = {
+            headers: {
+                Authorization: 'Bearer ' + cookies.token
+            }
+        };
+
+        axios
+        .get("/project/all", config)
+        .then(response => response.data)
+        .then((data) =>{
+            if(data){
+                setProjects(data);
+            }                    
+        })
+        .catch((error) => {
+            let code = error.toJSON().status;
+            if(code===400 && error.response.data !== null)
+                alert(error.response.data.message);
+            else if(code===401)
+                setError('Authorization is required');
+            else if(code===403)
+                alert("Access is denied"); 
+            else alert('Internal server error');
+        });
     };
 
     let inputHandler = (e) => {
@@ -44,6 +70,7 @@ export default function Projects(props) {
 
     return(
         <div className="projects">
+            {displayError()}
             <div className="container">
                 <div className="well well-sm row" style={{fontFamily:"sans-serif"}}>
                     <strong className="col-md-1">Display:</strong>

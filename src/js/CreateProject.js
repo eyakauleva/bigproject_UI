@@ -7,26 +7,31 @@ import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { useParams } from 'react-router-dom';
 
+import {logout} from './Sidebar.js';
 import ChooseEmployeeModal from './dashboard/ChooseEmployeeModal'
 import '../css/CreateProject.css';
 
 export default function CreateProject(props) {
-    const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+    const [cookies, setCookie, removeCookie] = useCookies(["token", "employeeId"]);
     const[name, setName] = useState(""); 
     const[description, setDescription] = useState(""); 
     const[dueDate, setDueDate] = useState(new Date());
     const[assignee, setAssignee] = useState();
-    const[reporter, setReporter] = useState();
     const[employees, setEmployees] = useState([]);
     const[gitLink, setGitLink] = useState("");
     const[showModal, setShowModal] = useState(false);
     const[flag, setFlag] = useState(false);
     const {id} = useParams(); 
+    const[errorMessage, setErrorMessage] = useState("");
+    const[error, setError] = useState("");
 
-    useEffect(() => {    
-        //TODO set reporter automatically    
-        setReporter({id: 2, user:{name:'name2', surname:'surname2'}, photo:''});
-    }, []);
+    const displayError = () => {
+        if(error!=="")
+        {
+          alert(error);
+          logout();
+        }
+    }
 
     const editAssignee = (employee) => {
         if(flag){
@@ -49,39 +54,55 @@ export default function CreateProject(props) {
     }
 
     const submitCreateProject = () => {
-        let config = {
-            headers: {
-                //TODO Authorization: 'Bearer ' + token
-            }
-        };
-
-        let employeesId = [];
-        employees.forEach((employee)=>{
-            employeesId.push({id: employee.id});
-        });
+        if(assignee != null){ 
+            let config = {
+                headers: {
+                    Authorization: 'Bearer ' + cookies.token
+                }
+            };
     
-        let project = {
-            assignee: {id: assignee.id},
-            reporter: {id: reporter.id},
-            name: name,
-            description: description,
-            dueDate: format(dueDate, "yyyy-MM-dd 00:00"),
-            employees: employeesId,
-            gitRef: gitLink
-        };        
-    
-        axios
-        .post("/project/create/" + id, project)
-        .then(() => {
-            props.navigate("projects");
-        })
-        .catch((error) => {
-            //TODO
-        });   
+            let employeesId = [];
+            employees.forEach((employee)=>{
+                employeesId.push({id: employee.id});
+            });
+        
+            let project = {
+                assignee: {id: assignee.id},
+                reporter: {id: cookies.employeeId},
+                name: name,
+                description: description,
+                dueDate: format(dueDate, "yyyy-MM-dd 00:00"),
+                employees: employeesId,
+                gitRef: gitLink
+            };        
+        
+            axios
+            .post("/project/create/" + id, project, config)
+            .then(() => {
+                props.navigate("projects");
+            })
+            .catch((error) => {
+                let code = error.toJSON().status;
+                if(code===400 && error.response.data !== null && error.response.data.message === "validation error"){
+                    if(Array.of(error.response.data.fieldErrors).length > 0)
+                        setErrorMessage(error.response.data.fieldErrors[0].defaultMessage);
+                }
+                else if(code===400 && error.response.data !== null)
+                    setErrorMessage(error.response.data.message);
+                else if(code===401)
+                    setError('Authorization is required');
+                else if(code===403)
+                    alert("Access is denied");       
+                else alert('Internal server error');
+            });   
+        } else if(assignee == null){
+            setErrorMessage("Assignee cannot be empty");
+        }     
     }
     
     return (
         <div className="create-project">
+            {displayError()}
             <div className="container emp-profile">
                 <div className="row">
                     <div className="col-md-4"></div>
@@ -137,18 +158,6 @@ export default function CreateProject(props) {
                 <div className="row">
                     <div className="col-md-1"></div>
                     <div className="col-md-4">
-                        <label>Reporter (GET REPORTER ID FROM COOKIES AND DELETE THIS INPUT):</label>
-                    </div>
-                    <div className="col-md-6">
-                        <div className='pretty-select'>
-                            <img className="photo" src={`data:image/jpeg;base64,${reporter != null ? reporter.photo : ''}`} />
-                            &nbsp;&nbsp;{ reporter != null ? reporter.user.name+' '+ reporter.user.surname : ''}
-                        </div>       
-                    </div>
-                </div><hr/>
-                <div className="row">
-                    <div className="col-md-1"></div>
-                    <div className="col-md-4">
                         <label>Employees:</label>
                     </div>
                     <div className="col-md-6">
@@ -173,6 +182,12 @@ export default function CreateProject(props) {
                     <div className="col-md-6">
                         <input type="text" onChange={(e)=>setGitLink(e.target.value)} />
                     </div>
+                </div><br/>
+                <div className="row">
+                    <div className="col-md-5"></div>
+                    <div className="col-md-6 error">
+                        {errorMessage}
+                    </div>
                 </div>
                 <div>
                     <br/>
@@ -182,14 +197,14 @@ export default function CreateProject(props) {
                                 <input type="submit" className="profile-edit-btn" onClick={()=>submitCreateProject()} value="Save" />
                             </div>
                             <div className="col-md-2">
-                                <button onClick={()=> props.navigate("projects")}
+                                <button onClick={()=> props.navigate("orders")}
                                     style={{background: '#FF6E4E'}} className="profile-edit-btn">Cancel</button>
                             </div>
                     </div>
                 </div>                                                            
             </div>  
             <ChooseEmployeeModal show={showModal} onHide={()=>setShowModal(false)} submitChange={(employee)=>editAssignee(employee)} 
-                           assignee={assignee} reporter={reporter} />  
+                           assignee={assignee} reporter={assignee} />  
         </div>
     );
 }

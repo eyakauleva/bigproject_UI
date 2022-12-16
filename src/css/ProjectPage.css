@@ -3,6 +3,15 @@
     width: calc(100% - 160px);    
 }
 
+.single-project .emp-profile{
+    padding: 3%;
+    margin-top: 1%;
+    margin-bottom: 3%;
+    border-radius: 0.5rem;
+    background: #fff; 
+    height: 90%;   
+  }
+
 .single-project .photo{
     width: 40px;
     height: 40px;
@@ -29,9 +38,9 @@
     background-color: rgb(235, 233, 233);
 }
 
-.single-project .col-md-4{
+/* .single-project .col-md-4{
     font-weight: bold;
-}
+} */
 
 .single-project .textarea{
     resize:both;
@@ -65,4 +74,18 @@
     border: 1px solid rgb(206, 204, 204);
     border-radius: 5px;
     padding-left: 5px;
+}
+
+.single-project .error{
+    font-size: 12px;
+    color: red;
+}
+
+.single-project .to-dashboard{
+    cursor: pointer;
+}
+
+.single-project .to-dashboard:hover{
+    color: white;
+    background-color: #5199FF;
 }

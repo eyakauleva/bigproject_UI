@@ -7,6 +7,7 @@ import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { format } from "date-fns";
 
+import {logout} from './Sidebar.js';
 import '.././css/Users.css';
 
 export default function AddEmployeeModal(props) {
@@ -18,11 +19,20 @@ export default function AddEmployeeModal(props) {
   const[email, setEmail] = useState("");
   const[startDate, setStartDate] = useState(new Date());
   const[errorMessage, setErrorMessage] = useState("");
+  const[error, setError] = useState("");
+
+  const displayError = () => {
+    if(error!=="")
+    {
+      alert(error);
+      logout();
+    }
+  }
 
   const addEmployee = () => {
     let config = {
         headers: {
-            //TODO Authorization: 'Bearer ' + token
+            Authorization: 'Bearer ' + cookies.token
         }
     };
 
@@ -56,6 +66,10 @@ export default function AddEmployeeModal(props) {
         }
         else if(code===400 && error.response.data !== null)
             setErrorMessage(error.response.data.message);
+        else if(code===401)
+            setError('Authorization is required');
+        else if(code===403)
+            alert("Access is denied");        
         else alert('Internal server error');
     });            
   }
@@ -64,6 +78,7 @@ export default function AddEmployeeModal(props) {
     <Modal className='add-employee-modal'
       {...props}
       centered>
+        {displayError()}
       <Modal.Header closeButton>
         <Modal.Title>
             Add Employee Account           
@@ -76,9 +91,9 @@ export default function AddEmployeeModal(props) {
             </div>
             <div className="col-md-6">
                 <Form.Select onChange={e => setRole(e.target.value)}>
-                    <option value="MANAGER">MANAGER</option>
-                    <option selected value="EMPLOYEE">EMPLOYEE</option>
-                    <option value="ADMINISTRATOR">ADMINISTRATOR</option>
+                    <option value="ROLE_MANAGER">MANAGER</option>
+                    <option selected value="ROLE_EMPLOYEE">EMPLOYEE</option>
+                    <option value="ROLE_ADMINISTRATOR">ADMINISTRATOR</option>
                 </Form.Select>                
             </div>
         </div>        

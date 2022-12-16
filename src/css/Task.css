@@ -9,11 +9,12 @@
     font-weight: bold;
     color: #404040;
     cursor: pointer;
+    word-wrap: break-word;
 }
 
 .task-container .name:hover {
     color: white;
-    background-color: #404040;
+    background-color: #5199FF;
 }
 
 .task-container .due-date{

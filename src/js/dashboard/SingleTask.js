@@ -6,12 +6,14 @@ import { useParams } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+import jwt_decode from "jwt-decode";
 
+import {logout} from '../Sidebar.js';
 import ChooseEmployeeModal from './ChooseEmployeeModal'
 import '../../css/SingleTask.css';
 
 export default function SingleTask(props) {
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const [cookies] = useCookies(["token", "employeeId"]);
   const [ticket, setTicket] = useState({}); 
   const[name, setName] = useState(""); 
   const[description, setDescription] = useState(""); 
@@ -26,43 +28,56 @@ export default function SingleTask(props) {
   const severities = ["LOW", "NORMAL", "HIGH", "CRITICAL"];
   const columnOrder = ['OPEN', 'IN_DESIGN', 'IN_BUILD', 'READY_FOR_TEST', 'CLOSE'];
   const[showModal, setShowModal] = useState(false);
+  const[errorMessage, setErrorMessage] = useState("");
+  const[decodedToken, setDecodedToken] = useState({});
+  const[error, setError] = useState("");
 
   useEffect(() => {
     getTicket();              
   }, [id]);
 
-  const getTicket = () => {
-    if(id){
-        axios
-        .get("/project/tickets/" + id)
-        .then(response => response.data)
-        .then(data =>{
-            if(data){
-                setTicket(data);                          
-            }                 
-        })
-        .catch((error) => {
-            //TODO
-        });   
+  const displayError = () => {
+    if(error!=="")
+    {
+      alert(error);
+      logout();
     }
   }
 
-  const editProfileOnUI = () => {
-    setName(ticket.name);
-    setDescription(ticket.description);
-    setDueDate(parseISO(ticket.dueDate));
-    setEstimatedTime(ticket.estimatedTime);
-    setStatus(ticket.status);
-    setSeverity(ticket.severity);
-    setGitLink(ticket.gitRef);
-    setAssignee(ticket.assignee);
-    setEditMode(true);
+  const getTicket = () => {
+    if(id){
+        let config = {
+            headers: {
+                Authorization: 'Bearer ' + cookies.token
+            }
+        };
+
+        axios
+        .get("/project/tickets/" + id, config)
+        .then(response => response.data)
+        .then(data =>{
+            if(data){
+                setTicket(data); 
+                setDecodedToken(jwt_decode(cookies.token));                         
+            }                 
+        })
+        .catch((error) => {
+            let code = error.toJSON().status;
+            if(code===400 && error.response.data !== null)
+                setErrorMessage(error.response.data.message);
+            else if(code===401)
+                setError('Authorization is required');
+            else if(code===403)
+                alert("Access is denied");
+            else alert('Internal server error');
+        });   
+    }
   }
 
   const submitEdit = () => {
     let config = {
         headers: {
-            //TODO Authorization: 'Bearer ' + token
+            Authorization: 'Bearer ' + cookies.token
         }
     };
 
@@ -85,12 +100,36 @@ export default function SingleTask(props) {
         .then(() => {
             getTicket();
             setEditMode(false);
+            setErrorMessage("");
         })
         .catch((error) => {
-            //TODO
+            let code = error.toJSON().status;
+            if(code===400 && error.response.data !== null && error.response.data.message === "validation error"){
+                if(Array.of(error.response.data.fieldErrors).length > 0)
+                    setErrorMessage(error.response.data.fieldErrors[0].defaultMessage);
+            }
+            else if(code===400 && error.response.data !== null)
+                setErrorMessage(error.response.data.message);
+            else if(code===401)
+                setError('Authorization is required');
+            else if(code===403)
+                alert("Access is denied");
+            else alert('Internal server error');
         });        
     }      
     update();
+  }
+
+  const editProfileOnUI = () => {
+    setName(ticket.name);
+    setDescription(ticket.description);
+    setDueDate(parseISO(ticket.dueDate));
+    setEstimatedTime(ticket.estimatedTime);
+    setStatus(ticket.status);
+    setSeverity(ticket.severity);
+    setGitLink(ticket.gitRef);
+    setAssignee(ticket.assignee);
+    setEditMode(true);
   }
 
   const editAssignee = (employee) => {
@@ -100,6 +139,7 @@ export default function SingleTask(props) {
 
   return (
     <div className="single-task">
+      {displayError()}
       <div className="container emp-profile">
         <div className="row">
             <div className="col-md-1"></div>
@@ -110,7 +150,8 @@ export default function SingleTask(props) {
                 : <h3>{ticket.name}</h3>}                 
             </div>
             {
-                !editMode 
+                !editMode && ticket.reporter!=undefined 
+                    && (cookies.employeeId==ticket.reporter.id || decodedToken.role==="ROLE_ADMIN" || decodedToken.role==="ROLE_MANAGER")
                 ?<div className="col-md-3">
                     <button onClick={() => editProfileOnUI()} className="mybtn"><span>Edit Ticket</span></button>
                 </div>
@@ -242,14 +283,14 @@ export default function SingleTask(props) {
                 {ticket.reporter != null
                 ? <div className='pretty-select-non-edit'>
                     <img className="photo" src={`data:image/jpeg;base64,${ticket.reporter.photo}`} />
-                    &nbsp;&nbsp;{ticket.reporter.user.name+' '+ticket.assignee.user.surname}
+                    &nbsp;&nbsp;{ticket.reporter.user.name+' '+ticket.reporter.user.surname}
                 </div>
                 : "" }           
             </div>
         </div><hr/>        
         <div className="row">
             <div className="col-md-1"></div>
-           <div className="col-md-3">
+            <div className="col-md-3">
                 <label>Git link:</label>
             </div>
             <div className="col-md-6">
@@ -257,7 +298,13 @@ export default function SingleTask(props) {
                 ? <input type="text" style={{width:'100%'}} defaultValue={ticket.gitRef} onChange={e => setGitLink(e.target.value)}/> 
                 : <a target="_blank" href={ticket.gitRef}>{ticket.gitRef}</a>}                    
             </div>
-        </div><hr/>
+        </div>
+        <div className="row">
+            <div className="col-md-4"></div>
+            <div className="col-md-6 error">
+                {errorMessage}
+            </div>
+        </div>        
         {
             editMode
             ?<div>
@@ -268,7 +315,7 @@ export default function SingleTask(props) {
                         <input type="submit" onClick={()=>{submitEdit()}} className="profile-edit-btn" value="Save" />
                     </div>
                     <div className="col-md-2">
-                        <button onClick={()=>{setEditMode(false);}} 
+                        <button onClick={()=>{setEditMode(false); setErrorMessage("");}} 
                             style={{background: '#FF6E4E'}} className="profile-edit-btn">Cancel</button>
                     </div>
                 </div>

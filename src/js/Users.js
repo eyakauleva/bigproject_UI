@@ -1,35 +1,63 @@
 import React, { useState, useEffect } from "react";
+import { useCookies } from 'react-cookie';
 import { FaList, FaTh } from 'react-icons/fa';
 import { IconContext } from 'react-icons';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import axios from "axios";
+import jwt_decode from "jwt-decode";
 
+import {logout} from './Sidebar.js';
 import AddEmployeeModal from './AddEmployeeModal.js';
 import '.././css/Users.css';
 
-export default function Users() {
+export default function Users(props) {
+    const[cookies] = useCookies(["token"]);
     const[employees, setEmployees] = useState({});
-    const [isList, setIsList] = useState(false);
-    const [inputText, setInputText] = useState("");
+    const[isList, setIsList] = useState(false);
+    const[inputText, setInputText] = useState("");
     const[showModal, setShowModal] = useState(false);
+    const[decodedToken, setDecodedToken] = useState({});
+    const[error, setError] = useState("");
 
     useEffect(() => {        
         getEmployees();
     }, []);
 
+    const displayError = () => {
+      if(error!=="")
+      {
+        alert(error);
+        logout();
+      }
+    }
+
     const getEmployees = async() => {
-         await axios
-         .get("/employee/all")
-         .then(response => response.data)
-         .then((data) =>{             
-             if(data){
-                 setEmployees(data);
-             }                                   
-         })
-         .catch((error) => {
-            //TODO
-         });    
+        let config = {
+            headers: {
+                Authorization: 'Bearer ' + cookies.token
+            }
+        };
+
+        await axios
+        .get("/employee/all", config)
+        .then(response => response.data)
+        .then((data) =>{             
+            if(data){
+                setEmployees(data);
+                setDecodedToken(jwt_decode(cookies.token));
+            }                                   
+        })
+        .catch((error) => {
+            let code = error.toJSON().status;
+            if(code===400 && error.response.data !== null)
+                alert(error.response.data.message);            
+            else if(code===401)
+                setError('Authorization is required');
+            else if(code===403)
+                alert("Access is denied");
+            else alert('Internal server error');
+        });    
     };
 
     let inputHandler = (e) => {
@@ -48,6 +76,7 @@ export default function Users() {
 
     return(
         <div className="users">
+            {displayError()}
             <div className="container">
                 <div className="well well-sm row" style={{fontFamily:"sans-serif"}}>
                     <strong className="col-md-1">Display:</strong>
@@ -75,10 +104,13 @@ export default function Users() {
                             Grid
                         </a>
                     </div>
-                    {/**TODO for admins only: */}
                     <div className="col-md-3">
-                        <button onClick={()=>setShowModal(true)} className="add-btn"><span>Add User</span></button>
-                    </div>
+                    {
+                        decodedToken.role === "ROLE_ADMIN"
+                        ? <button onClick={()=>setShowModal(true)} className="add-btn"><span>Add User</span></button>
+                        : ''
+                    }  
+                    </div>                  
                     <div className="search col-md-4">
                         <InputGroup>
                             <Form.Control

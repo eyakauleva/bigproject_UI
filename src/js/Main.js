@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useCookies } from 'react-cookie';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 
 import Sidebar from './Sidebar';
@@ -11,15 +12,24 @@ import Users from './Users';
 import ProjectPage from './ProjectPage';
 import CreateProject from './CreateProject';
 import CreateTask from './dashboard/CreateTask';
+import jwt_decode from "jwt-decode";
 
-function Main(props){
+export default function Main(){
     const navigate = useNavigate();
+    const [cookies] = useCookies(["token", "employeeId", "projectId"]);
+    const[decodedToken, setDecodedToken] = useState({});
+
+    useEffect(() => {        
+        setDecodedToken(jwt_decode(cookies.token))
+    }, []);
 
     return(
         <div className="main">
             <Sidebar navigate={navigate} />
-            <Routes>
-                <Route path="/*" element={<Navigate to="profile/1" />} /> {/* TODO set user id dynamically*/}
+            <Routes>                  
+                <Route path="/*" element={<Navigate to={decodedToken.role!=="ROLE_CUSTOMER" 
+                                                        ? "profile/" +  cookies.employeeId
+                                                        : "dashboard/" + cookies.projectId} />} />
                 <Route path="profile/:id" element={<Profile navigate={navigate}  /> } />
                 <Route path="dashboard/:id" element={<Dashboard navigate={navigate}  /> } />
                 <Route exact path="ticket/:id" element={<SingleTask navigate={navigate}  /> } />
@@ -33,5 +43,3 @@ function Main(props){
         </div>               
     );
 }
-
-export default Main;

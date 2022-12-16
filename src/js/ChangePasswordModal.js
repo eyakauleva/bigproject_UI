@@ -2,27 +2,40 @@ import { useState} from 'react';
 import Modal from 'react-bootstrap/Modal';
 import axios from "axios";
 import { useCookies } from 'react-cookie';
+import jwt_decode from "jwt-decode";
 
+import {logout} from './Sidebar.js';
 import '.././css/ChangePasswordModal.css';
 
 export default function ChangePasswordModal(props) {
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const [cookies] = useCookies(["token"]);
   const[currentPassword, setCurrentPassword] = useState("");
   const[newPassword, setNewPassword] = useState("");
   const[submitPassword, setSubmitPassword] = useState("");
   const[errorMessage, setErrorMessage] = useState('');
+  const[error, setError] = useState("");
+
+  const displayError = () => {
+    if(error!=="")
+    {
+      alert(error);
+      logout();
+    }
+  }
 
   const submitChangePassword = () => {
     let config = {
         headers: {
-            //TODO Authorization: 'Bearer ' + token
+          Authorization: 'Bearer ' + cookies.token
         }
     };
 
+    let decodedToken = jwt_decode(cookies.token);
+
     let body = {
-        login: 'user1', //TODO get login from token
-        currentPassword: currentPassword,
-        newPassword: newPassword
+      login: decodedToken.login,
+      currentPassword: currentPassword,
+      newPassword: newPassword
     }  
 
     axios
@@ -31,12 +44,16 @@ export default function ChangePasswordModal(props) {
         config)
     .then(() => {
         props.onHide();
-        removeCookie("token");        
-        props.navigate('/login');
+        logout();
     })
     .catch((error) => {
         let code = error.toJSON().status;
         if(code===401) setErrorMessage("Bad credentials");
+        else if(code===400 && error.response.data !== null) setErrorMessage(error.response.data.message);
+        else if(code===401)
+          setError('Authorization is required');
+        else if(code===403)
+          alert("Access is denied");    
         else alert('Internal server error');
     });            
   }
@@ -45,6 +62,7 @@ export default function ChangePasswordModal(props) {
     <Modal className="change-password"
       {...props}
       centered>
+      {displayError()}
       <Modal.Header>
         <Modal.Title>
             <i class="bi bi-exclamation-triangle"></i>   

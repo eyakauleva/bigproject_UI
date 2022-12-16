@@ -9,15 +9,17 @@ import { format, parseISO } from "date-fns";
 import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import Form from 'react-bootstrap/Form';
+import jwt_decode from "jwt-decode";
 
+import {logout} from './Sidebar.js';
 import ProjectEmployeesModal, {clearInput} from './ProjectEmployeesModal.js';
 import ChooseEmployeeModal from './dashboard/ChooseEmployeeModal.js'
 import '../css/ProjectPage.css';
 
 export default function ProjectPage(props) {
-    const [cookies, setCookie, removeCookie] = useCookies(["token"]);
-    const [project, setProject] = useState({}); 
-    const [employees, setEmployees] = useState([]);
+    const[cookies] = useCookies(["token", "employeeId"]);
+    const[project, setProject] = useState({}); 
+    const[employees, setEmployees] = useState([]);
     const[name, setName] = useState(""); 
     const[description, setDescription] = useState(""); 
     const[dueDate, setDueDate] = useState("");
@@ -27,39 +29,70 @@ export default function ProjectPage(props) {
     const[assignee, setAssignee] = useState({});
     const[gitLink, setGitLink] = useState("");  
     const[editMode, setEditMode] = useState(false); 
-    const {id} = useParams();  
+    const{id} = useParams();  
     const severities = ["LOW", "NORMAL", "HIGH", "CRITICAL"];
     const columnOrder = ['OPEN', 'IN_DESIGN', 'IN_BUILD', 'READY_FOR_TEST', 'CLOSE'];
     const[tickets, setTickets] = useState([]);
     const[showModal, setShowModal] = useState(false);
     const[showModalAssignee, setShowModalAssignee] = useState(false);
+    const[errorMessage, setErrorMessage] = useState("");
+    const[decodedToken, setDecodedToken] = useState({});
+    const[error, setError] = useState("");
 
     useEffect(() => {
-        getProject(); 
-        getTickets();             
-      }, [id]);
+      getProject(); 
+      getTickets();      
+    }, [id]);
+
+    const displayError = () => {
+      if(error!=="")
+      {
+        alert(error);
+        logout();
+      }
+    }
 
     const getProject = () => {
       if(id){
+          let config = {
+            headers: {
+                Authorization: 'Bearer ' + cookies.token
+            }
+          };
+
           axios
-          .get("/project/tickets/" + id)
+          .get("/project/tickets/" + id, config)
           .then(response => response.data)
           .then(data =>{
               if(data){
-                  setProject(data);                  
-                  setEmployees(data.employees);    
+                setProject(data);                  
+                setEmployees(data.employees);  
+                setDecodedToken(jwt_decode(cookies.token));  
               }                 
           })
           .catch((error) => {
-              //TODO
+            let code = error.toJSON().status;
+            if(code===400 && error.response.data !== null)
+                setErrorMessage(error.response.data.message);
+            else if(code===401)
+              setError('Authorization is required');
+            else if(code===403)
+              alert("Access is denied");            
+            else alert('Internal server error');
           });   
       }
     }
 
     const getTickets = () => {
       if(id){
+          let config = {
+            headers: {
+                Authorization: 'Bearer ' + cookies.token
+            }
+          };
+
           axios
-          .get("/project/" + id + "/tickets")
+          .get("/project/" + id + "/tickets", config)
           .then(response => response.data)
           .then(data =>{
               if(data){
@@ -67,10 +100,69 @@ export default function ProjectPage(props) {
               }                 
           })
           .catch((error) => {
-              //TODO
+            let code = error.toJSON().status;
+            if(code===400 && error.response.data !== null)
+                setErrorMessage(error.response.data.message);
+            else if(code===401)
+              setError('Authorization is required');
+            else if(code===403)
+              alert("Access is denied");            
+            else alert('Internal server error');
           });   
       }
     }
+
+    const submitEdit = () => {
+      let config = {
+        headers: {
+          Authorization: 'Bearer ' + cookies.token
+        }
+      };
+
+      let employeesId = [];
+      employees.forEach((employee)=>{
+          employeesId.push({id: employee.id});
+      });      
+
+      let project_ = {
+          name: name,
+          description: description,
+          dueDate: format(dueDate, "yyyy-MM-dd HH:mm"),
+          estimatedTime: estimatedTime,
+          status: status,
+          severity: severity,
+          gitRef: gitLink,
+          assignee: {id: assignee.id},
+          employees: employees
+      };
+
+      const update = async() => {
+          await axios
+          .put("/project/tickets/" + id, 
+            project_,
+            config)
+          .then(() => {
+            getProject();
+            setEditMode(false);
+          })
+          .catch((error) => {
+            let code = error.toJSON().status;
+            if(code===400 && error.response.data !== null && error.response.data.message === "validation error"){
+                if(Array.of(error.response.data.fieldErrors).length > 0)
+                    setErrorMessage(error.response.data.fieldErrors[0].defaultMessage);
+            }
+            else if(code===400 && error.response.data !== null)
+                setErrorMessage(error.response.data.message);
+            else if(code===401)
+              setError('Authorization is required');
+            else if(code===403)
+              alert("Access is denied");     
+            else alert('Internal server error');
+          });        
+      }      
+      update();
+    }
+
 
     let showNecessaryIcon = (type) => {
      if(type === 'BUG'){
@@ -105,15 +197,15 @@ export default function ProjectPage(props) {
      }
     }
 
-    //TODO submit on backend
     const removeFromProject = (id) => {
+      clearInput();
       setEmployees(employees.filter(function(employee) { 
         return employee.id !== id 
       }));
     }
 
-    //TODO submit on backend
     const addToProject = (newEmployee) => {
+      clearInput();
       setEmployees([...employees, newEmployee])
     }
 
@@ -130,48 +222,6 @@ export default function ProjectPage(props) {
       setEditMode(true);
     }
 
-    const submitEdit = () => {
-      let config = {
-        headers: {
-            //TODO Authorization: 'Bearer ' + token
-        }
-      };
-
-      let employeesId = [];
-      employees.forEach((employee)=>{
-          employeesId.push({id: employee.id});
-      });      
-
-      let project_ = {
-          name: name,
-          description: description,
-          dueDate: format(dueDate, "yyyy-MM-dd HH:mm"),
-          estimatedTime: estimatedTime,
-          status: status,
-          severity: severity,
-          gitRef: gitLink,
-          assignee: {id: assignee.id},
-          employees: employees
-      };
-
-      console.log(project_);
-
-      const update = async() => {
-          await axios
-          .put("/project/tickets/" + id, 
-            project_,
-            config)
-          .then(() => {
-            getProject();
-            setEditMode(false);
-          })
-          .catch((error) => {
-              //TODO
-          });        
-      }      
-      update();
-    }
-
     const editAssignee = (employee) => {
       setAssignee(employee);
       setShowModalAssignee(false);
@@ -179,6 +229,7 @@ export default function ProjectPage(props) {
 
     return (
     <div className="single-project">
+      {displayError()}
       <div className="container emp-profile">
         <div className="row">
             <div className="col-md-1"></div>
@@ -189,13 +240,17 @@ export default function ProjectPage(props) {
                 : <h3>{project.name}</h3>}                 
             </div>
             {
-                !editMode 
+                !editMode && project.reporter != null && (cookies.employeeId == project.reporter.id || decodedToken.role === "ROLE_ADMIN")
                 ?<div className="col-md-3">
                     <button onClick={() => editProfileOnUI()} className="mybtn"><span>Edit Project</span></button>
                 </div>
                 : ""
             }
-        </div><br/> 
+        </div><br/>         
+        <div className="row">
+          <div className="col-md-1"></div>
+          <div className='col-md-10 error'>{errorMessage}</div>
+        </div>
         <div className="row">
           <div className="col-md-1"></div>
           <div className="col-md-4">
@@ -363,16 +418,18 @@ export default function ProjectPage(props) {
         <div className="row">
           <div className="col-md-1"></div>
           <div className="col-md-4">
-          <h4>Related tickets</h4>
-          {
-              tickets.map((ticket) =>
+            <h4 className="to-dashboard" onClick={() => props.navigate("dashboard/" + id)}>Related tickets</h4>
+            {
+              tickets.length > 0
+              ? tickets.map((ticket) =>
               ticket.status !== "CLOSE"
               ? <div className='pretty-link' style={{cursor:'pointer'}} onClick={() => props.navigate("ticket/" + ticket.id)}>
                 {showNecessaryIcon(ticket.type)}
-                <a className='' onClick={() => props.navigate("ticket/" + ticket.id)}>{ticket.name}</a>
+                <a style={{fontWeight:"normal"}} onClick={() => props.navigate("ticket/" + ticket.id)}>{ticket.name}</a>
               </div>
-              : ""           
-          )}
+              : "")
+              : "No tickets"
+            }
           </div>
         </div>
       </div>   

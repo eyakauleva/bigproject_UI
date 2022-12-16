@@ -1,9 +1,9 @@
-.single-task{    
+.create-task{
     float: right;
     width: calc(100% - 160px);
 }
 
-.single-task .emp-profile{
+.create-task .emp-profile{
     padding: 3%;
     margin-top: 1%;
     margin-bottom: 3%;
@@ -12,7 +12,7 @@
     height: 90%;   
 }
 
-.single-task .photo{
+.create-task .photo{
     width: 40px;
     height: 40px;
     object-fit: cover;
@@ -21,15 +21,15 @@
     margin: 5px 0;
 }
 
-.single-task .col-md-3{
+.create-task .col-md-3{
     font-weight: bold;
 }
 
-.single-task .row{
+.create-task .row{
     margin: 12px 0;
 }
 
-.single-task .textarea{
+.create-task .textarea{
     resize:both;
     max-width:800px;
     max-height:600px;
@@ -38,36 +38,40 @@
     outline: none;
 }
 
-.single-task .pretty-select{
+.create-task .pretty-select{
     cursor: pointer;
     padding-left: 5%;
 }
 
-.single-task .pretty-select-non-edit{
+.create-task .pretty-select-non-edit{
     padding-left: 5%;
 }
 
-.single-task .pretty-select:hover{
+.create-task .pretty-select:hover{
     background-color: rgba(129, 129, 129, 0.205);
     cursor: pointer;
 }
 
-.single-task .name{
+.create-task .name{
     font-size: 22px;
     width: 100%;
 }
 
-.single-task .mybtn{
+.create-task .mybtn{
     margin-left: 40%;
 }
 
-.single-task input[type="text"]{
+.create-task input[type="text"]{
     border: 1px solid rgb(206, 204, 204);
     border-radius: 5px;
     padding-left: 5px;
 }
 
-.single-task .error{
+.create-task button{
+    border: 0;
+}
+
+.create-task .error{
     font-size: 12px;
     color: red;
 }

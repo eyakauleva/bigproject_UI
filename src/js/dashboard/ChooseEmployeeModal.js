@@ -5,12 +5,14 @@ import { useCookies } from 'react-cookie';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 
+import {logout} from '../Sidebar.js'
 import '../../css/ChooseEmployeeModal.css';
 
 export default function ChooseEmployeeModal(props) {
   const[cookies, setCookie, removeCookie] = useCookies(["token"]);
   const[employees, setEmployees] = useState([]);
   const[inputText, setInputText] = useState("");
+  const[error, setError] = useState("");
 
   useEffect(() => {
     getEmployees();               
@@ -20,9 +22,23 @@ export default function ChooseEmployeeModal(props) {
     setInputText("");             
   }, [props]);
 
+  const displayError = () => {
+    if(error!=="")
+    {
+      alert(error);
+      logout();
+    }
+  }
+
   const getEmployees = () => {
+    let config = {
+      headers: {
+        Authorization: 'Bearer ' + cookies.token
+      }
+    };
+
     axios
-    .get("/employee/all")
+    .get("/employee/all", config)
     .then(response => response.data)
     .then((data) =>{             
         if(data){
@@ -30,7 +46,14 @@ export default function ChooseEmployeeModal(props) {
         }                                   
     })
     .catch((error) => {
-      //TODO
+      let code = error.toJSON().status;
+      if(code===400 && error.response.data !== null)
+          alert(error.response.data.message);
+      else if(code===401)
+        setError('Authorization is required');
+      else if(code===403)
+          alert("Access is denied");
+      else alert('Internal server error');
     });  
   }
 
@@ -57,6 +80,7 @@ export default function ChooseEmployeeModal(props) {
       {...props}
       centered
       size="lg">
+      {displayError()}
       <Modal.Header closeButton>
         <Modal.Title className='title'>
           <div style={{width:'100%'}}>
