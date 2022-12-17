@@ -237,7 +237,7 @@ export default function CreateTask(props) {
         </div>
       </div>  
       <ChooseEmployeeModal show={showModal} onHide={()=>setShowModal(false)} submitChange={(employee)=>editAssignee(employee)} 
-                           assignee={assignee} reporter={assignee} />  
+                           assignee={assignee} reporter={assignee} projectId={cookies.projectId} />  
     </div>
   );  
 }

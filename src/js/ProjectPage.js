@@ -438,6 +438,6 @@ export default function ProjectPage(props) {
           removeFromProject={(id)=>removeFromProject(id)} addToProject={(employee)=>addToProject(employee)} />
       <ChooseEmployeeModal show={showModalAssignee} onHide={()=>setShowModalAssignee(false)} 
           submitChange={(employee)=>editAssignee(employee)} 
-          assignee={project.assignee} reporter={project.reporter} /> 
+          assignee={project.assignee} reporter={project.reporter} projectId={id} /> 
     </div>);
 }

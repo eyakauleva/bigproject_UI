@@ -15,8 +15,11 @@ export default function ChooseEmployeeModal(props) {
   const[error, setError] = useState("");
 
   useEffect(() => {
-    getEmployees();               
-  }, []);
+    if(props.projectId==null || props.projectId==undefined)
+      getEmployees();          
+    else
+      getProjectEmployees();  
+  }, [props.projectId]);
 
   useEffect(() => {
     setInputText("");             
@@ -42,6 +45,33 @@ export default function ChooseEmployeeModal(props) {
     .then((data) =>{             
         if(data){
             setEmployees(data);            
+        }                                   
+    })
+    .catch((error) => {
+      let code = error.toJSON().status;
+      if(code===400 && error.response.data !== null)
+          alert(error.response.data.message);
+      else if(code===401)
+        setError('Authorization is required');
+      else if(code===403)
+          alert("Access is denied");
+      else alert('Internal server error');
+    });  
+  }
+
+  const getProjectEmployees = () => {
+    let config = {
+      headers: {
+        Authorization: 'Bearer ' + cookies.token
+      }
+    };
+
+    axios
+    .get("/project/tickets/" + props.projectId, config)
+    .then(response => response.data)
+    .then((data) =>{             
+        if(data){
+            setEmployees(data.employees);            
         }                                   
     })
     .catch((error) => {

@@ -31,6 +31,7 @@ export default function SingleTask(props) {
   const[errorMessage, setErrorMessage] = useState("");
   const[decodedToken, setDecodedToken] = useState({});
   const[error, setError] = useState("");
+  const[projectId, setProjectId] = useState();
 
   useEffect(() => {
     getTicket();              
@@ -58,6 +59,7 @@ export default function SingleTask(props) {
         .then(data =>{
             if(data){
                 setTicket(data); 
+                setProjectId(data.ticket.id);
                 setDecodedToken(jwt_decode(cookies.token));                         
             }                 
         })
@@ -324,7 +326,7 @@ export default function SingleTask(props) {
         }
       </div>  
       <ChooseEmployeeModal show={showModal} onHide={()=>setShowModal(false)} submitChange={(employee)=>editAssignee(employee)} 
-                           assignee={ticket.assignee} reporter={ticket.reporter} />  
+                           assignee={ticket.assignee} reporter={ticket.reporter} projectId={projectId} />  
     </div>
   );  
 }
