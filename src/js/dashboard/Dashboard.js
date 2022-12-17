@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useLayoutEffect } from 'react';
 import { DragDropContext } from '@hello-pangea/dnd';
 import { useCookies } from "react-cookie";
 import axios from "axios";
@@ -23,13 +23,13 @@ export default function Dashboard(props) {
     columnOrder: ['OPEN', 'IN_DESIGN', 'IN_BUILD', 'READY_FOR_TEST', 'CLOSE'],
   };
   const[data, setData] = useState(initialData);
-  const[initFlag, setInitFlag] = useState(false); // flag to rerender component after data initialization  
   const {id} = useParams(); 
   const[searchData, setSearchData] = useState([]);
   const[cookies] = useCookies(["token"]);
   const[error, setError] = useState("");
+  const[reorderDone, setReorderDone] = useState(true);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     getTickets();     
   }, []);
 
@@ -70,7 +70,6 @@ export default function Dashboard(props) {
               data.columns[ticket.status].taskIds.push(task.id);              
             })  
             setSearchData(_data);
-            setInitFlag(true);
           }                    
       })
       .catch((error) => {
@@ -127,10 +126,12 @@ export default function Dashboard(props) {
         }
       };
 
+      let initData = data;
+
       axios
       .put("/project/reorder?id=" + draggableId + "&destination=" + destination.index + "&destinationColumn=" + finish.title,
             null, config)
-      .then(()=>{setData(newState);})
+      .then(()=>{})
       .catch((error) => {
         let code = error.toJSON().status;
         if(code===400 && error.response.data !== null)
@@ -140,7 +141,10 @@ export default function Dashboard(props) {
         else if(code===403)
           alert("Access is denied"); 
         else alert('Internal server error');
+        setData(initData);
       }); 
+
+      setData(newState);
 
       return;
     }
@@ -174,10 +178,13 @@ export default function Dashboard(props) {
       }
     };
 
+
+    let initData = data;
+
     axios
     .put("/project/reorder?id=" + draggableId + "&destination=" + destination.index + "&destinationColumn=" + finish.title, 
           null, config)
-    .then(()=>{setData(newState);})
+    .then(()=>{})
     .catch((error) => {
       let code = error.toJSON().status;
       if(code===400 && error.response.data !== null)
@@ -187,7 +194,10 @@ export default function Dashboard(props) {
       else if(code===403)
         alert("Access is denied"); 
       else alert('Internal server error');
-    });        
+      setData(initData);
+    });      
+    
+    setData(newState);
     
   };  
 

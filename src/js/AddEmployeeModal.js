@@ -11,8 +11,8 @@ import {logout} from './Sidebar.js';
 import '.././css/Users.css';
 
 export default function AddEmployeeModal(props) {
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
-  const [role, setRole] = useState("EMPLOYEE"); 
+  const[cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const[role, setRole] = useState("EMPLOYEE"); 
   const[name, setName] = useState(""); 
   const[surname, setSurname] = useState(""); 
   const[position, setPosition] = useState("");

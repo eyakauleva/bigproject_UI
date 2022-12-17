@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect } from 'react';
+import { useState, useLayoutEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import jwt_decode from "jwt-decode";
 
@@ -14,14 +14,14 @@ function Sidebar(props){
     const[showModal, setShowModal] = useState(false);
     const[decodedToken, setDecodedToken] = useState({});
 
-    useEffect(() => {        
+    useLayoutEffect(() => {        
         setDecodedToken(jwt_decode(cookies.token))
     }, []);
 
     const goToProfile = () => {
         let decodedToken = jwt_decode(cookies.token);
         setClientId(decodedToken.id);
-        if(decodedToken.role==="CUSTOMER")
+        if(decodedToken.role==="ROLE_CUSTOMER")
             setShowModal(true);
         else props.navigate('profile/' + cookies.employeeId); 
     }
@@ -31,6 +31,7 @@ function Sidebar(props){
     }
 
     logout = () => {        
+        document.cookie = "url=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
         document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
         document.cookie = "projectId=;  expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
         document.cookie = "employeeId=;  expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
@@ -41,7 +42,7 @@ function Sidebar(props){
     return(    
         <div className="sidenav">
             {
-                decodedToken.role!=="ROLE_CUSTOMER"
+                decodedToken.role!=="ROLE_CUSTOMER" && cookies.projectId!==undefined
                 ? <div>
                     <a href='/app/ticket_new' id='new-ticket'>
                         <i className="bi bi-plus-square"></i>
@@ -56,12 +57,16 @@ function Sidebar(props){
             </a>
             <a href='/app/users'>
                 <i className="bi bi-people"></i>
-                <span>Users</span>
+                <span>Employees</span>
             </a>
-            <a onClick={goToDashboard}>
-                <i className="bi bi-check2-square"></i>
-                <span>Tickets</span>
-            </a>
+            {
+                cookies.projectId!==undefined
+                ? <a onClick={goToDashboard}>
+                    <i className="bi bi-check2-square"></i>
+                    <span>Tickets</span>
+                </a>
+                : ''
+            }            
             <a href='/app/projects'>
                 <i className="bi bi-list"></i>    
                 <span>Projects</span>

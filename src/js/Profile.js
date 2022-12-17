@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import { useCookies } from 'react-cookie';
 import axios from "axios";
 import Tab from 'react-bootstrap/Tab';
@@ -33,7 +33,7 @@ export default function Profile(props) {
     const[decodedToken, setDecodedToken] = useState({});
     const[error, setError] = useState("");
 
-    useEffect(() => {        
+    useLayoutEffect(() => {        
         getEmployee();
     }, []);
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import { useCookies } from 'react-cookie';
 import { FaList, FaTh } from 'react-icons/fa';
 import { IconContext } from 'react-icons';
@@ -16,7 +16,7 @@ export default function Projects(props) {
     const[inputText, setInputText] = useState("");
     const[error, setError] = useState("");
 
-    useEffect(() => {        
+    useLayoutEffect(() => {        
         getProjects();
     }, []);
 

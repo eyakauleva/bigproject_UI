@@ -17,7 +17,7 @@ import ChooseEmployeeModal from './dashboard/ChooseEmployeeModal.js'
 import '../css/ProjectPage.css';
 
 export default function ProjectPage(props) {
-    const[cookies] = useCookies(["token", "employeeId"]);
+    const[cookies] = useCookies(["token", "employeeId", "projectId"]);
     const[project, setProject] = useState({}); 
     const[employees, setEmployees] = useState([]);
     const[name, setName] = useState(""); 
@@ -418,7 +418,12 @@ export default function ProjectPage(props) {
         <div className="row">
           <div className="col-md-1"></div>
           <div className="col-md-4">
-            <h4 className="to-dashboard" onClick={() => props.navigate("dashboard/" + id)}>Related tickets</h4>
+            <h4 className=
+              {decodedToken.role==="ROLE_ADMIN" || (cookies.projectId != undefined && cookies.projectId==id) ? "to-dashboard" : ""}
+                onClick={decodedToken.role==="ROLE_ADMIN" 
+                      || (cookies.projectId != undefined && cookies.projectId==id) ? () => props.navigate("dashboard/" + id) :{}}>
+                Related tickets
+            </h4>
             {
               tickets.length > 0
               ? tickets.map((ticket) =>

@@ -76,11 +76,8 @@
     color: red;
 }
 
-.single-project .to-dashboard{
-    cursor: pointer;
-}
-
 .single-project .to-dashboard:hover{
     color: white;
     background-color: #5199FF;
+    cursor: pointer;
 }

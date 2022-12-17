@@ -46,13 +46,13 @@ function Authorization(props){
           }
         };
     
-        if(decodedToken.role==="CUSTOMER"){
+        if(decodedToken.role==="ROLE_CUSTOMER"){
           axios.get("/orders/" + decodedToken.id + "/project", config)
           .then(response => response.data)
           .then((data) =>{
               if(data){
-                document.cookie = "projectId=" + data.id + "; path=/"; 
-                if(cookies.url !== "undefined")
+                document.cookie = "projectId=" + data.project.id + "; path=/"; 
+                if(cookies.url != null && cookies.url != undefined && cookies.url !== "undefined")
                   props.navigate(cookies.url);
                 else props.navigate('/app'); 
               }                    
@@ -71,14 +71,15 @@ function Authorization(props){
           .then(response => response.data)
           .then((data) =>{
               if(data){
-                document.cookie = "employeeId=" + data.id + "; path=/"; 
-                document.cookie = "projectId=" + data.currentProject.id + "; path=/"; 
+                document.cookie = "employeeId=" + data.id + "; path=/";  
+                if(data.currentProject!=null)           
+                  document.cookie = "projectId=" + data.currentProject.id + "; path=/"; 
                 if(cookies.url != null && cookies.url != undefined && cookies.url !== "undefined")
                   props.navigate(cookies.url);
                 else props.navigate('/app'); 
               }                    
           })
-          .catch((error) => {                
+          .catch((error) => {               
               let code = error.toJSON().status;
               if(code===400 && error.response.data !== null)
                   setErrorMessage(error.response.data.message);
@@ -87,9 +88,7 @@ function Authorization(props){
               }
               else alert('Internal server error');
           });
-        }        
-
-        
+        }   
         
       })
       .catch((error) => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import { useCookies } from 'react-cookie';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 
@@ -26,8 +26,8 @@ export default function Main(){
     const[cookies] = useCookies(["token", "employeeId", "projectId"]);
     const[decodedToken, setDecodedToken] = useState({});
 
-    useEffect(() => {        
-        setDecodedToken(jwt_decode(cookies.token))
+    useLayoutEffect(() => {        
+        setDecodedToken(jwt_decode(cookies.token));
     }, []);
 
     return(
@@ -38,7 +38,12 @@ export default function Main(){
                                                         ? "profile/" +  cookies.employeeId
                                                         : "dashboard/" + cookies.projectId} />} />
                 <Route path="profile/:id" element={<Profile navigate={navigate}  /> } />
-                <Route path="dashboard/:id" element={<Dashboard navigate={navigate}  /> } />
+                {
+                    cookies.projectId!==undefined
+                    ?<Route path="dashboard/:id" element={<Dashboard navigate={navigate}  /> } />
+                    : ''
+                }
+                
                 <Route exact path="ticket/:id" element={<SingleTask navigate={navigate}  /> } />                
                 <Route path="projects" element={<Projects navigate={navigate}  /> } />                
                 <Route path="users" element={<Users navigate={navigate}  /> } />
@@ -57,7 +62,7 @@ export default function Main(){
                 }/>
 
                 {
-                    decodedToken.role!=="ROLE_CUSTOMER"
+                    decodedToken.role!=="ROLE_CUSTOMER" && cookies.projectId!==undefined
                     ? <Route path="ticket_new" element={<CreateTask navigate={navigate}  /> } />
                     : ''
                 }

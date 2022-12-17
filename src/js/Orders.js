@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from "axios";
 import { useCookies } from 'react-cookie';
-import { useState, useEffect} from 'react';
+import { useState, useLayoutEffect} from 'react';
 import { format, parseISO } from "date-fns";
 import jwt_decode from "jwt-decode";
 
@@ -17,7 +17,7 @@ export default function Orders(props) {
     const[decodedToken, setDecodedToken] = useState({});
     const[error, setError] = useState("");
 
-    useEffect(() => {    
+    useLayoutEffect(() => {    
         getOrders();
     }, []);
 
