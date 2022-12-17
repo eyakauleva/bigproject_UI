@@ -269,7 +269,7 @@ export default function SingleTask(props) {
                     : ''
                 )
                 : ticket.assignee != null
-                ? <div className='pretty-select-non-edit' onClick={editMode ? ()=>setShowModal(true) : {}} >
+                ? <div className='pretty-select-non-edit' >
                     <img className="photo" src={`data:image/jpeg;base64,${ticket.assignee.photo}`} />
                     &nbsp;&nbsp;{ticket.assignee.user.name+' '+ticket.assignee.user.surname}
                   </div>

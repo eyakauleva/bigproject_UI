@@ -56,6 +56,8 @@ export default function CreateProject(props) {
 
     const submitCreateProject = () => {
         if(assignee != null){ 
+            setIsDisabled(true);
+
             let config = {
                 headers: {
                     Authorization: 'Bearer ' + cookies.token
@@ -80,6 +82,7 @@ export default function CreateProject(props) {
             axios
             .post("/project/create/" + id, project, config)
             .then(() => {
+                setIsDisabled(false);
                 props.navigate("projects");
             })
             .catch((error) => {
@@ -95,6 +98,7 @@ export default function CreateProject(props) {
                 else if(code===403)
                     alert("Access is denied");       
                 else alert('Internal server error');
+                setIsDisabled(false);
             });   
         } else if(assignee == null){
             setErrorMessage("Assignee cannot be empty");
@@ -195,12 +199,12 @@ export default function CreateProject(props) {
                     <div className="row">                                            
                             <div className="col-md-7"></div>
                             <div className="col-md-2">
-                                <input type="submit" className="profile-edit-btn" disabled={isDisabled}
-                                        onClick={()=>{submitCreateProject(); setIsDisabled(true);}} value="Save" />
+                                <input type="submit" className="profile-edit-btn" disabled={isDisabled} style={isDisabled ? {backgroundColor:"grey"} : {}}
+                                        onClick={()=>{submitCreateProject()}} value="Save" />
                             </div>
                             <div className="col-md-2">
                                 <button onClick={()=> props.navigate("orders")}
-                                    style={{background: '#FF6E4E'}} className="profile-edit-btn">Cancel</button>
+                                    style={isDisabled ? {backgroundColor:"grey"} : {background: '#FF6E4E'}} className="profile-edit-btn">Cancel</button>
                             </div>
                     </div>
                 </div>                                                            

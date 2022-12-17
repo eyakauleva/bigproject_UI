@@ -17,8 +17,7 @@ export default function CreateTask(props) {
   const[dueDate, setDueDate] = useState(new Date());
   const[estimatedTime, setEstimatedTime] = useState(0);
   const[assignee, setAssignee] = useState();
-  const[gitLink, setGitLink] = useState("");  
-  const[editMode, setEditMode] = useState(false); 
+  const[gitLink, setGitLink] = useState(""); 
   const severities = ["LOW", "NORMAL", "HIGH", "CRITICAL"];
   const[severity, setSeverity] = useState(severities[0]);
   const types = ['TASK', 'INFO', 'BUG'];
@@ -40,6 +39,8 @@ export default function CreateTask(props) {
 
   const submitCreate = () => {
     if(assignee != null){
+        setIsDisabled(true);
+
         let config = {
             headers: {
                 Authorization: 'Bearer ' + cookies.token
@@ -65,6 +66,7 @@ export default function CreateTask(props) {
                 ticket,
                 config)
             .then(() => {
+                setIsDisabled(false);
                 props.navigate("dashboard/" + cookies.projectId);
             })
             .catch((error) => {
@@ -80,6 +82,7 @@ export default function CreateTask(props) {
                 else if(code===403)
                     alert("Access is denied");  
                 else alert('Internal server error');
+                setIsDisabled(false);
             });        
         }      
         create();
@@ -200,7 +203,7 @@ export default function CreateTask(props) {
             <div className="col-md-6">
                 {
                     assignee != null
-                    ? <div className='pretty-select' onClick={editMode ? ()=>setShowModal(true) : {}} >
+                    ? <div className='pretty-select' onClick={()=>setShowModal(true)} >
                         <img className="photo" src={`data:image/jpeg;base64,${assignee.photo}`} />
                         &nbsp;&nbsp;{assignee.user.name+' '+ assignee.user.surname}
                     </div>
@@ -227,11 +230,12 @@ export default function CreateTask(props) {
             <div className="row">                                            
                 <div className="col-md-6"></div>
                 <div className="col-md-2">
-                    <input type="submit" disabled={isDisabled} onClick={()=>{submitCreate(); setIsDisabled(true);}} className="profile-edit-btn" value="Save" />
+                    <input type="submit" disabled={isDisabled} style={isDisabled ? {backgroundColor:"grey"} : {}}
+                        onClick={()=>{submitCreate()}} className="profile-edit-btn" value="Save" />
                 </div>
                 <div className="col-md-2">
                     <button onClick={()=>props.navigate("dashboard/" + cookies.projectId)} disabled={isDisabled}
-                        style={{background: '#FF6E4E'}} className="profile-edit-btn">Cancel</button>
+                        style={isDisabled ? {backgroundColor:"grey"} : {background: '#FF6E4E'}} className="profile-edit-btn">Cancel</button>
                 </div>
             </div>
         </div>

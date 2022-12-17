@@ -359,7 +359,7 @@ export default function ProjectPage(props) {
                   : ''
               )
               : project.assignee != null
-              ? <div className='pretty-select-non-edit' onClick={editMode ? ()=>setShowModalAssignee(true) : {}} >
+              ? <div className='pretty-select-non-edit'>
                   <img className="photo" src={`data:image/jpeg;base64,${project.assignee.photo}`} />
                   &nbsp;&nbsp;{project.assignee.user.name + ' ' + project.assignee.user.surname}
                 </div>
