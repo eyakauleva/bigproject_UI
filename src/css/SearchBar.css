@@ -29,10 +29,6 @@
     overflow-y: scroll;
 }
 
-.search .dataResult::-webkit-scrollbar {
-    display: none;
-}
-
 .search .dataResult .dataItem {
     width: 100%;
     height: 45px;

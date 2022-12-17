@@ -28,6 +28,7 @@ export default function CreateTask(props) {
   const[showModal, setShowModal] = useState(false);
   const[errorMessage, setErrorMessage] = useState("");
   const[error, setError] = useState("");
+  const[isDisabled, setIsDisabled] = useState(false);
 
   const displayError = () => {
     if(error!=="")
@@ -37,7 +38,7 @@ export default function CreateTask(props) {
     }
    }
 
-  const submitEdit = () => {
+  const submitCreate = () => {
     if(assignee != null){
         let config = {
             headers: {
@@ -226,10 +227,10 @@ export default function CreateTask(props) {
             <div className="row">                                            
                 <div className="col-md-6"></div>
                 <div className="col-md-2">
-                    <input type="submit" onClick={()=>{submitEdit()}} className="profile-edit-btn" value="Save" />
+                    <input type="submit" disabled={isDisabled} onClick={()=>{submitCreate(); setIsDisabled(true);}} className="profile-edit-btn" value="Save" />
                 </div>
                 <div className="col-md-2">
-                    <button onClick={()=>props.navigate("dashboard/" + cookies.projectId)}
+                    <button onClick={()=>props.navigate("dashboard/" + cookies.projectId)} disabled={isDisabled}
                         style={{background: '#FF6E4E'}} className="profile-edit-btn">Cancel</button>
                 </div>
             </div>

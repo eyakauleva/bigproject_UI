@@ -14,9 +14,16 @@ import CreateProject from './CreateProject';
 import CreateTask from './dashboard/CreateTask';
 import jwt_decode from "jwt-decode";
 
+const OnlyManagerAdminRoute = ({ redirectPath = '/', children }) => {
+    const [cookies] = useCookies(["token"]);
+    let decodedToken = jwt_decode(cookies.token);
+    if(decodedToken.role==="ROLE_MANAGER" || decodedToken.role==="ROLE_ADMIN") return children;
+    else return <Navigate to={redirectPath} replace />;
+};
+
 export default function Main(){
     const navigate = useNavigate();
-    const [cookies] = useCookies(["token", "employeeId", "projectId"]);
+    const[cookies] = useCookies(["token", "employeeId", "projectId"]);
     const[decodedToken, setDecodedToken] = useState({});
 
     useEffect(() => {        
@@ -32,13 +39,28 @@ export default function Main(){
                                                         : "dashboard/" + cookies.projectId} />} />
                 <Route path="profile/:id" element={<Profile navigate={navigate}  /> } />
                 <Route path="dashboard/:id" element={<Dashboard navigate={navigate}  /> } />
-                <Route exact path="ticket/:id" element={<SingleTask navigate={navigate}  /> } />
-                <Route exact path="ticket/new" element={<CreateTask navigate={navigate}  /> } />
-                <Route path="projects" element={<Projects navigate={navigate}  /> } />
-                <Route path="orders" element={<Orders navigate={navigate}  /> } />
+                <Route exact path="ticket/:id" element={<SingleTask navigate={navigate}  /> } />                
+                <Route path="projects" element={<Projects navigate={navigate}  /> } />                
                 <Route path="users" element={<Users navigate={navigate}  /> } />
-                <Route path="project/:id" element={<ProjectPage navigate={navigate}  /> } />
-                <Route path="orders/:id/create" element={<CreateProject navigate={navigate}  /> } />
+                <Route path="project/:id" element={<ProjectPage navigate={navigate} /> } />
+
+                <Route path="orders" element={
+                    <OnlyManagerAdminRoute>
+                        <Orders navigate={navigate} />
+                    </OnlyManagerAdminRoute>
+                }/>
+
+                <Route path="orders/:id/create" element={
+                    <OnlyManagerAdminRoute>
+                        <CreateProject navigate={navigate} />
+                    </OnlyManagerAdminRoute>
+                }/>
+
+                {
+                    decodedToken.role!=="ROLE_CUSTOMER"
+                    ? <Route path="ticket_new" element={<CreateTask navigate={navigate}  /> } />
+                    : ''
+                }
             </Routes> 
         </div>               
     );

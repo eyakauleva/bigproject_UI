@@ -24,16 +24,23 @@ const isUserLoggedIn = (token) => {
 };
 
 const ProtectedRoute = ({ redirectPath = '/login', children }) => {
-    const [cookies] = useCookies(["token", "url"]);
+    const [cookies] = useCookies(["token"]);
+    document.cookie = "url=" + window.location.pathname + "; path=/";
     if(isUserLoggedIn(cookies.token)) return children;
-    else{
-        document.cookie = "url=" + window.location.pathname + "; path=/"; 
+    else{         
         document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
         document.cookie = "projectId=;  expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
         document.cookie = "employeeId=;  expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
         
         return <Navigate to={redirectPath} replace />;
     }
+};
+
+const GoToLogin = ({ children }) => {
+    const [cookies] = useCookies(["token", "url"]);
+    if(isUserLoggedIn(cookies.token))
+        return <Navigate to={cookies.url} replace />;
+    else return children;
 };
 
 function App(){    
@@ -43,7 +50,14 @@ function App(){
     return(
         <Routes>
             <Route path="/*" element={<Navigate to={isUserLoggedIn(cookies.token) ? "/app/*" : "/login"} />} />
-            <Route path="/login" element={<Authorization navigate={navigate}  /> } />
+
+            <Route path="/login" 
+                element={
+                    <GoToLogin>
+                        <Authorization navigate={navigate}  />
+                    </GoToLogin>
+                }/>
+                
             <Route path="/app/*"
                 element={
                     <ProtectedRoute>

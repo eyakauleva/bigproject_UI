@@ -25,7 +25,6 @@ export default function ChooseEmployeeModal(props) {
   const displayError = () => {
     if(error!=="")
     {
-      alert(error);
       logout();
     }
   }
@@ -79,8 +78,8 @@ export default function ChooseEmployeeModal(props) {
     <Modal className='choose-employee-modal'
       {...props}
       centered
-      size="lg">
-      {displayError()}
+      size="lg"> 
+      {displayError()}       
       <Modal.Header closeButton>
         <Modal.Title className='title'>
           <div style={{width:'100%'}}>
@@ -91,7 +90,7 @@ export default function ChooseEmployeeModal(props) {
           </div>     
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>    
+      <Modal.Body>        
         <div>
         {
           filteredUsers.map((employee) => 

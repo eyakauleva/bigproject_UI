@@ -88,7 +88,7 @@ export default function Orders(props) {
             {displayError()}
             <div className="container">
                 <div className="well well-sm row" style={{fontFamily:"sans-serif"}}>
-                    <div className="col-md-1">Filter by:</div>
+                    {/* <div className="col-md-1">Filter by:</div> */}
                 </div> 
                 <div className='item  list-group-item'> 
                     <div className='order-wrapper' style={{fontWeight:"bold"}}>

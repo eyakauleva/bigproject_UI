@@ -23,7 +23,6 @@ export default function ProjectEmployeesModal(props) {
     const displayError = () => {
         if(error!=="")
         {
-          alert(error);
           logout();
         }
     }

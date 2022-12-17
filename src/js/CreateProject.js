@@ -12,7 +12,7 @@ import ChooseEmployeeModal from './dashboard/ChooseEmployeeModal'
 import '../css/CreateProject.css';
 
 export default function CreateProject(props) {
-    const [cookies, setCookie, removeCookie] = useCookies(["token", "employeeId"]);
+    const[cookies, setCookie, removeCookie] = useCookies(["token", "employeeId"]);
     const[name, setName] = useState(""); 
     const[description, setDescription] = useState(""); 
     const[dueDate, setDueDate] = useState(new Date());
@@ -24,6 +24,7 @@ export default function CreateProject(props) {
     const {id} = useParams(); 
     const[errorMessage, setErrorMessage] = useState("");
     const[error, setError] = useState("");
+    const[isDisabled, setIsDisabled] = useState(false);
 
     const displayError = () => {
         if(error!=="")
@@ -194,7 +195,8 @@ export default function CreateProject(props) {
                     <div className="row">                                            
                             <div className="col-md-7"></div>
                             <div className="col-md-2">
-                                <input type="submit" className="profile-edit-btn" onClick={()=>submitCreateProject()} value="Save" />
+                                <input type="submit" className="profile-edit-btn" disabled={isDisabled}
+                                        onClick={()=>{submitCreateProject(); setIsDisabled(true);}} value="Save" />
                             </div>
                             <div className="col-md-2">
                                 <button onClick={()=> props.navigate("orders")}
