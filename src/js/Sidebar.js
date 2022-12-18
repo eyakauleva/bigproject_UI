@@ -4,6 +4,7 @@ import { useCookies } from 'react-cookie';
 import jwt_decode from "jwt-decode";
 
 import ClientProfileModal, {clearErrorMessage, noEditMode} from './ClientProfileModal.js';
+import ChangePasswordModal from './ChangePasswordModal';
 import '.././css/Sidebar.css';
 
 var logout;
@@ -12,6 +13,7 @@ function Sidebar(props){
     const[cookies] = useCookies(["token", "employeeId", "projectId"]);
     const[clientId, setClientId] = useState();
     const[showModal, setShowModal] = useState(false);
+    const[showChangePasswordModal, setShowChangePasswordModal] = useState(true);
     const[decodedToken, setDecodedToken] = useState({});
 
     useLayoutEffect(() => {        
@@ -86,6 +88,11 @@ function Sidebar(props){
             </a>
             <ClientProfileModal show={showModal} onHide={()=>{setShowModal(false); clearErrorMessage(); noEditMode()}} 
                     id={clientId} setShowModal={()=>setShowModal(true)} />
+            {
+                decodedToken.status === 'DEACTIVATED' && decodedToken.role === 'ROLE_CUSTOMER'
+                ? <ChangePasswordModal show={showChangePasswordModal} onHide={()=>setShowChangePasswordModal(false)} backdrop="static" navigate={props.navigate}/>
+                : ''
+            }
         </div>               
     );
 }

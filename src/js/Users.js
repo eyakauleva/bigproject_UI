@@ -20,8 +20,8 @@ export default function Users(props) {
     const[decodedToken, setDecodedToken] = useState({});
     const[error, setError] = useState("");
 
-    useLayoutEffect(() => {        
-        getEmployees();
+    useLayoutEffect(() => { 
+        getEmployees();        
     }, []);
 
     const displayError = () => {
@@ -38,14 +38,18 @@ export default function Users(props) {
                 Authorization: 'Bearer ' + cookies.token
             }
         };
+        
+        let url = "/employee/all";
+        if(jwt_decode(cookies.token).role==="ROLE_ADMIN")
+            url += "?showBlocked=true";
 
         await axios
-        .get("/employee/all", config)
+        .get(url, config)
         .then(response => response.data)
         .then((data) =>{             
             if(data){
-                setEmployees(data);
-                setDecodedToken(jwt_decode(cookies.token));
+                setEmployees(data); 
+                setDecodedToken(jwt_decode(cookies.token));                
             }                                   
         })
         .catch((error) => {

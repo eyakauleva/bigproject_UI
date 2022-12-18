@@ -33,7 +33,7 @@ export default function ChangePasswordModal(props) {
     let decodedToken = jwt_decode(cookies.token);
 
     let body = {
-      login: decodedToken.login,
+      login: decodedToken.sub,
       currentPassword: currentPassword,
       newPassword: newPassword
     }  

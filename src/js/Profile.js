@@ -165,9 +165,13 @@ export default function Profile(props) {
             };
     
             axios
-            .put("/user/" + decodedToken.id + "/block",
+            .put("/user/" + user.id + "/block",
+                null,
                 config)
-            .then(()=>alert("User is blocked"))
+            .then(()=>{
+                alert("User is blocked");
+                getEmployee();
+            })
             .catch((error) => {
                 let code = error.toJSON().status;
                 if(code===400 && error.response.data !== null)
@@ -190,9 +194,13 @@ export default function Profile(props) {
             };
     
             axios
-            .put("/user/" + decodedToken.id + "/deactivate",
+            .put("/user/" + user.id + "/deactivate",
+                null,
                 config)
-            .then(()=>alert("User is deactivated"))
+            .then(()=>{
+                alert("User is deactivated");
+                getEmployee();
+            })
             .catch((error) => {
                 let code = error.toJSON().status;
                 if(code===400 && error.response.data !== null)
@@ -204,6 +212,35 @@ export default function Profile(props) {
                 else alert('Internal server error');
             });  
         }        
+    }
+
+    const activateUser = () => {
+        if(window.confirm("Are you sure you want to activate this user?")){
+            let config = {
+                headers: {
+                    Authorization: 'Bearer ' + cookies.token
+                }
+            };
+    
+            axios
+            .put("/user/" + user.id + "/activate",
+                null,
+                config)
+            .then(()=>{
+                alert("User is activated");
+                getEmployee();
+            })
+            .catch((error) => {
+                let code = error.toJSON().status;
+                if(code===400 && error.response.data !== null)
+                    setErrorMessage(error.response.data.message);
+                else if(code===401)
+                    setError('Authorization is required');
+                else if(code===403)
+                    alert("Access is denied");    
+                else alert('Internal server error');
+            });  
+        } 
     }
 
     return (
@@ -249,14 +286,17 @@ export default function Profile(props) {
                                     </div>
                                     <div className="col-md-3">
                                     {                                    
-                                        decodedToken.role === "ROLE_ADMIN" && decodedToken.status !== "BLOCKED"
+                                        decodedToken.role === "ROLE_ADMIN" && user.status !== "BLOCKED"
                                         ? <button onClick={blockUser} className="block-btn"><span>Block user</span></button>
-                                        : ""
+                                        : decodedToken.role === "ROLE_ADMIN" && user.status === "BLOCKED"
+                                        ? <button onClick={activateUser} style={{background:"#70E852"}}
+                                            className="block-btn"><span>Activate user</span></button>
+                                        : ''
                                     }
                                     </div>
                                     <div className="col-md-3">
                                     {                                       
-                                        decodedToken.role === "ROLE_ADMIN" && decodedToken.status !== "DEACTIVATED"
+                                        decodedToken.role === "ROLE_ADMIN" && user.status !== "DEACTIVATED"
                                         ? <button onClick={deactivateUser} className="block-btn" style={{background:"#FC9A40"}}>
                                             <span>Deactivate</span>
                                         </button>

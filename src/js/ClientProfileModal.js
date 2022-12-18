@@ -12,7 +12,7 @@ var noEditMode;
 export {clearErrorMessage}
 export {noEditMode}
 export default function ClientProfileModal(props) {
-    const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+    const[cookies, setCookie, removeCookie] = useCookies(["token"]);
     const[user, setUser] = useState({});
     const[name, setName] = useState("");
     const[surname, setSurname] = useState("");
@@ -82,12 +82,13 @@ export default function ClientProfileModal(props) {
             };
     
             axios
-            .put("/user/" + props.id + "/block",
+            .put("/user/" + user.id + "/block",
                 null,
                 config)
             .then(()=>{
                 props.onHide();
                 alert("User is blocked");
+                getClient();
                 props.getOrders();
             })
             .catch((error) => {
@@ -112,12 +113,13 @@ export default function ClientProfileModal(props) {
             };
     
             axios
-            .put("/user/" + props.id + "/deactivate",
+            .put("/user/" + user.id + "/deactivate",
                 null,
                 config)
             .then(()=>{
                 props.onHide();
                 alert("User is deactivated");
+                getClient();
                 props.getOrders();
             })
             .catch((error) => {
@@ -131,6 +133,37 @@ export default function ClientProfileModal(props) {
                 else alert('Internal server error');
             });  
         }        
+    }
+
+    const activateUser = () => {
+        if(window.confirm("Are you sure you want to activate this user?")){
+            let config = {
+                headers: {
+                    Authorization: 'Bearer ' + cookies.token
+                }
+            };
+    
+            axios
+            .put("/user/" + user.id + "/activate",
+                null,
+                config)
+            .then(()=>{
+                props.onHide();
+                alert("User is activated");
+                getClient();
+                props.getOrders();
+            })
+            .catch((error) => {
+                let code = error.toJSON().status;
+                if(code===400 && error.response.data !== null)
+                    setErrorMessage(error.response.data.message);
+                else if(code===401)
+                    setError('Authorization is required');
+                else if(code===403)
+                    alert("Access is denied");    
+                else alert('Internal server error');
+            });  
+        } 
     }
 
     const editProfileRequest = () => {
@@ -287,8 +320,11 @@ export default function ClientProfileModal(props) {
                 <div className="col-md-1"></div> 
                 <div className="col-md-4">
                 {
-                    decodedToken.role === "ROLE_ADMIN" && decodedToken.status !== "BLOCKED"
+                    decodedToken.role === "ROLE_ADMIN" && user.status !== "BLOCKED"
                     ? <button onClick={()=>blockUser()} className="block"><span>Block user</span></button>
+                    : decodedToken.role === "ROLE_ADMIN" && user.status === "BLOCKED"
+                    ? <button onClick={activateUser} style={{background:"#70E852"}}
+                        className="block"><span>Activate</span></button>
                     : editMode == true && decodedToken.id === user.id
                     ? <input onClick={()=>editProfileRequest()} type="submit" className="submit-edit" value="Save" />
                     : ''
@@ -296,7 +332,7 @@ export default function ClientProfileModal(props) {
                 </div>
                 <div className="col-md-4">
                 {
-                    decodedToken.role === "ROLE_ADMIN" && decodedToken.status !== "DEACTIVATED"
+                    decodedToken.role === "ROLE_ADMIN" && user.status !== "DEACTIVATED"
                     ? <button onClick={()=>deactivateUser()} className="block deactivate"><span>Deactivate</span></button>
                     : editMode == true && decodedToken.id === user.id
                     ? <button onClick={()=>{setEditmode(false); setErrorMessage("")}} 
