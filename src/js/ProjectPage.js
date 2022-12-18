@@ -23,7 +23,7 @@ export default function ProjectPage(props) {
     const[name, setName] = useState(""); 
     const[description, setDescription] = useState(""); 
     const[dueDate, setDueDate] = useState("");
-    const[estimatedTime, setEstimatedTime] = useState("");
+    const[estimatedTime, setEstimatedTime] = useState(0);
     const[status, setStatus] = useState("");
     const[severity, setSeverity] = useState("");
     const[assignee, setAssignee] = useState({});
@@ -122,7 +122,8 @@ export default function ProjectPage(props) {
       let employeesId = [];
       employees.forEach((employee)=>{
           employeesId.push({id: employee.id});
-      });      
+      });    
+      console.log(employeesId);  
 
       let project_ = {
           name: name,
@@ -133,7 +134,7 @@ export default function ProjectPage(props) {
           severity: severity,
           gitRef: gitLink,
           assignee: {id: assignee.id},
-          employees: employees
+          employees: employeesId
       };
 
       const update = async() => {
@@ -246,11 +247,7 @@ export default function ProjectPage(props) {
                 </div>
                 : ""
             }
-        </div><br/>         
-        <div className="row">
-          <div className="col-md-1"></div>
-          <div className='col-md-10 error'>{errorMessage}</div>
-        </div>
+        </div><br/>        
         <div className="row">
           <div className="col-md-1"></div>
           <div className="col-md-4">
@@ -397,6 +394,10 @@ export default function ProjectPage(props) {
                 : <a target="_blank" href={project.gitRef}>{project.gitRef}</a>}                    
             </div>
         </div><hr/>
+        <div className="row">
+          <div className="col-md-1"></div>
+          <div className='col-md-10 error'>{errorMessage}</div>
+        </div>
         {
             editMode
             ?<div>
@@ -407,7 +408,7 @@ export default function ProjectPage(props) {
                         <input type="submit" onClick={()=>{submitEdit()}} className="profile-edit-btn" value="Save" />
                     </div>
                     <div className="col-md-2">
-                        <button onClick={()=>{setEditMode(false);}} 
+                        <button onClick={()=>{setEditMode(false); setErrorMessage("");}} 
                             style={{background: '#FF6E4E'}} className="profile-edit-btn">Cancel</button>
                     </div>
                 </div>

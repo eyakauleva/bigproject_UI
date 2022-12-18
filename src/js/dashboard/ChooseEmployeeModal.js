@@ -9,7 +9,7 @@ import {logout} from '../Sidebar.js'
 import '../../css/ChooseEmployeeModal.css';
 
 export default function ChooseEmployeeModal(props) {
-  const[cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const[cookies] = useCookies(["token"]);
   const[employees, setEmployees] = useState([]);
   const[inputText, setInputText] = useState("");
   const[error, setError] = useState("");
