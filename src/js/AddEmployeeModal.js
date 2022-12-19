@@ -12,7 +12,7 @@ import '.././css/Users.css';
 
 export default function AddEmployeeModal(props) {
   const[cookies, setCookie, removeCookie] = useCookies(["token"]);
-  const[role, setRole] = useState("EMPLOYEE"); 
+  const[role, setRole] = useState("ROLE_EMPLOYEE"); 
   const[name, setName] = useState(""); 
   const[surname, setSurname] = useState(""); 
   const[position, setPosition] = useState("");
@@ -20,6 +20,7 @@ export default function AddEmployeeModal(props) {
   const[startDate, setStartDate] = useState(new Date());
   const[errorMessage, setErrorMessage] = useState("");
   const[error, setError] = useState("");
+  const[isDisabled, setIsDisabled] = useState(false);
 
   const displayError = () => {
     if(error!=="")
@@ -30,6 +31,8 @@ export default function AddEmployeeModal(props) {
   }
 
   const addEmployee = () => {
+    setIsDisabled(true);
+
     let config = {
         headers: {
             Authorization: 'Bearer ' + cookies.token
@@ -57,6 +60,7 @@ export default function AddEmployeeModal(props) {
         props.onHide();
         props.getEmployees();
         setErrorMessage("");
+        setIsDisabled(false);
     })
     .catch((error) => {
         let code = error.toJSON().status;
@@ -71,6 +75,7 @@ export default function AddEmployeeModal(props) {
         else if(code===403)
             alert("Access is denied");        
         else alert('Internal server error');
+        setIsDisabled(false);
     });            
   }
 
@@ -147,7 +152,8 @@ export default function AddEmployeeModal(props) {
       </Modal.Body>
       <Modal.Footer>
         <div>
-            <button className="add-btn" onClick={()=>addEmployee()} style={{marginLeft:"0"}}>Add employee account</button>
+            <button className="add-btn" disabled={isDisabled} style={isDisabled ? {backgroundColor:"grey", marginLeft:"0"} : {marginLeft:"0"}}
+                    onClick={()=>addEmployee()}>Add employee account</button>
         </div>
       </Modal.Footer>
     </Modal>
