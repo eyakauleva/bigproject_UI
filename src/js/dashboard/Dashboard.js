@@ -1,8 +1,9 @@
-import { useState, useLayoutEffect } from 'react';
+import { useState, useLayoutEffect, useEffect } from 'react';
 import { DragDropContext } from '@hello-pangea/dnd';
 import { useCookies } from "react-cookie";
 import axios from "axios";
 import { useParams } from 'react-router-dom';
+import Form from 'react-bootstrap/Form';
 
 import {logout} from '../Sidebar.js';
 import Column from './Column';
@@ -25,13 +26,51 @@ export default function Dashboard(props) {
   const[data, setData] = useState(initialData);
   const {id} = useParams(); 
   const[searchData, setSearchData] = useState([]);
-  const[cookies] = useCookies(["token"]);
+  const[filterSeverity, setFilterSeverity] = useState("CRITICAL");
+  const[isShowOnlyMine, setShowOnlyMine] = useState(false);
+  const[cookies] = useCookies(["token", "employeeId"]);
   const[error, setError] = useState("");
-  const[reorderDone, setReorderDone] = useState(true);
 
   useLayoutEffect(() => {
     getTickets();     
   }, []);
+
+  const filterBySeverity = (value) => {
+    setFilterSeverity(value);
+    
+    data.columnOrder.map((columnName) => {
+      data.columns[columnName].taskIds.sort((a)=>
+        data.tasks[a].severity != value ? 1 : -1,
+      );
+    }); 
+  }
+
+  const showOnlyMine = (isChecked) => {
+    setShowOnlyMine(isChecked);
+
+    if(isChecked) {
+      data.columnOrder.map((columnName) => {
+        data.columns[columnName].taskIds = 
+          data.columns[columnName].taskIds.filter((a)=>
+            data.tasks[a].assigneeId == parseInt(cookies.employeeId)
+          );
+      }); 
+    } else{
+      searchData.map(ticket => {
+        let doContain = false;
+        data.columnOrder.map((columnName) => {
+          data.columns[columnName].taskIds.map(task_id => {
+            if(task_id==ticket.id)
+              doContain = true;
+          });
+        });
+        if(!doContain){
+          let columnName = data.tasks[ticket.id].status;
+          data.columns[columnName].taskIds.push(ticket.id);
+        }
+      });
+    }
+  }
 
   const displayError = () => {
     if(error!=="")
@@ -53,8 +92,11 @@ export default function Dashboard(props) {
       .get("/project/" + id + "/tickets", config)
       .then(response => response.data)
       .then((_data) =>{
-          if(_data){             
-            _data.map(ticket => {
+          if(_data){
+            _data.sort((a) =>
+              a.severity != filterSeverity ? 1 : -1,
+            )
+            .map(ticket => {
               let ticket_id_toString = '' + ticket.id;
               let task = {
                 id: ticket_id_toString, 
@@ -62,17 +104,19 @@ export default function Dashboard(props) {
                 order: ticket.order, 
                 dueDate: ticket.dueDate,
                 severity: ticket.severity,
+                status: ticket.status,
                 assigneePhoto: ticket.assignee.photo,
                 assigneeName: ticket.assignee.user.name + " " + ticket.assignee.user.surname,
                 assigneeId: ticket.assignee.id};
               const {tasks} = data;
               tasks[ticket_id_toString] = task;
               data.columns[ticket.status].taskIds.push(task.id);              
-            })  
+            }) 
             setSearchData(_data);
           }                    
       })
       .catch((error) => {
+        console.log(error);
         let code = error.toJSON().status;
         if(code===400 && error.response.data !== null)
             alert(error.response.data.message);
@@ -128,6 +172,8 @@ export default function Dashboard(props) {
 
       let initData = data;
 
+      newState.tasks[draggableId].status = finish.title;
+
       axios
       .put("/project/reorder?id=" + draggableId + "&destination=" + destination.index + "&destinationColumn=" + finish.title,
             null, config)
@@ -178,8 +224,9 @@ export default function Dashboard(props) {
       }
     };
 
-
     let initData = data;
+
+    newState.tasks[draggableId].status = finish.title;
 
     axios
     .put("/project/reorder?id=" + draggableId + "&destination=" + destination.index + "&destinationColumn=" + finish.title, 
@@ -204,26 +251,36 @@ export default function Dashboard(props) {
   return (
     <div className="projects">
       {displayError()}
-        <div className="container">
-          <div className="well well-sm row" style={{fontFamily:"sans-serif"}}>
-            <SearchBar placeholder="Ticket name" data={searchData} />
-          </div>  
-        </div>
-        <div className="container">                        
-          <div className="dashboard">
-            <DragDropContext onDragEnd={onDragEnd}>
-              <div className='dash-container'>
-              {
-                data.columnOrder.map(columnId => {
-                  const column = data.columns[columnId];
-                  const tasks = column.taskIds.map(taskId => data.tasks[taskId]);    
-                  return <div className='wrapper'><Column key={column.id} column={column} tasks={tasks} navigate={props.navigate}/></div>;
-                }) 
-              }
-              </div>
-            </DragDropContext>                  
-          </div>  
-        </div>
+      <div className="container">
+        <div className="well well-sm row" style={{fontFamily:"sans-serif"}}>
+          <div className='col-1 filter-title'>Show first</div>
+          <Form.Select size="sm" onChange={e => filterBySeverity(e.target.value)} style={{"width":"10%"}}>
+            <option selected value='CRITICAL'>CRITICAL</option>                    
+            <option value='HIGH'>HIGH</option>
+            <option value='NORMAL'>NORMAL</option>
+            <option value='LOW'>LOW</option>
+          </Form.Select>
+          <Form.Check onChange={e => showOnlyMine(e.target.checked)} className='col-2 filter-only-mine' type="switch" label="Only mine" />
+          {/* TODO implementation */}
+          <div className='col-3'></div> 
+          <SearchBar placeholder="Ticket name" data={searchData}/>
+        </div>  
+      </div>
+      <div className="container">                        
+        <div className="dashboard">
+          <DragDropContext onDragEnd={onDragEnd}>
+            <div className='dash-container'>
+            {
+              data.columnOrder.map(columnId => {
+                const column = data.columns[columnId];
+                const tasks = column.taskIds.map(taskId => data.tasks[taskId]);    
+                return <div className='wrapper'><Column key={column.id} column={column} tasks={tasks} navigate={props.navigate}/></div>;
+              }) 
+            }
+            </div>
+          </DragDropContext>                  
+        </div>  
+      </div>
     </div>
   );
 }

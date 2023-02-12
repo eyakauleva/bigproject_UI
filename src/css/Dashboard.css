@@ -6,3 +6,15 @@
     display: flex;
     justify-content: space-between;
 }
+
+.projects .filter-title{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.projects .filter-only-mine{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

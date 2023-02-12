@@ -43,12 +43,12 @@
     box-shadow: 0 5px 15px rgba(0,0,0,0.20);
   }
   
-  .client-profile .mybtn span {
+.client-profile .mybtn span {
     position: relative; 
     z-index: 1;
-  }
-  
-  .client-profile .mybtn:after {
+}
+
+.client-profile .mybtn:after {
     content: "";
     position: absolute;
     left: 0;
@@ -60,14 +60,14 @@
     transition: all .5s ease-in-out;
     -webkit-transform: translateX(-99%) translateY(-20%) rotate(45deg);
     transform: translateX(-99%) translateY(-20%) rotate(45deg);
-  }
-  
-  .client-profile .mybtn:hover:after {
+}
+
+.client-profile .mybtn:hover:after {
     -webkit-transform: translateX(-9%) translateY(-25%) rotate(45deg);
     transform: translateX(-9%) translateY(-25%) rotate(45deg);
-  }
+}
 
-  .client-profile .submit-edit{
+.client-profile .submit-edit{
     border: none;
     border-radius: 0.3rem;
     width: 100%;
@@ -86,17 +86,17 @@
 }
 
 .client-profile .error{
-  font-size: 12px;
-  color: red;
+    font-size: 12px;
+    color: red;
 }
 
 .client-profile .footer{
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .client-profile .buttons{
-  display: flex;
-  justify-content: right;
-  column-gap: 10px;
+    display: flex;
+    justify-content: right;
+    column-gap: 10px;
 }

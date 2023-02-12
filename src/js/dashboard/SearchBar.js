@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import '../../css/SearchBar.css';
 
-function SearchBar({ placeholder, data }) {
+export default function SearchBar({ placeholder, data }) {
   const [filteredData, setFilteredData] = useState([]);
   const [wordEntered, setWordEntered] = useState("");
 
@@ -26,8 +26,8 @@ function SearchBar({ placeholder, data }) {
   };
 
   return (
-    <div className="col-md-12">
-        <div className="search">
+    <div className="col-4">
+      <div className="search" style={{"width":"100%"}}>
         <div className="searchInputs">
             <input className="searchInput"
             type="text"
@@ -48,19 +48,17 @@ function SearchBar({ placeholder, data }) {
             </div>
         </div>
         {filteredData.length != 0 && (
-            <div className="dataResult">
+          <div className="dataResult">
             {filteredData.map((value, key) => {
-                return (
+              return (
                 <a className="dataItem" href={"/app/ticket/"+value.id}>
                     <p className="name">{value.name}</p>
                 </a>
-                );
+              );
             })}
-            </div>
+          </div>
         )}
-        </div>
+      </div>
     </div>
   );
 }
-
-export default SearchBar;

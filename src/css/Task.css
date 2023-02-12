@@ -5,6 +5,10 @@
     background-color: white;
 }
 
+.overdue-task{
+    background: #F6522E;
+}
+
 .task-container .name{
     font-weight: bold;
     color: #404040;

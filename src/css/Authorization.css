@@ -119,8 +119,6 @@ margin: 5% 10%;
 }
 .login .custom-input{
     border-radius: 5px;
-    /* margin: 0 10%;
-    width: auto !important; */
 }
 .login .custom-input:focus-visible{
     border-radius: 5px;
