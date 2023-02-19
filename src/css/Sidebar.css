@@ -6,13 +6,12 @@
     top: 0;
     bottom: 0;
     left: 0;
-    background-color: #F2F8FD;
-    border-right: 1px solid white;
+    background-color: #DCE5E7;
     overflow-x: hidden;
     padding-top: 20px;
 }
 
-.sidenav a {
+.sidenav .action {
     padding: 15px 8px 15px 16px;
     text-decoration: none;
     font-size: 17px;
@@ -20,12 +19,10 @@
     display: block;
 }
 
-.sidenav a:hover {
+.sidenav .action:hover {
     cursor: pointer;
-    background-color: white;
-    border-bottom: 1px solid #b1adad;
-    border-top: 1px solid #b1adad;
-    color: black;
+    background-color: #F1F6FB;
+    color: #8C8C8C;
 }
 
 @media screen and (max-height: 450px) {
@@ -38,7 +35,5 @@
 }
 
 .sidenav #new-ticket{
-    background-color: #D7FFFE;
-    border: 2px solid white;
-    font-style: italic;
+    font-weight: bold;
 }

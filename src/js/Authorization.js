@@ -51,7 +51,9 @@ function Authorization(props){
           .then(response => response.data)
           .then((data) =>{
               if(data){
-                document.cookie = "projectId=" + data.project.id + "; path=/"; 
+                let projectsIds = [];
+                data.project.map(project => projectsIds.push(project.id));
+                document.cookie = "projectId=" + JSON.stringify(projectsIds) + "; path=/"; 
                 if(cookies.url != null && cookies.url != undefined && cookies.url !== "undefined")
                   props.navigate(cookies.url);
                 else props.navigate('/app'); 
@@ -72,8 +74,11 @@ function Authorization(props){
           .then((data) =>{
               if(data){
                 document.cookie = "employeeId=" + data.id + "; path=/";  
-                if(data.currentProject!=null)           
-                  document.cookie = "projectId=" + data.currentProject.id + "; path=/"; 
+                if(data.currentProjects!=null){
+                  let projectsIds = [];
+                  data.currentProjects.map(project => projectsIds.push(project.id));
+                  document.cookie = "projectId=" + JSON.stringify(projectsIds) + "; path=/"; 
+                } 
                 if(cookies.url != null && cookies.url != undefined && cookies.url !== "undefined")
                   props.navigate(cookies.url);
                 else props.navigate('/app'); 

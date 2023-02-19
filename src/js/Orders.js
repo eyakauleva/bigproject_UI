@@ -103,7 +103,7 @@ export default function Orders(props) {
                         <div className="col-md-2"><i className="bi bi-download"></i>&nbsp;Description</div>
                         <div className="col-md-2">Action</div>
                         {
-                            decodedToken.role === "ROLE_ADMIN"
+                            decodedToken.role === "ROLE_ADMIN" || decodedToken.role === "ROLE_MANAGER"
                             ? <div className="col-md-1">Delete</div>
                             : ''
                         }                        
@@ -141,7 +141,7 @@ export default function Orders(props) {
                                     : ''}                                        
                                 </div>
                                 {
-                                    decodedToken.role === "ROLE_ADMIN" && order.status !== "BLOCKED"
+                                    (decodedToken.role === "ROLE_ADMIN" || decodedToken.role === "ROLE_MANAGER") && order.status !== "BLOCKED"
                                     ? <div className='col-md-1 remove' title='Delete order' onClick={()=>deleteOrder(order.id)} style={{cursor:"pointer"}}>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#CE3D1D" class="bi bi-x-circle" viewBox="0 0 16 16">
                                             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>

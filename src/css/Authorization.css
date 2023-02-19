@@ -5,7 +5,8 @@
     bottom: 0;
     left: 0;
     overflow:auto;
-    background-image: url("../images/login_background.png");
+    /* background-image: url("../images/login_background.png"); */
+    background-color: #F1F6FB;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -21,7 +22,7 @@
 }
 
 .login .left{
-    background-color: #DCDCDC;
+    background-color: #D4DADE;
     border-radius: 5% 0 0 5%;
     height: 100%;
     width: 65%;
@@ -33,7 +34,7 @@
 }
 
 .login .left .title{
-    color: #580BE4;
+    color: #1a95db;
     font-size: 25px;
     font-weight: bold;
 }
@@ -75,7 +76,7 @@
 .login .right input[type="password"]:focus {
   border-radius: 5px;
   outline: none;
-  border: 2px solid #4a238094;
+  border: 2px solid #1a95db;
 }
 .login .right input[type="text"],
 .login .right input[type="password"] {

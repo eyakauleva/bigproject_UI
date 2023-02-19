@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import axios from "axios";
 import { useCookies } from 'react-cookie';
@@ -14,11 +14,8 @@ export default function ChooseEmployeeModal(props) {
   const[inputText, setInputText] = useState("");
   const[error, setError] = useState("");
 
-  useEffect(() => {
-    if(props.projectId==null || props.projectId==undefined)
-      getEmployees();          
-    else
-      getProjectEmployees();  
+  useLayoutEffect(() => {
+    getEmployees(); 
   }, [props.projectId]);
 
   useEffect(() => {
@@ -40,39 +37,12 @@ export default function ChooseEmployeeModal(props) {
     };
 
     axios
-    .get("/employee/all", config)
-    .then(response => response.data)
-    .then((data) =>{             
-        if(data){
-            setEmployees(data);            
-        }                                   
-    })
-    .catch((error) => {
-      let code = error.toJSON().status;
-      if(code===400 && error.response.data !== null)
-          alert(error.response.data.message);
-      else if(code===401)
-        setError('Authorization is required');
-      else if(code===403)
-          alert("Access is denied");
-      else alert('Internal server error');
-    });  
-  }
-
-  const getProjectEmployees = () => {
-    let config = {
-      headers: {
-        Authorization: 'Bearer ' + cookies.token
-      }
-    };
-
-    axios
     .get("/project/tickets/" + props.projectId, config)
     .then(response => response.data)
     .then((data) =>{             
-        if(data){
-            setEmployees(data.employees);            
-        }                                   
+      if(data.employees){
+        setEmployees(data.employees); 
+      }                    
     })
     .catch((error) => {
       let code = error.toJSON().status;
@@ -93,15 +63,10 @@ export default function ChooseEmployeeModal(props) {
 
   const filteredUsers =  Object.values(employees).filter((employee) =>{
     let fullName = (employee.user.name + ' ' + employee.user.surname).toLowerCase();
-    if(inputText === ''){
-      if(props.assignee != null && props.reporter != null){
-        let assigneeFullName = (props.assignee.user.name + ' ' + props.assignee.user.surname).toLowerCase();
-        let reporterFullName = (props.reporter.user.name + ' ' + props.reporter.user.surname).toLowerCase();
-        return fullName === assigneeFullName || fullName === reporterFullName;
-      } else return;
-    } else {      
+    if(inputText != ''){     
       return fullName.startsWith(inputText);
     }
+    else return true;
   });
 
   return (

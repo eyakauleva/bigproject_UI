@@ -30,13 +30,18 @@ export default function Main(){
         setDecodedToken(jwt_decode(cookies.token));
     }, []);
 
+    const getFirstProjectId = () => {
+        let projectsIds = JSON.parse(cookies.projectId);
+        return projectsIds[0];
+    }
+
     return(
         <div className="main">
             <Sidebar navigate={navigate} />
             <Routes>                  
                 <Route path="/*" element={<Navigate to={decodedToken.role!=="ROLE_CUSTOMER" 
                                                         ? "profile/" +  cookies.employeeId
-                                                        : "dashboard/" + cookies.projectId} />} />
+                                                        : "dashboard/" + getFirstProjectId()} />} />
                 <Route path="profile/:id" element={<Profile navigate={navigate}  /> } />
                 {
                     cookies.projectId!==undefined

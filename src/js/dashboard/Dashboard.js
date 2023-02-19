@@ -251,8 +251,20 @@ export default function Dashboard(props) {
   return (
     <div className="projects">
       {displayError()}
-      <div className="container">
-        <div className="well well-sm row" style={{fontFamily:"sans-serif"}}>
+      <div className="container" style={{fontFamily:"sans-serif"}}>
+        <div className="row switch-project">
+          <div className='col-1'>Project</div>
+          {/* TODO display all employee's projects*/}
+          <Form.Select size="sm" onChange={e => filterBySeverity(e.target.value)} style={{"width":"10%"}}>
+            <option selected value='CRITICAL'>CRITICAL</option>                    
+            <option value='HIGH'>HIGH</option>
+            <option value='NORMAL'>NORMAL</option>
+            <option value='LOW'>LOW</option>
+          </Form.Select>
+          {/* TODO display employees*/}
+          <div className='col-3'></div>
+        </div>
+        <div className="well well-sm row">
           <div className='col-1 filter-title'>Show first</div>
           <Form.Select size="sm" onChange={e => filterBySeverity(e.target.value)} style={{"width":"10%"}}>
             <option selected value='CRITICAL'>CRITICAL</option>                    
@@ -260,8 +272,7 @@ export default function Dashboard(props) {
             <option value='NORMAL'>NORMAL</option>
             <option value='LOW'>LOW</option>
           </Form.Select>
-          <Form.Check onChange={e => showOnlyMine(e.target.checked)} className='col-2 filter-only-mine' type="switch" label="Only mine" />
-          {/* TODO implementation */}
+          <Form.Check onChange={e => showOnlyMine(e.target.checked)} className='col-2 filter-only-mine' type="switch" label="&nbsp;Only mine" />
           <div className='col-3'></div> 
           <SearchBar placeholder="Ticket name" data={searchData}/>
         </div>  

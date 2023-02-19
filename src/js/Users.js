@@ -65,7 +65,7 @@ export default function Users(props) {
     };
 
     let inputHandler = (e) => {
-        var lowerCase = e.target.value.toLowerCase();
+        var lowerCase = e.target.value.toLowerCase().replaceAll(' ', '');
         setInputText(lowerCase);
     };
 
@@ -74,7 +74,10 @@ export default function Users(props) {
             return employee;
         } else {
             if(employee.user) 
-                return employee.user.name.toLowerCase().includes(inputText);
+                return employee.user.name.toLowerCase().startsWith(inputText)
+                    || employee.user.surname.toLowerCase().startsWith(inputText)
+                    || (employee.user.name + employee.user.surname).toLowerCase().startsWith(inputText)
+                    || (employee.user.surname + employee.user.name).toLowerCase().startsWith(inputText); 
         }
     });
 
@@ -130,8 +133,8 @@ export default function Users(props) {
                 <div id="products" className={isList ? '' : 'row'}>
                     {
                         filteredEmployees.map((employee) => 
-                        <div className={isList ? 'item  list-group-item users-list' : 'item col-md-3 col-lg-3 '}> 
-                            <div className={isList ? "" : "thumbnail"}>
+                        <div style={isList ? {background: "#DCE5E7"} : {}} className={isList ? 'item  list-group-item users-list' : 'item col-md-3 col-lg-3 '}> 
+                            <div style={employee.user.status == 'BLOCKED' ? {opacity: 0.33} : {}} className={isList ? "" : "thumbnail"}>
                                 <div className={isList ? 'user-wrapper' : 'user-wrapper user-wrapper-list-grid'}>
                                     <div className={isList ? "col-md-1" : ""}>
                                         <img className="photo" src={`data:image/jpeg;base64,${employee.photo}`} 
@@ -145,7 +148,7 @@ export default function Users(props) {
                                     {isList 
                                     ? <div>
                                         <a className='btn-custom-2' href={"/app/profile/"+employee.id}><span>More</span></a>
-                                      </div>
+                                    </div>
                                     : ""}                                 
                                 </div>                                    
                                 <div className={isList ? 'row container-custom-list' : 'row container-custom'}>

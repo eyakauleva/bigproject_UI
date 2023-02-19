@@ -17,7 +17,7 @@ export default function Profile(props) {
     const[cookies, setCookie] = useCookies(["token", "employeeId"]);
     const[employee, setEmployee] = useState({});
     const[user, setUser] = useState({});
-    const[currProject, setCurrProject] = useState({});
+    const[currProjects, setCurrProjects] = useState([]);
     const[name, setName] = useState("");
     const[surname, setSurname] = useState("");
     const[email, setEmail] = useState("");
@@ -60,7 +60,7 @@ export default function Profile(props) {
                 if(data){
                     setEmployee(data);
                     setUser(data.user);
-                    setCurrProject(data.currentProject);      
+                    setCurrProjects(data.currentProjects); 
                     setPosition(data.position);      
                     setDecodedToken(jwt_decode(cookies.token));
                 }                    
@@ -263,10 +263,14 @@ export default function Profile(props) {
                             </div>
                             <div className="profile-work">
                                 <br/>
-                                <p>Current project</p>
+                                <p>Current projects</p>
                                 <hr/>
-                                {currProject
-                                ? <div><a href={"/app/project/"+currProject.id}>{currProject.name}</a><br/></div>
+                                {currProjects != null
+                                ? <div>
+                                    {currProjects
+                                    .sort((a, b) => a.name > b.name ? 1 : -1)
+                                    .map(project => <div><a href={"/app/project/"+project.id}>{project.name}</a><br/></div>)}
+                                </div>
                                 : <div>No current project</div>}                            
                             </div>
                         </div>
@@ -280,7 +284,10 @@ export default function Profile(props) {
                                         <p className="profile-rating">{employee.position}</p>
                                         {
                                             decodedToken.role === "ROLE_ADMIN"
-                                            ? <p>{user.status}</p>
+                                            ? <div className="profile-rating">
+                                                <span>Role: {decodedToken.role.split("_").pop().toLowerCase()}</span><br/>
+                                                <span>Status: {user.status.toLowerCase()}</span>
+                                              </div>
                                             : ""
                                         }                                        
                                     </div>
@@ -437,7 +444,7 @@ export default function Profile(props) {
                                                 </div>
                                                 <div className="row">
                                                     <div className="col-md-6">
-                                                        <label>Total Projects</label>
+                                                        <label>Total projects count</label>
                                                     </div>
                                                     <div className="col-md-6">
                                                         <p>{employee.projectsCount}</p>

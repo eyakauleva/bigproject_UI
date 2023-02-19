@@ -228,6 +228,15 @@ export default function ProjectPage(props) {
       setShowModalAssignee(false);
     }
 
+    const isUsersCurrentProject = (_id) => {
+      let projectsIds = cookies.projectId;
+      projectsIds.map(id => {
+        if(id==_id)
+          return true;
+      });
+      return false;
+    }
+
     return (
     <div className="single-project">
       {displayError()}
@@ -420,9 +429,9 @@ export default function ProjectPage(props) {
           <div className="col-md-1"></div>
           <div className="col-md-4">
             <h4 className=
-              {decodedToken.role==="ROLE_ADMIN" || (cookies.projectId != undefined && cookies.projectId==id) ? "to-dashboard" : ""}
+              {decodedToken.role==="ROLE_ADMIN" || (cookies.projectId != undefined && isUsersCurrentProject(id)) ? "to-dashboard" : ""}
                 onClick={decodedToken.role==="ROLE_ADMIN" 
-                      || (cookies.projectId != undefined && cookies.projectId==id) ? () => props.navigate("dashboard/" + id) :{}}>
+                      || (cookies.projectId != undefined && isUsersCurrentProject(id)) ? () => props.navigate("dashboard/" + id) :{}}>
                 Related tickets
             </h4>
             {

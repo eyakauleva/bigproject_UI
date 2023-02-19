@@ -28,8 +28,14 @@ function Sidebar(props){
         else props.navigate('profile/' + cookies.employeeId); 
     }
 
+    const getFirstProjectId = () => {
+        let projectsIds = cookies.projectId;
+        projectsIds = projectsIds.sort((a, b) => a > b ? 1 : -1);
+        return projectsIds[0];
+    }
+
     const goToDashboard = () => {
-        props.navigate('dashboard/' + cookies.projectId);
+        props.navigate('dashboard/' + getFirstProjectId());
     }
 
     logout = () => {        
@@ -46,43 +52,43 @@ function Sidebar(props){
             {
                 decodedToken.role!=="ROLE_CUSTOMER" && cookies.projectId!==undefined
                 ? <div>
-                    <a href='/app/ticket_new' id='new-ticket'>
+                    <a href='/app/ticket_new' id='new-ticket' className='action'>
                         <i className="bi bi-plus-square"></i>
                         <span>NEW TICKET</span>
                     </a><hr/>
                  </div>
                 : ''
             }
-            <a onClick={goToProfile}>
+            <a onClick={goToProfile} className='action'>
                 <i className="bi bi-person-circle"></i>
                 <span>Profile</span>
             </a>
-            <a href='/app/users'>
+            <a href='/app/users' className='action'>
                 <i className="bi bi-people"></i>
                 <span>Employees</span>
             </a>
             {
                 cookies.projectId!==undefined
-                ? <a onClick={goToDashboard}>
+                ? <a onClick={goToDashboard} className='action'>
                     <i className="bi bi-check2-square"></i>
                     <span>Tickets</span>
                 </a>
                 : ''
             }            
-            <a href='/app/projects'>
+            <a href='/app/projects' className='action'>
                 <i className="bi bi-list"></i>    
                 <span>Projects</span>
             </a>
             {
                 decodedToken.role==="ROLE_MANAGER" || decodedToken.role==="ROLE_ADMIN"
-                ? <a href='/app/orders'>
+                ? <a href='/app/orders' className='action'>
                     <i className="bi bi-bookmarks"></i>    
                     <span>Orders</span>
                  </a>  
                 : ''
             }            
             <hr/>
-            <a onClick={logout}>
+            <a onClick={logout} className='action'>
                 <i className="bi bi-box-arrow-left"></i>
                 <span>Logout</span>  
             </a>

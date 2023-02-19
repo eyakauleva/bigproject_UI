@@ -13,8 +13,8 @@ import ChooseEmployeeModal from './ChooseEmployeeModal'
 import '../../css/SingleTask.css';
 
 export default function SingleTask(props) {
-  const [cookies] = useCookies(["token", "employeeId"]);
-  const [ticket, setTicket] = useState({}); 
+  const[cookies] = useCookies(["token", "employeeId"]);
+  const[ticket, setTicket] = useState({}); 
   const[name, setName] = useState(""); 
   const[description, setDescription] = useState(""); 
   const[dueDate, setDueDate] = useState(new Date());

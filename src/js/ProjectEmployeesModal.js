@@ -155,7 +155,7 @@ export default function ProjectEmployeesModal(props) {
                         }                        
                     </div><hr/>               
                 </div> )
-                }
+            }
             </div>    
         </Modal.Body>
         </Modal>
