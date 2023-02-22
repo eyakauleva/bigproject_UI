@@ -5,8 +5,7 @@
     bottom: 0;
     left: 0;
     overflow:auto;
-    /* background-image: url("../images/login_background.png"); */
-    background-color: #F1F6FB;
+    background-color: #66b3ff;
     display: flex;
     align-items: center;
     justify-content: center;

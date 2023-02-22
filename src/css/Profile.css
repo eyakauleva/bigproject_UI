@@ -121,48 +121,6 @@
 }
 
 .mybtn {
-  border: none;
-  border-radius: 0.3rem;
-  display: block;
-  text-align: center;
-  cursor: pointer;
-  text-transform: uppercase;
-  outline: none;
-  overflow: hidden;
-  position: relative;
-  color: #fff;
-  font-weight: 700;
-  font-size: 14px;
-  background-color: #64C7FF;
-  padding: 12px 35px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.20);
-}
-
-.mybtn span {
-  position: relative; 
-  z-index: 1;
-}
-
-.mybtn:after {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 490%;
-  width: 140%;
-  background: #AFCFEA;
-  -webkit-transition: all .5s ease-in-out;
-  transition: all .5s ease-in-out;
-  -webkit-transform: translateX(-99%) translateY(-20%) rotate(45deg);
-  transform: translateX(-99%) translateY(-20%) rotate(45deg);
-}
-
-.mybtn:hover:after {
-  -webkit-transform: translateX(-9%) translateY(-25%) rotate(45deg);
-  transform: translateX(-9%) translateY(-25%) rotate(45deg);
-}
-
-.block-btn{
     border: none;
     border-radius: 0.3rem;
     display: block;
@@ -174,10 +132,145 @@
     position: relative;
     color: #fff;
     font-weight: 700;
-    font-size: 14px;
-    padding: 12px 35px;
+    font-size: 12px;
+    background-color: #64C7FF;
+    padding: 1.5px 5px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.20);
+  }
+  
+  .mybtn span {
+    position: relative; 
+    z-index: 1;
+  }
+  
+  .mybtn:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 480%;
+    width: 150%;
+    background: #AFCFEA;
+    -webkit-transition: all 1s ease-in-out;
+    transition: all 1s ease-in-out;
+    -webkit-transform: translateX(-199%) translateY(-20%) rotate(45deg);
+    transform: translateX(-199%) translateY(-20%) rotate(45deg);
+  }
+  .mybtn:hover{
+      padding-left: 25px;
+      padding-right: 25px;
+      transition: all 1.5s ease;
+  }
+  
+  .mybtn:hover:after {
+    -webkit-transform: translateX(-9%) translateY(-25%) rotate(45deg);
+    transform: translateX(-9%) translateY(-25%) rotate(45deg);
+  }
+  .hidden_span{
+      visibility: hidden;
+      display: none;
+  }
+  .mybtn:hover .hidden_span{
+      visibility: visible;
+      padding-top: 7px;
+      padding-bottom: 7px;
+      display: inline-block;
+      text-align: center;
+      overflow: hidden;
+      width: 100%;
+      white-space: nowrap;
+      animation: type .8s steps(60, start); 
+  }
+  .mybtn:hover .hidden_hover{
+      visibility: hidden;
+      display: none;
+  }
+  @keyframes type{ 
+    from { width: 0; } 
+  }
+
+  .block-btn{
+    border: none;
+    border-radius: 0.3rem;
+    display: block;
+    text-align: center;
+    cursor: pointer;
+    text-transform: uppercase;
+    outline: none;
+    overflow: hidden;
+    position: relative;
+    color: #fff;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 1px 5px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.20);
     background: #F6522E;
 }
-
+.block-btn:hover .hidden_span{
+  visibility: visible;
+  padding-top: 5.5px;
+  padding-bottom: 5.5px;
+  display: inline-block;
+  text-align: center;
+  overflow: hidden;
+  width: 100%;
+  white-space: nowrap;
+  animation: type .8s steps(60, start); 
+}
+.block-btn:hover{
+  padding-left: 25px;
+  padding-right: 25px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  transition: padding-left 1.5s ease;
+  transition: padding-right 1.5s ease;
+}
+.block-btn:hover .hidden_hover{
+  visibility: hidden;
+  display: none;
+}
+.deactivate-btn{
+    border: none;
+    border-radius: 0.3rem;
+    display: block;
+    text-align: center;
+    cursor: pointer;
+    text-transform: uppercase;
+    outline: none;
+    overflow: hidden;
+    position: relative;
+    color: #fff;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 1px 5px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.20);
+    background:#FC9A40;
+}
+.deactivate-btn:hover .hidden_span{
+  visibility: visible;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  display: inline-block;
+  text-align: center;
+  overflow: hidden;
+  width: 100%;
+  white-space: nowrap;
+  animation: type .8s steps(60, start); 
+}
+.deactivate-btn:hover{
+  padding-left: 25px;
+  padding-right: 25px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  transition: padding-left 1.5s ease;
+  transition: padding-right 1.5s ease;
+}
+.deactivate-btn:hover .hidden_hover{
+  visibility: hidden;
+  display: none;
+}
+.button-group-modification{
+    float: right;
+    margin: 0 5px;
+}
 

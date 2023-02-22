@@ -291,32 +291,48 @@ export default function Profile(props) {
                                             : ""
                                         }                                        
                                     </div>
-                                    <div className="col-md-3">
-                                    {                                    
-                                        decodedToken.role === "ROLE_ADMIN" && user.status !== "BLOCKED"
-                                        ? <button onClick={blockUser} className="block-btn"><span>Block user</span></button>
-                                        : decodedToken.role === "ROLE_ADMIN" && user.status === "BLOCKED"
-                                        ? <button onClick={activateUser} style={{background:"#70E852"}}
-                                            className="block-btn"><span>Activate user</span></button>
-                                        : ''
-                                    }
-                                    </div>
-                                    <div className="col-md-3">
-                                    {                                       
-                                        decodedToken.role === "ROLE_ADMIN" && user.status !== "DEACTIVATED"
-                                        ? <button onClick={deactivateUser} className="block-btn" style={{background:"#FC9A40"}}>
-                                            <span>Deactivate</span>
-                                        </button>
-                                        : ""
-                                    }
-                                    </div> 
-                                    {
-                                        !editMode && decodedToken.id === user.id
-                                        ? <div className="col-md-3">
-                                            <button onClick={editProfileOnUI} className="mybtn"><span>Edit Profile</span></button>
+                                    <div className="container col-md-9" >
+                                        <div className="button-group-modification">
+                                            {                                    
+                                                decodedToken.role === "ROLE_ADMIN" && user.status !== "BLOCKED"
+                                                ? 
+                                                <button onClick={blockUser} className="block-btn">
+                                                    <span class="hidden_hover" style={{fontSize:"25px"}}><i className="bi bi-person-x-fill"></i></span>
+                                                    <span class="hidden_span">Block User</span>
+                                                </button>
+                                                : decodedToken.role === "ROLE_ADMIN" && user.status === "BLOCKED"
+                                                ? 
+                                                <button onClick={activateUser} style={{background:"#70E852"}} className="block-btn">
+                                                    <span class="hidden_hover" style={{fontSize:"25px"}}><i className="bi bi-person-check-fill"></i></span>
+                                                    <span class="hidden_span">Activate user</span>
+                                                </button>
+                                                : ''
+                                            }
                                         </div>
-                                        : ""
-                                    }                            
+                                        <div className="button-group-modification">
+                                            {                                       
+                                                decodedToken.role === "ROLE_ADMIN" && user.status !== "DEACTIVATED"
+                                                ?<button onClick={deactivateUser} className="deactivate-btn">
+                                                        <span class="hidden_hover" style={{fontSize:"25px"}}><i className="bi bi-person-dash"></i></span>
+                                                        <span class="hidden_span">Deactivate</span>
+                                                    </button>
+                                                    
+                                                : ""
+                                            }
+                                        </div>
+                                        <div className="button-group-modification">
+                                            {
+                                                !editMode && decodedToken.id === user.id
+                                                ?
+                                                <button onClick={editProfileOnUI} className="mybtn">
+                                                    <span className="hidden_hover" style={{fontSize:"25px"}}><i className="bi bi-pencil-square" ></i></span>
+                                                    <span className="hidden_span">Edit Profile</span>
+                                                </button>
+                                                : ""
+                                            }   
+                                        </div>
+                                    </div>
+                                                           
                                 </div>                                
                                 <br/>
                                 <div className="col-md-8">
