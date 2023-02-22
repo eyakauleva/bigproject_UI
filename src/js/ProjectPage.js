@@ -17,7 +17,7 @@ import ChooseEmployeeModal from './dashboard/ChooseEmployeeModal.js'
 import '../css/ProjectPage.css';
 
 export default function ProjectPage(props) {
-    const[cookies] = useCookies(["token", "employeeId", "projectId"]);
+    const[cookies] = useCookies(["token", "employeeId", "project"]);
     const[project, setProject] = useState({}); 
     const[employees, setEmployees] = useState([]);
     const[name, setName] = useState(""); 
@@ -229,12 +229,31 @@ export default function ProjectPage(props) {
     }
 
     const isUsersCurrentProject = (_id) => {
-      let projectsIds = cookies.projectId;
-      projectsIds.map(id => {
-        if(id==_id)
-          return true;
+      let config = {
+        headers: {
+            Authorization: 'Bearer ' + cookies.token
+        }
+      };
+
+      axios
+      .get("/employee/user/" + decodedToken.id, config)
+      .then(response => response.data)
+      .then((data) =>{
+          if(data.currentProjects!=null){
+              data.currentProjects.map(project => {
+                if(project.id==_id)
+                  return true;
+              });
+              return false;
+          }                  
+      })
+      .catch((error) => {               
+          let code = error.toJSON().status;
+          if(code===401){
+              alert('Authorization is required');
+          }
+          else alert('Internal server error');
       });
-      return false;
     }
 
     return (
@@ -429,9 +448,9 @@ export default function ProjectPage(props) {
           <div className="col-md-1"></div>
           <div className="col-md-4">
             <h4 className=
-              {decodedToken.role==="ROLE_ADMIN" || (cookies.projectId != undefined && isUsersCurrentProject(id)) ? "to-dashboard" : ""}
+              {decodedToken.role==="ROLE_ADMIN" || (cookies.project != undefined && isUsersCurrentProject(id)) ? "to-dashboard" : ""}
                 onClick={decodedToken.role==="ROLE_ADMIN" 
-                      || (cookies.projectId != undefined && isUsersCurrentProject(id)) ? () => props.navigate("dashboard/" + id) :{}}>
+                      || (cookies.project != undefined && isUsersCurrentProject(id)) ? () => props.navigate("dashboard/" + id) :{}}>
                 Related tickets
             </h4>
             {

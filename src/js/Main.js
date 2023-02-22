@@ -23,17 +23,12 @@ const OnlyManagerAdminRoute = ({ redirectPath = '/', children }) => {
 
 export default function Main(){
     const navigate = useNavigate();
-    const[cookies] = useCookies(["token", "employeeId", "projectId"]);
+    const[cookies] = useCookies(["token", "employeeId", "project"]);
     const[decodedToken, setDecodedToken] = useState({});
 
     useLayoutEffect(() => {        
         setDecodedToken(jwt_decode(cookies.token));
     }, []);
-
-    const getFirstProjectId = () => {
-        let projectsIds = JSON.parse(cookies.projectId);
-        return projectsIds[0];
-    }
 
     return(
         <div className="main">
@@ -41,14 +36,13 @@ export default function Main(){
             <Routes>                  
                 <Route path="/*" element={<Navigate to={decodedToken.role!=="ROLE_CUSTOMER" 
                                                         ? "profile/" +  cookies.employeeId
-                                                        : "dashboard/" + getFirstProjectId()} />} />
+                                                        : "dashboard/" + cookies.project} />} />
                 <Route path="profile/:id" element={<Profile navigate={navigate}  /> } />
                 {
-                    cookies.projectId!==undefined
+                    cookies.project!==undefined
                     ?<Route path="dashboard/:id" element={<Dashboard navigate={navigate}  /> } />
                     : ''
                 }
-                
                 <Route exact path="ticket/:id" element={<SingleTask navigate={navigate}  /> } />                
                 <Route path="projects" element={<Projects navigate={navigate}  /> } />                
                 <Route path="users" element={<Users navigate={navigate}  /> } />
@@ -67,7 +61,7 @@ export default function Main(){
                 }/>
 
                 {
-                    decodedToken.role!=="ROLE_CUSTOMER" && cookies.projectId!==undefined
+                    decodedToken.role!=="ROLE_CUSTOMER" && cookies.project!==undefined
                     ? <Route path="ticket_new" element={<CreateTask navigate={navigate}  /> } />
                     : ''
                 }

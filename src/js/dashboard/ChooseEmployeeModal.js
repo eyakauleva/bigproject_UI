@@ -15,7 +15,8 @@ export default function ChooseEmployeeModal(props) {
   const[error, setError] = useState("");
 
   useLayoutEffect(() => {
-    getEmployees(); 
+    if(props.projectId != undefined)
+      getEmployees(); 
   }, [props.projectId]);
 
   useEffect(() => {

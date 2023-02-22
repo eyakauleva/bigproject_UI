@@ -9,7 +9,7 @@ function Authorization(props){
   const[username, setUsername] = useState('');
   const[password, setPassword] = useState('');
   const[errorMessage, setErrorMessage] = useState('');
-  const[cookies] = useCookies(["token", "url", "employeeId", "projectId"]);
+  const[cookies] = useCookies(["token", "url", "employeeId", "project"]);
 
   const handleUserInput = (e) => {
     const name = e.target.name;
@@ -34,76 +34,65 @@ function Authorization(props){
       password: password
     }
 
-    axios.post('auth', requestOptions)
-      .then(response => {  
-        document.cookie = "token=" + response.data.token + "; path=/";   
+    axios
+    .post('auth', requestOptions)
+    .then(response => {  
+      document.cookie = "token=" + response.data.token + "; path=/"; 
 
-        let decodedToken = jwt_decode(response.data.token);
+      let decodedToken = jwt_decode(response.data.token);
 
-        let config = {
-          headers: {
-              Authorization: 'Bearer ' + response.data.token
+      let config = {
+        headers: {
+            Authorization: 'Bearer ' + response.data.token
+        }
+      };
+  
+      if(decodedToken.role!=="ROLE_CUSTOMER"){
+        axios
+        .get("/employee/user/" + decodedToken.id, config)
+        .then(response => response.data)
+        .then((data) =>{
+          if(data){
+            document.cookie = "employeeId=" + data.id + "; path=/";
+
+            if(data.currentProjects!=null){
+              let projects = [];
+              data.currentProjects.map(project => projects.push({id: project.id, name: project.name}));
+              projects = projects.sort((a, b) => a.id > b.id ? 1 : -1);
+              document.cookie = "project=" + projects[0].id + "; path=/";
+            }   
+
+            if(cookies.url != null && cookies.url != undefined && cookies.url !== "undefined")
+              props.navigate(cookies.url);
+            else props.navigate('/app');
+            }                    
+        })
+        .catch((error) => {               
+          let code = error.toJSON().status;
+          if(code===400 && error.response.data !== null)
+              setErrorMessage(error.response.data.message);
+          else if(code===401){
+              alert('Authorization is required');
           }
-        };
-    
-        if(decodedToken.role==="ROLE_CUSTOMER"){
-          axios.get("/orders/" + decodedToken.id + "/project", config)
-          .then(response => response.data)
-          .then((data) =>{
-              if(data){
-                let projectsIds = [];
-                data.project.map(project => projectsIds.push(project.id));
-                document.cookie = "projectId=" + JSON.stringify(projectsIds) + "; path=/"; 
-                if(cookies.url != null && cookies.url != undefined && cookies.url !== "undefined")
-                  props.navigate(cookies.url);
-                else props.navigate('/app'); 
-              }                    
-          })
-          .catch((error) => {                
-              let code = error.toJSON().status;
-              if(code===400 && error.response.data !== null)
-                  setErrorMessage(error.response.data.message);
-              else if(code===401){
-                  alert('Authorization is required');
-              }
-              else alert('Internal server error');
-          });
-        } else{
-          axios.get("/employee/user/" + decodedToken.id, config)
-          .then(response => response.data)
-          .then((data) =>{
-              if(data){
-                document.cookie = "employeeId=" + data.id + "; path=/";  
-                if(data.currentProjects!=null){
-                  let projectsIds = [];
-                  data.currentProjects.map(project => projectsIds.push(project.id));
-                  document.cookie = "projectId=" + JSON.stringify(projectsIds) + "; path=/"; 
-                } 
-                if(cookies.url != null && cookies.url != undefined && cookies.url !== "undefined")
-                  props.navigate(cookies.url);
-                else props.navigate('/app'); 
-              }                    
-          })
-          .catch((error) => {               
-              let code = error.toJSON().status;
-              if(code===400 && error.response.data !== null)
-                  setErrorMessage(error.response.data.message);
-              else if(code===401){
-                  alert('Authorization is required');
-              }
-              else alert('Internal server error');
-          });
-        }   
+          else alert('Internal server error');
+        });
         
-      })
-      .catch((error) => {
-        console.log(error);
-        let code = error.toJSON().status;
-        if(code===401) setErrorMessage("Bad credentials");
-        else if(code===423) setErrorMessage("Account is locked");
-        else if(code===400 && error.response.data !== null) setErrorMessage(error.response.data.message);
-        else alert('Internal server error');
-      });
+      } else{
+        if(cookies.url != null && cookies.url != undefined && cookies.url !== "undefined")
+          props.navigate(cookies.url);
+        else props.navigate('/app');
+      }
+
+    })
+    .catch((error) => {
+      console.log(error);
+      let code = error.toJSON().status;
+      if(code===401) setErrorMessage("Bad credentials");
+      else if(code===423) setErrorMessage("Account is locked");
+      else if(code===400 && error.response.data !== null) setErrorMessage(error.response.data.message);
+      else alert('Internal server error');
+    });
+
   }
     
   return(   

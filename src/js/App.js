@@ -29,7 +29,7 @@ const ProtectedRoute = ({ redirectPath = '/login', children }) => {
     if(isUserLoggedIn(cookies.token)) return children;
     else{         
         document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
-        document.cookie = "projectId=;  expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+        document.cookie = "project=;  expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
         document.cookie = "employeeId=;  expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
         
         return <Navigate to={redirectPath} replace />;

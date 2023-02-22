@@ -22,7 +22,6 @@
 .sidenav .action:hover {
     cursor: pointer;
     background-color: #F1F6FB;
-    color: #8C8C8C;
 }
 
 @media screen and (max-height: 450px) {

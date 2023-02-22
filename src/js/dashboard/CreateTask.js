@@ -11,7 +11,8 @@ import ChooseEmployeeModal from './ChooseEmployeeModal';
 import '../../css/CreateTask.css';
 
 export default function CreateTask(props) {
-  const [cookies] = useCookies(["token", "employeeId", "projectId"]);
+  const[cookies] = useCookies(["token", "employeeId"]);
+  const[project, setProject] = useState({}); //TODO
   const[name, setName] = useState(""); 
   const[description, setDescription] = useState(""); 
   const[dueDate, setDueDate] = useState(new Date());
@@ -28,6 +29,7 @@ export default function CreateTask(props) {
   const[errorMessage, setErrorMessage] = useState("");
   const[error, setError] = useState("");
   const[isDisabled, setIsDisabled] = useState(false);
+  const[selectedFile, setSelectedFile] = useState();
 
   const displayError = () => {
     if(error!=="")
@@ -62,12 +64,12 @@ export default function CreateTask(props) {
     
         const create = async() => {
             await axios
-            .post("/project/" + cookies.projectId + "/tickets/",
+            .post("/project/" + project.id + "/tickets/",
                 ticket,
                 config)
             .then(() => {
                 setIsDisabled(false);
-                props.navigate("dashboard/" + cookies.projectId);
+                props.navigate("dashboard/" + project.id);
             })
             .catch((error) => {
                 let code = error.toJSON().status;
@@ -95,6 +97,21 @@ export default function CreateTask(props) {
     setAssignee(employee);
     setShowModal(false);
   }
+
+  const onFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+   
+  const onFileUpload = () => {
+    const formData = new FormData();
+    
+    formData.append(
+      "myFile",
+      selectedFile
+    );
+
+    //axios.post("api/uploadfile", formData);
+  };
 
   return (
     <div className="create-task">
@@ -220,6 +237,16 @@ export default function CreateTask(props) {
                 <input type="text" style={{width:'100%'}} onChange={e => setGitLink(e.target.value)}/>                  
             </div>
         </div><hr/>
+        <div className="row">
+            <div className="col-md-1"></div>
+           <div className="col-md-3">
+                <label>Attach file:</label>
+            </div>
+            <div className="col-md-6">
+                <input type="file" style={{display: "none"}} onChange={(e) => onFileChange(e)}/>
+                <button onClick={onFileUpload()}>Choose...</button>                  
+            </div>
+        </div><hr/>
         <div>
             <div className="row">
                 <div className="col-md-4"></div>
@@ -234,14 +261,14 @@ export default function CreateTask(props) {
                         onClick={()=>{submitCreate()}} className="profile-edit-btn" value="Save" />
                 </div>
                 <div className="col-md-2">
-                    <button onClick={()=>props.navigate("dashboard/" + cookies.projectId)} disabled={isDisabled}
+                    <button onClick={()=>props.navigate("dashboard/" + project.id)} disabled={isDisabled}
                         style={isDisabled ? {backgroundColor:"grey"} : {background: '#FF6E4E'}} className="profile-edit-btn">Cancel</button>
                 </div>
             </div>
         </div>
       </div>  
       <ChooseEmployeeModal show={showModal} onHide={()=>setShowModal(false)} submitChange={(employee)=>editAssignee(employee)} 
-                           assignee={assignee} reporter={assignee} projectId={cookies.projectId} />  
+                           assignee={assignee} reporter={assignee} projectId={project.id} />  
     </div>
   );  
 }

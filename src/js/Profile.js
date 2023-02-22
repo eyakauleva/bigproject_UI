@@ -60,7 +60,7 @@ export default function Profile(props) {
                 if(data){
                     setEmployee(data);
                     setUser(data.user);
-                    setCurrProjects(data.currentProjects); 
+                    setCurrProjects(data.currentProjects.sort((a, b) => a.id > b.id ? 1 : -1)); 
                     setPosition(data.position);      
                     setDecodedToken(jwt_decode(cookies.token));
                 }                    
@@ -268,7 +268,6 @@ export default function Profile(props) {
                                 {currProjects != null
                                 ? <div>
                                     {currProjects
-                                    .sort((a, b) => a.name > b.name ? 1 : -1)
                                     .map(project => <div><a href={"/app/project/"+project.id}>{project.name}</a><br/></div>)}
                                 </div>
                                 : <div>No current project</div>}                            

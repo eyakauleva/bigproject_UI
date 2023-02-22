@@ -1,7 +1,9 @@
 import React from "react";
+import axios from "axios";
 import { useState, useLayoutEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import jwt_decode from "jwt-decode";
+import Form from 'react-bootstrap/Form';
 
 import ClientProfileModal, {clearErrorMessage, noEditMode} from './ClientProfileModal.js';
 import ChangePasswordModal from './ChangePasswordModal';
@@ -10,14 +12,16 @@ import '.././css/Sidebar.css';
 var logout;
 export {logout}
 function Sidebar(props){
-    const[cookies] = useCookies(["token", "employeeId", "projectId"]);
+    const[cookies] = useCookies(["token", "employeeId", "project"]);
     const[clientId, setClientId] = useState();
     const[showModal, setShowModal] = useState(false);
     const[showChangePasswordModal, setShowChangePasswordModal] = useState(true);
     const[decodedToken, setDecodedToken] = useState({});
+    const[projects, setProjects] = useState([]);
 
     useLayoutEffect(() => {        
-        setDecodedToken(jwt_decode(cookies.token))
+        setDecodedToken(jwt_decode(cookies.token));
+        getCurrentProjects();
     }, []);
 
     const goToProfile = () => {
@@ -28,20 +32,40 @@ function Sidebar(props){
         else props.navigate('profile/' + cookies.employeeId); 
     }
 
-    const getFirstProjectId = () => {
-        let projectsIds = cookies.projectId;
-        projectsIds = projectsIds.sort((a, b) => a > b ? 1 : -1);
-        return projectsIds[0];
+    const getCurrentProjects = () => {
+        let config = {
+            headers: {
+                Authorization: 'Bearer ' + cookies.token
+            }
+        };
+
+        let decodedToken = jwt_decode(cookies.token);
+
+        axios
+        .get("/employee/user/" + decodedToken.id, config)
+        .then(response => response.data)
+        .then((data) =>{
+            if(data.currentProjects!=null){
+                setProjects(data.currentProjects.sort((a, b) => a.id > b.id ? 1 : -1));
+            }                  
+        })
+        .catch((error) => {               
+            let code = error.toJSON().status;
+            if(code===401){
+                alert('Authorization is required');
+            }
+            else alert('Internal server error');
+        });
     }
 
     const goToDashboard = () => {
-        props.navigate('dashboard/' + getFirstProjectId());
+        props.navigate('dashboard/' + cookies.project);
     }
 
     logout = () => {        
         document.cookie = "url=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
         document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
-        document.cookie = "projectId=;  expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+        document.cookie = "project=;  expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
         document.cookie = "employeeId=;  expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
         
         props.navigate('/login'); 
@@ -50,13 +74,24 @@ function Sidebar(props){
     return(    
         <div className="sidenav">
             {
-                decodedToken.role!=="ROLE_CUSTOMER" && cookies.projectId!==undefined
+                decodedToken.role!=="ROLE_CUSTOMER" && cookies.project!==undefined
                 ? <div>
-                    <a href='/app/ticket_new' id='new-ticket' className='action'>
-                        <i className="bi bi-plus-square"></i>
-                        <span>NEW TICKET</span>
-                    </a><hr/>
-                 </div>
+                    <div>
+                        <Form.Select>                
+                        {
+                            projects.map(project => {
+                                return <option value={project.id}>{project.name}</option>;
+                            })
+                        }
+                        </Form.Select> 
+                    </div>   
+                    <div>
+                        <a href='/app/ticket_new' id='new-ticket' className='action'>
+                            <i className="bi bi-plus-square"></i>
+                            <span>NEW TICKET</span>
+                        </a><hr/>
+                    </div>
+                </div>
                 : ''
             }
             <a onClick={goToProfile} className='action'>
@@ -68,7 +103,7 @@ function Sidebar(props){
                 <span>Employees</span>
             </a>
             {
-                cookies.projectId!==undefined
+                cookies.project!==undefined
                 ? <a onClick={goToDashboard} className='action'>
                     <i className="bi bi-check2-square"></i>
                     <span>Tickets</span>
