@@ -15,7 +15,6 @@ export default function Users(props) {
     const[cookies] = useCookies(["token"]);
     const[employees, setEmployees] = useState({});
     const[isList, setIsList] = useState(false);
-    const[isFullList, setIsFullList] = useState(false);
     const[inputText, setInputText] = useState("");
     const[showModal, setShowModal] = useState(false);
     const[decodedToken, setDecodedToken] = useState({});
@@ -24,10 +23,7 @@ export default function Users(props) {
     useLayoutEffect(() => { 
         getEmployees();        
     }, []);
-    // useLayoutEffect(() => { 
-    //     setIsFullList(true) ; 
-    //     console.log(employees) ;     
-    // }, [employees]);
+    
     const displayError = () => {
       if(error!=="")
       {
@@ -36,22 +32,15 @@ export default function Users(props) {
       }
     }
     const updateView = (employee) =>{
-        console.log("employee:")
-        console.log(employee);
-        console.log(employees);
         var newState =  employees.map(emp => {
             if(emp.id == employee.id){
-                console.log("found " + emp.id);
                 emp.isFullList = !emp.isFullList;
-                console.log("isFullList " + emp.isFullList);
                 return emp;
             }
             return emp;
             
         });
-        console.log(newState);
         setEmployees(newState);
-       
     }
 
     const getEmployees = async() => {
@@ -70,6 +59,7 @@ export default function Users(props) {
         .then(response => response.data)
         .then((data) =>{             
             if(data){
+                data = data.sort((a,b) => a.user.surname > b.user.surname ? 1 : -1);
                 setEmployees(data); 
                 setDecodedToken(jwt_decode(cookies.token));                
             }                                   
@@ -92,7 +82,6 @@ export default function Users(props) {
     };
 
     const filteredEmployees =  Object.values(employees).filter((employee) =>{
-        // employee.isFullList = false;
         if(inputText === ''){
             return employee;
         } else {
@@ -104,6 +93,15 @@ export default function Users(props) {
         }
         
     });
+
+    const getIconClass = (employee) => {
+        if(employee.user.status == 'BLOCKED') return "bi bi-slash-circle-fill star";
+        else if(employee.currentProjects != null && employee.currentProjects.length > 0){
+            
+            return "bi bi-circle-fill circle";
+        }
+        else return "bi bi-circle circle";
+    }
 
     return(
         <div className="users">
@@ -159,101 +157,64 @@ export default function Users(props) {
                   filteredEmployees.map((employee) =>
                     <div onClick={() => updateView(employee) } style={isList ? {background: "#DCE5E7"} : {}} className={isList ? 'item  list-group-item users-list' : 'item col-md-3 col-lg-3 '}>  
                         { isList ?  
-                                <div style={employee.user.status == 'BLOCKED' ? {opacity: 0.33} : {}} className="row">
-                                    <div className="user-wrapper">
-                                        <div className={employee.isFullList ? "col-md-10 item-margin-left-3" : "col-md-3"}>
-                                            <img style={employee.isFullList ? {display:"inline-block"} : {display:"none"}} className="photo-list" src={`data:image/jpeg;base64,${employee.photo}`} />
-                                            <i style={employee.isFullList ? {display:"none"} : {display:"inline-block"}} className={employee.user.status == 'BLOCKED' ? "bi bi-slash-circle-fill star" : "bi bi-star-fill star"}></i>
-                                            {employee.isFullList ?
-                                                <span>
-                                                    <span className="name-list">{employee.user.name + ' ' + employee.user.surname}
-                                                        <sup>{employee.position}</sup>
-                                                    </span>
-                                                    <hr/>
-                                                    <span className="email-list"><i className="bi bi-envelope-fill"></i>&nbsp;{employee.user.email}</span>
-                                                </span>
-                                                :
-                                                <span className="name-list-not-full">{employee.user.name + ' ' + employee.user.surname}</span>
-                                            }
-                                        </div>
+                            <div style={employee.user.status == 'BLOCKED' ? {opacity: 0.33} : {}} className="row">
+                                <div className="user-wrapper">
+                                    <div className={employee.isFullList ? "col-md-10 item-margin-left-3" : "col-md-3"}>
+                                        <img style={employee.isFullList ? {display:"inline-block"} : {display:"none"}} className="photo-list" src={`data:image/jpeg;base64,${employee.photo}`} />
+                                        <i style={employee.isFullList ? {display:"none"} : {display:"inline-block"}} className={getIconClass(employee)}></i>
                                         {employee.isFullList ?
-                                        <div className="container item-margin-left-10 col-md-1">
-                                                <div className="row" style={{float:"right"}}>
-                                                    <div className="col-md-12 margin-arrow"><i class="bi bi-caret-up-fill arrow"></i></div>
-                                                    <div className="col-md-12">
-                                                        <a className='btn-custom-2' href={"/app/profile/"+employee.id}><span>More</span></a>
-                                                    </div>
-                                            </div> 
-                                            </div> 
-                                            :
-                                            <span className="container row">
-                                                <div className="col-md-11">
-                                                    <i className="bi bi-briefcase suitcase"></i>
-                                                    <span className="position-list-not-full">{employee.position}</span>
-                                                </div>
-                                                <div className="col-md-1"><i class="bi bi-caret-down-fill arrow"></i></div>
+                                            <span>
+                                                <span className="name-list">{employee.user.name + ' ' + employee.user.surname}
+                                                    <sup>&nbsp;&nbsp;{employee.position}</sup>
+                                                </span>
+                                                <hr/>
+                                                <span className="email-list"><i className="bi bi-envelope-fill"></i>&nbsp;{employee.user.email}</span>
                                             </span>
+                                            :
+                                            <span className="name-list-not-full">{employee.user.name + ' ' + employee.user.surname}</span>
                                         }
                                     </div>
-                                </div>
-                                :
-                                    <div style={employee.user.status == 'BLOCKED' ? {opacity: 0.33} : {}} className= "thumbnail">
-                                        <div className="user-wrapper user-wrapper-list-grid">
-                                            <div>
-                                                <img className="photo-row" src={`data:image/jpeg;base64,${employee.photo}`} />
+                                    {employee.isFullList ?
+                                        <div className="container item-margin-left-10 col-md-1">
+                                            <div className="row" style={{float:"right"}}>
+                                                <div className="col-md-12 margin-arrow"><i class="bi bi-caret-up-fill arrow"></i></div>
+                                                <div className="col-md-12">
+                                                    <a className='btn-custom-2' href={"/app/profile/"+employee.id}><span>More</span></a>
+                                                </div>
+                                        </div> 
+                                        </div> 
+                                        :
+                                        <span className="container row">
+                                            <div className="col-md-11">
+                                                <i className="bi bi-briefcase suitcase"></i>
+                                                <span className="position-list-not-full">{employee.position}</span>
                                             </div>
-                                            <div className="name">{employee.user.name + ' ' + employee.user.surname}</div>
-                                            <div className="position"><i className="bi bi-briefcase"></i>&nbsp;{employee.position}</div>
-                                            <div className="email"><i className="bi bi-briefcase"></i>&nbsp;{employee.user.email}</div>
-                                        </div>
-                                        <div className="row container-custom">
-                                            <div>
-                                                <a className='btn-custom-2 btn-custom-2-grid' href={"/app/profile/"+employee.id}>
-                                                    <span>More</span>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                        }
-                        </div>)
-                }   
-                
-                    {/* {
-                        filteredEmployees.map((employee) => 
-                        <div style={isList ? {background: "#DCE5E7"} : {}} className={isList ? 'item  list-group-item users-list' : 'item col-md-3 col-lg-3 '}> 
-                            <div style={employee.user.status == 'BLOCKED' ? {opacity: 0.33} : {}} className={isList ? "" : "thumbnail"}>
-                                <div className={isList ? 'user-wrapper' : 'user-wrapper user-wrapper-list-grid'}>
-                                    <div className={isList ? "col-md-10" : ""}>
-                                        <img className={isList ? 'photo-list' : 'photo-row'} src={`data:image/jpeg;base64,${employee.photo}`} />
-                                        {isList ? 
-                                        <span className="name-list">{employee.user.name + ' ' + employee.user.surname}
-                                        <sup>{employee.position}</sup>
-                                        </span> : ''} 
-                                        {isList ? <hr/>:''}
-                                        {isList ? <span className="email-list"><i className="bi bi-envelope-fill"></i>&nbsp;{employee.user.email}</span>:''}   
-                                    </div>
-                                    {!isList ? <div className="name">{employee.user.name + ' ' + employee.user.surname}</div>:''}
-                                    {!isList ? <div className="position"><i className="bi bi-briefcase"></i>&nbsp;{employee.position}</div>:''}
-                                    {!isList ? <div className="email"><i className="bi bi-briefcase"></i>&nbsp;{employee.user.email}</div>:''}
-                                    {isList 
-                                    ? <div>
-                                        <a className='btn-custom-2' href={"/app/profile/"+employee.id}><span>More</span></a>
-                                    </div>
-                                    : ""}                                 
-                                </div>                                    
-                                <div className={isList ? 'row container-custom-list' : 'row container-custom'}>
-                                    {isList
-                                    ? ""
-                                    : <div>
-                                        <a className='btn-custom-2 btn-custom-2-grid' href={"/app/profile/"+employee.id}>
-                                            <span>More</span>
-                                        </a>
-                                     </div>}
+                                            <div className="col-md-1"><i class="bi bi-caret-down-fill arrow"></i></div>
+                                        </span>
+                                    }
                                 </div>
                             </div>
-                        </div>
-                        )
-                    } */}
+                            :
+                                <div style={employee.user.status == 'BLOCKED' ? {opacity: 0.33} : {}} className= "thumbnail">
+                                    <div className="user-wrapper user-wrapper-list-grid">
+                                        <div>
+                                            <img className="photo-row" src={`data:image/jpeg;base64,${employee.photo}`} />
+                                        </div>
+                                        <div className="name">{employee.user.name + ' ' + employee.user.surname}</div>
+                                        <div className="position"><i className="bi bi-briefcase"></i>&nbsp;{employee.position}</div>
+                                        <div className="email"><i className="bi bi-briefcase"></i>&nbsp;{employee.user.email}</div>
+                                    </div>
+                                    <div className="row container-custom">
+                                        <div>
+                                            <a className='btn-custom-2 btn-custom-2-grid' href={"/app/profile/"+employee.id}>
+                                                <span>More</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                        }
+                    </div>)
+                } 
                 </div>
             </div>
             <AddEmployeeModal show={showModal} onHide={()=>setShowModal(false)} getEmployees={()=>getEmployees()} />

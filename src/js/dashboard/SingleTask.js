@@ -122,7 +122,7 @@ export default function SingleTask(props) {
     update();
   }
 
-  const editProfileOnUI = () => {
+  const editTicketOnUI = () => {
     setName(ticket.name);
     setDescription(ticket.description);
     setDueDate(parseISO(ticket.dueDate));
@@ -146,7 +146,7 @@ export default function SingleTask(props) {
         <div className="row">
             <div className="col-md-1"></div>
             <div className="col-md-1"><h3>Ticket: </h3></div>
-            <div className="col-md-7">
+            <div className="col-md-6">
                 {editMode 
                 ? <input type="text" className='name' defaultValue={ticket.name} onChange={e => setName(e.target.value)}/> 
                 : <h3>{ticket.name}</h3>}                 
@@ -155,7 +155,12 @@ export default function SingleTask(props) {
                 !editMode && ticket.reporter!=undefined 
                     && (cookies.employeeId==ticket.reporter.id || decodedToken.role==="ROLE_ADMIN" || decodedToken.role==="ROLE_MANAGER")
                 ?<div className="col-md-3">
-                    <button onClick={() => editProfileOnUI()} className="mybtn"><span>Edit Ticket</span></button>
+                    <div className="button-group-modification">
+                        <button onClick={() => editTicketOnUI()} className="mybtn">
+                            <span className="hidden_hover" style={{fontSize:"25px"}}><i className="bi bi-pencil-square" ></i></span>
+                            <span className="hidden_span">Edit Ticket</span>
+                        </button>
+                    </div>
                 </div>
                 : ""
             } 

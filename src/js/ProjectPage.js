@@ -208,7 +208,7 @@ export default function ProjectPage(props) {
       setEmployees([...employees, newEmployee])
     }
 
-    const editProfileOnUI = () => {
+    const editProjectOnUI = () => {
       setName(project.name);
       setDescription(project.description);
       setDueDate(parseISO(project.dueDate));
@@ -291,7 +291,12 @@ export default function ProjectPage(props) {
             {
                 !editMode && project.reporter != null && (cookies.employeeId == project.reporter.id || decodedToken.role === "ROLE_ADMIN")
                 ?<div className="col-md-3">
-                    <button onClick={() => editProfileOnUI()} className="mybtn"><span>Edit Project</span></button>
+                    <div className="button-group-modification">
+                        <button onClick={() => editProjectOnUI()} className="mybtn">
+                            <span className="hidden_hover" style={{fontSize:"25px"}}><i className="bi bi-pencil-square" ></i></span>
+                            <span className="hidden_span">Edit Project</span>
+                        </button>
+                    </div>
                 </div>
                 : ""
             }

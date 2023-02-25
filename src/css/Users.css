@@ -49,6 +49,11 @@
     margin: 0 25px;
     color: #fe4d4dc1;
 }
+.users .circle{
+    font-size: 19px;
+    margin: 0 25px;
+    color: #5199FF;
+}
 .users .arrow{
     font-size: 19px;
     margin: 0 25px;
@@ -83,16 +88,16 @@
 
 .users .name-list{
     display: inline-block;
-    font: small-caps 24px/1 sans-serif;
-    margin-top: 3%;
+    font-size: 24px;
+    margin-top: 1.5%;
     margin-left: 3%;
 }
 
 .users .name-list-not-full{
-    font: small-caps 20px/1 sans-serif;
+    font-size: 19px;
 }
 .users .position-list-not-full{
-    font: small-caps 17px/1 sans-serif;
+    font-size: 16px;
 }
 .users sup {
     vertical-align: super;
@@ -105,7 +110,7 @@
     margin-top: 5px;
 }
 .users .email-list{
-    font: small-caps 13px/1 sans-serif;
+    font-size: 14px;
     margin-left: 3%;
 }
 .users .item-margin-left-3{
@@ -129,9 +134,8 @@
     margin-top: 10px;
 }
 .users-list:hover{
-    box-shadow: 0 0px 100px rgba(0, 0, 0, 0.495);
-    padding: 1.1%;
-    transition: 0.1s padding ease;
+    padding: 1.3%;
+    transition: .3s padding;
 }
 
 .add-employee-modal input[type='text'], 
