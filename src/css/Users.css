@@ -3,9 +3,18 @@
     width: calc(100% - 160px);    
 }
 
-.users .photo{
-    width: 40px;
-    height: 40px;
+.users .photo-list{
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 20%;
+    cursor: pointer;
+    margin-top: 10px;
+    box-shadow: 2px 2px 20px -1px rgba(34, 60, 80, 0.94);
+}
+.users .photo-row{
+    width: 120px;
+    height: 120px;
     object-fit: cover;
     border-radius: 50%;
     cursor: pointer;
@@ -35,7 +44,28 @@
 .users .users-list{
     background-color: white;
 }
-
+.users .star{
+    font-size: 19px;
+    margin: 0 25px;
+    color: #fe4d4dc1;
+}
+.users .arrow{
+    font-size: 19px;
+    margin: 0 25px;
+    color: #01374fc1;
+}
+.users .margin-arrow{
+    font-size: 19px;
+    margin-bottom: 25%;
+    margin-left: 40%;
+    color: #01374fc1;
+    float: right;
+}
+.users .suitcase{
+    font-size: 17px;
+    margin-right: 1%;
+    color: #000000c1;
+}
 .users .user-wrapper{
     display: flex;
     align-items: center;
@@ -51,10 +81,44 @@
     margin-top: 10px;
 }
 
+.users .name-list{
+    display: inline-block;
+    font: small-caps 24px/1 sans-serif;
+    margin-top: 3%;
+    margin-left: 3%;
+}
+
+.users .name-list-not-full{
+    font: small-caps 20px/1 sans-serif;
+}
+.users .position-list-not-full{
+    font: small-caps 17px/1 sans-serif;
+}
+.users sup {
+    vertical-align: super;
+    font-size: 12px;
+    top: 0;
+    left: 0.25em;
+}
+
 .users .position, .users .email{
     margin-top: 5px;
 }
-
+.users .email-list{
+    font: small-caps 13px/1 sans-serif;
+    margin-left: 3%;
+}
+.users .item-margin-left-3{
+    margin-left: 3%;
+}
+.users .item-margin-left-10{
+    margin-left: 5.5%;
+}
+.users hr{
+    margin: .6rem 0;
+    margin-left: 12%;
+    width: 85%;
+}
 .users .btn-custom-2{
     width: 100%;
 }
@@ -63,6 +127,11 @@
     float: none;
     margin: 0;
     margin-top: 10px;
+}
+.users-list:hover{
+    box-shadow: 0 0px 100px rgba(0, 0, 0, 0.495);
+    padding: 1.1%;
+    transition: 0.1s padding ease;
 }
 
 .add-employee-modal input[type='text'], 
