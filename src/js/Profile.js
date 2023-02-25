@@ -60,13 +60,16 @@ export default function Profile(props) {
                 if(data){
                     setEmployee(data);
                     setUser(data.user);
-                    setCurrProjects(data.currentProjects.sort((a, b) => a.id > b.id ? 1 : -1)); 
+                    if(data.currentProjects != null){
+                        setCurrProjects(data.currentProjects.sort((a, b) => a.id > b.id ? 1 : -1)); 
+                    }
                     setPosition(data.position);      
                     setDecodedToken(jwt_decode(cookies.token));
                 }                    
             })
             .catch((error) => {                
-                let code = error.toJSON().status;
+                let code = error.status;
+                console.log(error);
                 if(code===400 && error.response.data !== null)
                     setErrorMessage(error.response.data.message);
                 else if(code===401)
