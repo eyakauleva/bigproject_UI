@@ -4,7 +4,7 @@ import { FaRegCircle, FaInfoCircle } from 'react-icons/fa';
 import { IconContext } from 'react-icons';
 import { useParams } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
-import { useState, useEffect} from 'react';
+import { useState, useLayoutEffect} from 'react';
 import { format, parseISO } from "date-fns";
 import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
@@ -39,10 +39,11 @@ export default function ProjectPage(props) {
     const[decodedToken, setDecodedToken] = useState({});
     const[error, setError] = useState("");
 
-    useEffect(() => {
+    useLayoutEffect(() => {
+      setDecodedToken(jwt_decode(cookies.token)); 
       getProject(); 
-      getTickets();      
-    }, [id]);
+      getTickets();   
+    }, []);
 
     const displayError = () => {
       if(error!=="")
@@ -54,61 +55,60 @@ export default function ProjectPage(props) {
 
     const getProject = () => {
       if(id){
-          let config = {
-            headers: {
-                Authorization: 'Bearer ' + cookies.token
-            }
-          };
+        let config = {
+          headers: {
+              Authorization: 'Bearer ' + cookies.token
+          }
+        };
 
-          axios
-          .get("/project/tickets/" + id, config)
-          .then(response => response.data)
-          .then(data =>{
-              if(data){
-                setProject(data);                  
-                setEmployees(data.employees);  
-                setDecodedToken(jwt_decode(cookies.token));  
-              }                 
-          })
-          .catch((error) => {
-            let code = error.toJSON().status;
-            if(code===400 && error.response.data !== null)
-                setErrorMessage(error.response.data.message);
-            else if(code===401)
-              setError('Authorization is required');
-            else if(code===403)
-              alert("Access is denied");            
-            else alert('Internal server error');
-          });   
+        axios
+        .get("/project/tickets/" + id, config)
+        .then(response => response.data)
+        .then(data =>{
+            if(data){
+              setProject(data);                  
+              setEmployees(data.employees); 
+            }                 
+        })
+        .catch((error) => {
+          let code = error.toJSON().status;
+          if(code===400 && error.response.data !== null)
+              setErrorMessage(error.response.data.message);
+          else if(code===401)
+            setError('Authorization is required');
+          else if(code===403)
+            alert("Access is denied");            
+          else alert('Internal server error');
+        });   
       }
     }
 
     const getTickets = () => {
       if(id){
-          let config = {
-            headers: {
-                Authorization: 'Bearer ' + cookies.token
-            }
-          };
+        let config = {
+          headers: {
+              Authorization: 'Bearer ' + cookies.token
+          }
+        };
 
-          axios
-          .get("/project/" + id + "/tickets", config)
-          .then(response => response.data)
-          .then(data =>{
-              if(data){
-                  setTickets(data);                
-              }                 
-          })
-          .catch((error) => {
-            let code = error.toJSON().status;
-            if(code===400 && error.response.data !== null)
-                setErrorMessage(error.response.data.message);
-            else if(code===401)
-              setError('Authorization is required');
-            else if(code===403)
-              alert("Access is denied");            
-            else alert('Internal server error');
-          });   
+        axios
+        .get("/project/" + id + "/tickets", config)
+        .then(response => response.data)
+        .then(data =>{
+            if(data){
+                setTickets(data);                
+            }                 
+        })
+        .catch((error) => {
+          let code = error.toJSON().status;
+          if(code===400 && error.response.data !== null)
+              setErrorMessage(error.response.data.message);
+          else if(code===401)
+            setError('Authorization is required');
+          else if(code===403)
+            alert("Access is denied");            
+          else alert('Internal server error');
+        });   
       }
     }
 
@@ -122,51 +122,50 @@ export default function ProjectPage(props) {
       let employeesId = [];
       employees.forEach((employee)=>{
           employeesId.push({id: employee.id});
-      });    
-      console.log(employeesId);  
+      });     
 
       let project_ = {
-          name: name,
-          description: description,
-          dueDate: format(dueDate, "yyyy-MM-dd HH:mm"),
-          estimatedTime: estimatedTime,
-          status: status,
-          severity: severity,
-          gitRef: gitLink,
-          assignee: {id: assignee.id},
-          employees: employeesId
+        name: name,
+        description: description,
+        dueDate: format(dueDate, "yyyy-MM-dd HH:mm"),
+        estimatedTime: estimatedTime,
+        status: status,
+        severity: severity,
+        gitRef: gitLink,
+        assignee: {id: assignee.id},
+        employees: employeesId
       };
 
       const update = async() => {
-          await axios
-          .put("/project/tickets/" + id, 
-            project_,
-            config)
-          .then(() => {
-            getProject();
-            setEditMode(false);
-          })
-          .catch((error) => {
-            let code = error.toJSON().status;
-            if(code===400 && error.response.data !== null && error.response.data.message === "validation error"){
-                if(Array.of(error.response.data.fieldErrors).length > 0)
-                    setErrorMessage(error.response.data.fieldErrors[0].defaultMessage);
-            }
-            else if(code===400 && error.response.data !== null)
-                setErrorMessage(error.response.data.message);
-            else if(code===401)
-              setError('Authorization is required');
-            else if(code===403)
-              alert("Access is denied");     
-            else alert('Internal server error');
-          });        
+        await axios
+        .put("/project/tickets/" + id, 
+          project_,
+          config)
+        .then(() => {
+          getProject();
+          setEditMode(false);
+        })
+        .catch((error) => {
+          let code = error.toJSON().status;
+          if(code===400 && error.response.data !== null && error.response.data.message === "validation error"){
+              if(Array.of(error.response.data.fieldErrors).length > 0)
+                  setErrorMessage(error.response.data.fieldErrors[0].defaultMessage);
+          }
+          else if(code===400 && error.response.data !== null)
+              setErrorMessage(error.response.data.message);
+          else if(code===401)
+            setError('Authorization is required');
+          else if(code===403)
+            alert("Access is denied");     
+          else alert('Internal server error');
+        });        
       }      
       update();
     }
 
 
     let showNecessaryIcon = (type) => {
-     if(type === 'BUG'){
+      if(type === 'BUG'){
         return (<IconContext.Provider
         value={{ 
             className: "glyphicon glyphicon-th",
@@ -182,12 +181,11 @@ export default function ProjectPage(props) {
                 className: "glyphicon glyphicon-th",
                 size: '15px',
                 color:'green'
-            }}
-            >
+            }}>
             <FaRegCircle/>
             </IconContext.Provider>);
-      } else {
-        return (<IconContext.Provider
+        } else {
+          return (<IconContext.Provider
             value={{ 
                 className: "glyphicon glyphicon-th",
                 size: '15px',
@@ -195,7 +193,7 @@ export default function ProjectPage(props) {
             }}>
             <FaInfoCircle/>
             </IconContext.Provider>);
-     }
+      }
     }
 
     const removeFromProject = (id) => {
@@ -235,25 +233,47 @@ export default function ProjectPage(props) {
         }
       };
 
-      axios
-      .get("/employee/user/" + decodedToken.id, config)
-      .then(response => response.data)
-      .then((data) =>{
-          if(data.currentProjects!=null){
-              data.currentProjects.map(project => {
-                if(project.id==_id)
-                  return true;
-              });
-              return false;
+      if(decodedToken.role==="ROLE_CLIENT"){
+        axios
+        .get("/orders/" + decodedToken.id + "/project", config)
+        .then(response => response.data)
+        .then((data) =>{
+          if(data.orders!=null){
+            data.orders.map(order => {
+              if(order.project.id==_id)
+                return true;
+            });
+            return false;
           }                  
-      })
-      .catch((error) => {               
+        })
+        .catch((error) => {               
           let code = error.toJSON().status;
           if(code===401){
               alert('Authorization is required');
           }
           else alert('Internal server error');
-      });
+        });
+      } else if(decodedToken.id != undefined) {
+        axios
+        .get("/employee/" + decodedToken.id, config)
+        .then(response => response.data)
+        .then((data) =>{
+          if(data.currentProjects!=null){
+            data.currentProjects.map(project => {
+              if(project.id==_id)
+                return true;
+            });
+            return false;
+          }                  
+        })
+        .catch((error) => {               
+          let code = error.toJSON().status;
+          if(code===401){
+              alert('Authorization is required');
+          }
+          else alert('Internal server error');
+        });
+      }
     }
 
     return (

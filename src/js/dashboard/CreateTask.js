@@ -1,4 +1,4 @@
-import { useState, useEffect} from 'react';
+import { useState, useLayoutEffect} from 'react';
 import axios from "axios";
 import { useCookies } from 'react-cookie';
 import { format, parseISO } from "date-fns";
@@ -12,7 +12,7 @@ import '../../css/CreateTask.css';
 
 export default function CreateTask(props) {
   const[cookies] = useCookies(["token", "employeeId"]);
-  const[project, setProject] = useState({}); //TODO
+  const[project, setProject] = useState({});
   const[name, setName] = useState(""); 
   const[description, setDescription] = useState(""); 
   const[dueDate, setDueDate] = useState(new Date());
@@ -31,6 +31,14 @@ export default function CreateTask(props) {
   const[isDisabled, setIsDisabled] = useState(false);
   const[selectedFile, setSelectedFile] = useState();
 
+  useLayoutEffect(() => {
+    getProject(); 
+
+    props.listenCookieChange(() => {
+      getProject(); 
+    }, 1000);
+  }, []);
+
   const displayError = () => {
     if(error!=="")
     {
@@ -38,6 +46,38 @@ export default function CreateTask(props) {
       logout();
     }
    }
+
+   function getProject(){
+    let currentProjectId = document.cookie
+                .split("; ")
+                .find((row) => row.startsWith("project="))
+                ?.split("=")[1];
+
+    let config = {
+      headers: {
+          Authorization: 'Bearer ' + cookies.token
+      }
+    };
+
+    axios
+    .get("/project/tickets/" + currentProjectId, config)
+    .then(response => response.data)
+    .then((data) =>{
+        if(data){
+          setProject(data);
+        }                    
+    })
+    .catch((error) => {
+      let code = error.toJSON().status;
+      if(code===400 && error.response.data !== null)
+        alert(error.response.data.message);
+      else if(code===401)
+        setError('Authorization is required');
+      else if(code===403)
+        alert("Access is denied"); 
+      else alert('Internal server error');
+    });
+  }
 
   const submitCreate = () => {
     if(assignee != null){
@@ -121,7 +161,7 @@ export default function CreateTask(props) {
         <div className="col-md-1"></div>
            <div className="col-md-3"></div>
             <div className="col-md-5">
-                <h3>Create new ticket:</h3>              
+                <h3><span className='project-name'>[{project.name}]</span>&nbsp;&nbsp;Create new ticket:</h3>              
             </div>
         </div>
         <div className="row">

@@ -33,6 +33,9 @@
     margin-right: 10px;
 }
 
-.sidenav #new-ticket{
-    font-weight: bold;
+.sidenav .up-wrapper{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }

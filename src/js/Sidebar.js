@@ -58,10 +58,6 @@ function Sidebar(props){
         });
     }
 
-    const goToDashboard = () => {
-        props.navigate('dashboard/' + cookies.project);
-    }
-
     logout = () => {        
         document.cookie = "url=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
         document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
@@ -76,19 +72,28 @@ function Sidebar(props){
             {
                 decodedToken.role!=="ROLE_CUSTOMER" && cookies.project!==undefined
                 ? <div>
+                    <div className="up-wrapper">
+                        <b>Current project:</b>
+                        <div style={{width:"85%"}}> 
+                            <Form.Select onChange={e => document.cookie = "project=" + e.target.value + "; path=/"}>                
+                            {
+                                projects.map(project => {
+                                    let currentProjectId = document.cookie
+                                            .split("; ")
+                                            .find((row) => row.startsWith("project="))
+                                            ?.split("=")[1];
+                                    if(currentProjectId != project.id)
+                                        return <option value={project.id}>{project.name}</option>;
+                                    else return <option selected value={project.id}>{project.name}</option>;
+                                })
+                            }
+                            </Form.Select> 
+                        </div>
+                    </div><hr/>
                     <div>
-                        <Form.Select>                
-                        {
-                            projects.map(project => {
-                                return <option value={project.id}>{project.name}</option>;
-                            })
-                        }
-                        </Form.Select> 
-                    </div>   
-                    <div>
-                        <a href='/app/ticket_new' id='new-ticket' className='action'>
+                        <a href='/app/ticket_new' className='action'>
                             <i className="bi bi-plus-square"></i>
-                            <span>NEW TICKET</span>
+                            <b>NEW TICKET</b>
                         </a><hr/>
                     </div>
                 </div>
@@ -104,7 +109,7 @@ function Sidebar(props){
             </a>
             {
                 cookies.project!==undefined
-                ? <a onClick={goToDashboard} className='action'>
+                ? <a href='/app/dashboard' className='action'>
                     <i className="bi bi-check2-square"></i>
                     <span>Tickets</span>
                 </a>

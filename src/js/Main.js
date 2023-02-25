@@ -23,12 +23,33 @@ const OnlyManagerAdminRoute = ({ redirectPath = '/', children }) => {
 
 export default function Main(){
     const navigate = useNavigate();
-    const[cookies] = useCookies(["token", "employeeId", "project"]);
+    const[cookies] = useCookies(["token", "employeeId"]);
     const[decodedToken, setDecodedToken] = useState({});
 
     useLayoutEffect(() => {        
         setDecodedToken(jwt_decode(cookies.token));
     }, []);
+
+    const getCookieCurrentProjectId = () => {
+        return document.cookie
+                .split("; ")
+                .find((row) => row.startsWith("project="))
+                ?.split("=")[1];
+    }
+
+    const listenCookieChange = (callback, interval = 1000) => {
+        let lastCookie = getCookieCurrentProjectId();
+        setInterval(()=> {
+            let cookie = getCookieCurrentProjectId();
+            if (cookie !== lastCookie) {
+                try {
+                    callback();
+                } finally {
+                    lastCookie = cookie;
+                }
+            }
+        }, interval);
+    }
 
     return(
         <div className="main">
@@ -36,11 +57,11 @@ export default function Main(){
             <Routes>                  
                 <Route path="/*" element={<Navigate to={decodedToken.role!=="ROLE_CUSTOMER" 
                                                         ? "profile/" +  cookies.employeeId
-                                                        : "dashboard/" + cookies.project} />} />
+                                                        : "dashboard/" + getCookieCurrentProjectId()} />} />
                 <Route path="profile/:id" element={<Profile navigate={navigate}  /> } />
                 {
                     cookies.project!==undefined
-                    ?<Route path="dashboard/:id" element={<Dashboard navigate={navigate}  /> } />
+                    ?<Route path="dashboard" element={<Dashboard navigate={navigate} listenCookieChange={listenCookieChange}  /> } />
                     : ''
                 }
                 <Route exact path="ticket/:id" element={<SingleTask navigate={navigate}  /> } />                
@@ -62,7 +83,7 @@ export default function Main(){
 
                 {
                     decodedToken.role!=="ROLE_CUSTOMER" && cookies.project!==undefined
-                    ? <Route path="ticket_new" element={<CreateTask navigate={navigate}  /> } />
+                    ? <Route path="ticket_new" element={<CreateTask navigate={navigate} listenCookieChange={listenCookieChange}  /> } />
                     : ''
                 }
             </Routes> 

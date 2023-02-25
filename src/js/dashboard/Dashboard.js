@@ -2,7 +2,6 @@ import { useState, useLayoutEffect, useEffect } from 'react';
 import { DragDropContext } from '@hello-pangea/dnd';
 import { useCookies } from "react-cookie";
 import axios from "axios";
-import { useParams } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 
 import {logout} from '../Sidebar.js';
@@ -10,6 +9,7 @@ import Column from './Column';
 import SearchBar from "./SearchBar";
 import '../../css/Dashboard.css';
 import '../../css/Projects.css';
+import ProjectEmployeesModal, {clearInput} from '../ProjectEmployeesModal.js';
 
 export default function Dashboard(props) {
   const initialData = {
@@ -24,30 +24,51 @@ export default function Dashboard(props) {
     columnOrder: ['OPEN', 'IN_DESIGN', 'IN_BUILD', 'READY_FOR_TEST', 'CLOSE'],
   };
   const[data, setData] = useState(initialData);
-  const {id} = useParams(); 
   const[searchData, setSearchData] = useState([]);
-  const[filterSeverity, setFilterSeverity] = useState("CRITICAL");
+  const[filterSeverity, setFilterSeverity] = useState("—");
   const[isShowOnlyMine, setShowOnlyMine] = useState(false);
+  const[project, setProject] = useState({employees:[]});
   const[cookies] = useCookies(["token", "employeeId"]);
+  const[showModal, setShowModal] = useState(false);
   const[error, setError] = useState("");
 
   useLayoutEffect(() => {
-    getTickets();     
+    getTickets();    
+    getProject(); 
+
+    props.listenCookieChange(() => {
+      setFilterSeverity("—");
+      setShowOnlyMine(false);
+      setData(initialData);
+      data.columnOrder.map((columnName) => {
+        data.columns[columnName].taskIds = []
+      });
+      data.tasks={};
+      getProject(); 
+      getTickets();
+    }, 1000);
   }, []);
 
   const filterBySeverity = (value) => {
     setFilterSeverity(value);
-    
-    data.columnOrder.map((columnName) => {
-      data.columns[columnName].taskIds.sort((a)=>
-        data.tasks[a].severity != value ? 1 : -1,
-      );
-    }); 
+    if(value=='—'){
+      data.columnOrder.map((columnName) => {
+        data.columns[columnName].taskIds.sort((a,b)=>
+          a.order < b.order ? 1 : -1,
+        );
+      });
+    }
+    else {
+      data.columnOrder.map((columnName) => {
+        data.columns[columnName].taskIds.sort((a)=>
+          data.tasks[a].severity != value ? 1 : -1,
+        );
+      });
+    }
   }
 
   const showOnlyMine = (isChecked) => {
     setShowOnlyMine(isChecked);
-
     if(isChecked) {
       data.columnOrder.map((columnName) => {
         data.columns[columnName].taskIds = 
@@ -80,53 +101,91 @@ export default function Dashboard(props) {
     }
   }
 
-  function getTickets(){ 
-    if(id){
-      let config = {
-        headers: {
-            Authorization: 'Bearer ' + cookies.token
-        }
-      };
+  function getProject(){
+    let currentProjectId = document.cookie
+                .split("; ")
+                .find((row) => row.startsWith("project="))
+                ?.split("=")[1];
 
-      axios
-      .get("/project/" + id + "/tickets", config)
-      .then(response => response.data)
-      .then((_data) =>{
-          if(_data){
-            _data.sort((a) =>
-              a.severity != filterSeverity ? 1 : -1,
-            )
-            .map(ticket => {
-              let ticket_id_toString = '' + ticket.id;
-              let task = {
-                id: ticket_id_toString, 
-                content: ticket.name, 
-                order: ticket.order, 
-                dueDate: ticket.dueDate,
-                severity: ticket.severity,
-                status: ticket.status,
-                assigneePhoto: ticket.assignee.photo,
-                assigneeName: ticket.assignee.user.name + " " + ticket.assignee.user.surname,
-                assigneeId: ticket.assignee.id};
-              const {tasks} = data;
-              tasks[ticket_id_toString] = task;
-              data.columns[ticket.status].taskIds.push(task.id);              
-            }) 
-            setSearchData(_data);
-          }                    
-      })
-      .catch((error) => {
-        console.log(error);
-        let code = error.toJSON().status;
-        if(code===400 && error.response.data !== null)
-            alert(error.response.data.message);
-        else if(code===401)
-            setError('Authorization is required');
-        else if(code===403)
-            alert("Access is denied"); 
-        else alert('Internal server error');
-      });
-    }       
+    let config = {
+      headers: {
+          Authorization: 'Bearer ' + cookies.token
+      }
+    };
+
+    axios
+    .get("/project/tickets/" + currentProjectId, config)
+    .then(response => response.data)
+    .then((data) =>{
+        if(data){
+          setProject(data);
+        }                    
+    })
+    .catch((error) => {
+      let code = error.toJSON().status;
+      if(code===400 && error.response.data !== null)
+        alert(error.response.data.message);
+      else if(code===401)
+        setError('Authorization is required');
+      else if(code===403)
+        alert("Access is denied"); 
+      else alert('Internal server error');
+    });
+  }
+
+  function getTickets(){ 
+    data.columnOrder.map((columnName) => {
+      data.columns[columnName].taskIds = []
+    });
+    data.tasks={};
+
+    let currentProjectId = document.cookie
+                          .split("; ")
+                          .find((row) => row.startsWith("project="))
+                          ?.split("=")[1];
+
+    let config = {
+      headers: {
+          Authorization: 'Bearer ' + cookies.token
+      }
+    };
+
+    axios
+    .get("/project/" + currentProjectId + "/tickets", config)
+    .then(response => response.data)
+    .then((_data) =>{
+        if(_data){
+          _data
+          .sort((a, b) => a.order > b.order ? 1 : -1)
+          .map(ticket => {
+            let ticket_id_toString = '' + ticket.id;
+            let task = {
+              id: ticket_id_toString, 
+              content: ticket.name, 
+              order: ticket.order, 
+              dueDate: ticket.dueDate,
+              severity: ticket.severity,
+              status: ticket.status,
+              assigneePhoto: ticket.assignee.photo,
+              assigneeName: ticket.assignee.user.name + " " + ticket.assignee.user.surname,
+              assigneeId: ticket.assignee.id};
+            const {tasks} = data;
+            tasks[ticket_id_toString] = task;
+            data.columns[ticket.status].taskIds.push(task.id);              
+          }) 
+          setSearchData(_data);
+        }                    
+    })
+    .catch((error) => {
+      let code = error.toJSON().status;
+      if(code===400 && error.response.data !== null)
+        alert(error.response.data.message);
+      else if(code===401)
+        setError('Authorization is required');
+      else if(code===403)
+        alert("Access is denied"); 
+      else alert('Internal server error');
+    }); 
   }
 
   const onDragEnd = result => {
@@ -163,14 +222,12 @@ export default function Dashboard(props) {
           [newColumn.id]: newColumn,
         },
       };
-
+      
       let config = {
         headers: {
             Authorization: 'Bearer ' + cookies.token
         }
       };
-
-      let initData = data;
 
       newState.tasks[draggableId].status = finish.title;
 
@@ -187,7 +244,6 @@ export default function Dashboard(props) {
         else if(code===403)
           alert("Access is denied"); 
         else alert('Internal server error');
-        setData(initData);
       }); 
 
       setData(newState);
@@ -224,14 +280,11 @@ export default function Dashboard(props) {
       }
     };
 
-    let initData = data;
-
     newState.tasks[draggableId].status = finish.title;
 
     axios
     .put("/project/reorder?id=" + draggableId + "&destination=" + destination.index + "&destinationColumn=" + finish.title, 
           null, config)
-    .then(()=>{})
     .catch((error) => {
       let code = error.toJSON().status;
       if(code===400 && error.response.data !== null)
@@ -241,38 +294,53 @@ export default function Dashboard(props) {
       else if(code===403)
         alert("Access is denied"); 
       else alert('Internal server error');
-      setData(initData);
     });      
     
     setData(newState);
     
-  };  
+  };
 
   return (
     <div className="projects">
       {displayError()}
       <div className="container" style={{fontFamily:"sans-serif"}}>
-        <div className="row switch-project">
-          <div className='col-1'>Project</div>
-          {/* TODO display all employee's projects*/}
-          <Form.Select size="sm" onChange={e => filterBySeverity(e.target.value)} style={{"width":"10%"}}>
-            <option selected value='CRITICAL'>CRITICAL</option>                    
-            <option value='HIGH'>HIGH</option>
-            <option value='NORMAL'>NORMAL</option>
-            <option value='LOW'>LOW</option>
-          </Form.Select>
-          {/* TODO display employees*/}
-          <div className='col-3'></div>
-        </div>
         <div className="well well-sm row">
+          <div className="project-info">
+            <div>Project <b>{project.name}</b></div>
+            <div className='project-employees' onClick={()=>setShowModal(true)}>
+            {
+              project.employees!==undefined
+              ? project.employees
+                .sort((a, b) => a.id > b.id ? 1 : -1)
+                .map((employee, idx) => {
+                  if(idx<3) return <div className="profile-img">
+                                      <img src={`data:image/jpeg;base64,${employee.photo}`} />
+                                    </div>
+                })
+              : ''
+            }
+            {
+              project.employees.size > 3
+              ? <div className="profile-img">
+                  <span className='centered'>+{project.employees-3}</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="#D4DADE" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                    <circle cx="8" cy="8" r="8"/>
+                  </svg>
+                </div>
+              : ''
+            }
+            </div>
+          </div>
           <div className='col-1 filter-title'>Show first</div>
-          <Form.Select size="sm" onChange={e => filterBySeverity(e.target.value)} style={{"width":"10%"}}>
-            <option selected value='CRITICAL'>CRITICAL</option>                    
+          <Form.Select size="sm" value={filterSeverity} onChange={e => filterBySeverity(e.target.value)} style={{"width":"10%"}}>
+            <option value='—'>&nbsp;&nbsp;—</option>
+            <option value='CRITICAL'>CRITICAL</option>                    
             <option value='HIGH'>HIGH</option>
             <option value='NORMAL'>NORMAL</option>
             <option value='LOW'>LOW</option>
           </Form.Select>
-          <Form.Check onChange={e => showOnlyMine(e.target.checked)} className='col-2 filter-only-mine' type="switch" label="&nbsp;Only mine" />
+          <Form.Check checked={isShowOnlyMine} onChange={e => showOnlyMine(e.target.checked)} 
+            className='col-2 filter-only-mine' type="switch" label="&nbsp;Only mine" />
           <div className='col-3'></div> 
           <SearchBar placeholder="Ticket name" data={searchData}/>
         </div>  
@@ -292,6 +360,7 @@ export default function Dashboard(props) {
           </DragDropContext>                  
         </div>  
       </div>
+      <ProjectEmployeesModal show={showModal} onHide={()=>{setShowModal(false); clearInput()}} employees={project.employees} editMode={false}  />
     </div>
   );
 }

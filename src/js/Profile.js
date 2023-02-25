@@ -254,12 +254,12 @@ export default function Profile(props) {
                                 {editMode && selectedImage
                                 ? <img src={`${selectedImage}`} />
                                 : <img src={`data:image/jpeg;base64,${employee.photo}`} />}
-                                {editMode ? 
-                                    <div className="file btn btn-lg btn-primary " id="editPhoto">
-                                        Change Photo                           
-                                        <input type="file" name="file" accept="image/*" onChange={uploadPhoto}/>
-                                    </div>
-                                    : ""}
+                                {editMode 
+                                ? <div className="file btn btn-lg btn-primary " id="editPhoto">
+                                    Change Photo                           
+                                    <input type="file" name="file" accept="image/*" onChange={uploadPhoto}/>
+                                </div> 
+                                : ""}
                             </div>
                             <div className="profile-work">
                                 <br/>

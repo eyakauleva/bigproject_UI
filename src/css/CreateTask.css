@@ -75,3 +75,8 @@
     font-size: 12px;
     color: red;
 }
+
+.create-task .project-name{
+    font-weight: lighter;
+    font-size: 24px;
+}

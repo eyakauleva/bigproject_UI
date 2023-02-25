@@ -123,7 +123,6 @@ export default function Projects(props) {
                                     <p className={isList ? 'group inner list-group-item-text-list' : 'group inner list-group-item-text'}>{project.description}</p>
                                     <div className={isList ? 'row container-custom-list' : 'row container-custom'}>
                                         <div className="col-xs-12 col-md-6">
-                                            {/* <p className="lead">$21.000</p> */}
                                         </div>
                                         <div className="col-xs-12 col-md-6">
                                             <a className={isList ? 'btn-custom-2' : 'btn-custom-2 btn-grid'} onClick={() => props.navigate("project/" + project.id)}>

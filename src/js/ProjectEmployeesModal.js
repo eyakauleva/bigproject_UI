@@ -11,7 +11,7 @@ import '.././css/ProjectEmployeesModal.css';
 var clearInput;
 export {clearInput}
 export default function ProjectEmployeesModal(props) {
-  const[cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const[cookies] = useCookies(["token"]);
   const[allEmployees, setAllEmployees] = useState([]);
   const[inputText, setInputText] = useState("");
   const[error, setError] = useState("");
@@ -60,18 +60,23 @@ export default function ProjectEmployeesModal(props) {
     }
 
     const inputHandler = (e) => {
-        var lowerCase = e.target.value.toLowerCase();
+        var lowerCase = e.target.value.toLowerCase().replaceAll(' ', '');
         setInputText(lowerCase);
-      }
+    }
 
-    const filteredAllEmployees =  Object.values(allEmployees).filter((employee) =>{
-        let fullName = (employee.user.name + ' ' + employee.user.surname).toLowerCase();
-        return fullName.startsWith(inputText);
-    });
-
-    const filteredProjectEmployees =  Object.values(props.employees).filter((employee) =>{
-        let fullName = (employee.user.name + ' ' + employee.user.surname).toLowerCase();
-        return fullName.startsWith(inputText);
+    const filteredEmployees = (employees) =>  
+    Object
+    .values(employees)
+    .filter((employee) =>{
+        if(inputText === ''){
+            return employee;
+        } else {
+            if(employee.user) 
+                return employee.user.name.toLowerCase().startsWith(inputText)
+                    || employee.user.surname.toLowerCase().startsWith(inputText)
+                    || (employee.user.name + employee.user.surname).toLowerCase().startsWith(inputText)
+                    || (employee.user.surname + employee.user.name).toLowerCase().startsWith(inputText); 
+        }
     });
 
     const isEmployeeInProject = (employee_) => {
@@ -91,7 +96,7 @@ export default function ProjectEmployeesModal(props) {
         <Modal.Header closeButton>
             <div style={{width:'80%'}}>
                 <InputGroup>
-                    <Form.Control placeholder="Name Surname" aria-label="Name Surname" aria-describedby="basic-addon1" onChange={inputHandler} value={inputText} />
+                    <Form.Control placeholder="Name Surname" aria-label="Name Surname" aria-describedby="basic-addon1" onChange={inputHandler} />
                     <InputGroup.Text id="basic-addon1"><i className="bi bi-search"></i></InputGroup.Text>
                 </InputGroup>
             </div>     
@@ -99,7 +104,7 @@ export default function ProjectEmployeesModal(props) {
         <Modal.Body>
             <div>
             { inputText === '' || props.editMode==false
-            ? filteredProjectEmployees.map((employee) => 
+            ? filteredEmployees(props.employees).map((employee) => 
                 <div className='item list-group-item'> 
                     <div className='item-wrapper'>
                         <div>
@@ -125,7 +130,7 @@ export default function ProjectEmployeesModal(props) {
                         }                     
                     </div><hr/>               
                 </div> )
-            : filteredAllEmployees.map((employee) => 
+            : filteredEmployees(allEmployees).map((employee) => 
                 <div className='item list-group-item'> 
                     <div className='item-wrapper'>
                         <div>
