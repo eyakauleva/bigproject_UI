@@ -65,7 +65,7 @@ function Authorization(props){
             if(cookies.url != null && cookies.url != undefined && cookies.url !== "undefined")
               props.navigate(cookies.url);
             else props.navigate('/app');
-            }                    
+          }                    
         })
         .catch((error) => {               
           let code = error.toJSON().status;
@@ -78,14 +78,37 @@ function Authorization(props){
         });
         
       } else{
-        if(cookies.url != null && cookies.url != undefined && cookies.url !== "undefined")
-          props.navigate(cookies.url);
-        else props.navigate('/app');
+        
+        axios
+        .get("/orders/" + decodedToken.id + "/project", config)
+        .then(response => response.data)
+        .then((data) =>{
+          if(data){
+            let projects = [];
+            data.map(order => projects.push({id: order.project.id, name: order.project.name}));
+            projects = projects.sort((a, b) => a.id > b.id ? 1 : -1);
+            document.cookie = "project=" + projects[0].id + "; path=/";  
+
+            if(cookies.url != null && cookies.url != undefined && cookies.url !== "undefined")
+              props.navigate(cookies.url);
+            else props.navigate('/app');
+            
+          } 
+
+        })
+        .catch((error) => {               
+          let code = error.toJSON().status;
+          if(code===400 && error.response.data !== null)
+              setErrorMessage(error.response.data.message);
+          else if(code===401){
+              alert('Authorization is required');
+          }
+          else alert('Internal server error');
+        });
       }
 
     })
     .catch((error) => {
-      console.log(error);
       let code = error.toJSON().status;
       if(code===401) setErrorMessage("Bad credentials");
       else if(code===423) setErrorMessage("Account is locked");

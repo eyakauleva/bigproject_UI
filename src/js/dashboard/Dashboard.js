@@ -3,6 +3,7 @@ import { DragDropContext } from '@hello-pangea/dnd';
 import { useCookies } from "react-cookie";
 import axios from "axios";
 import Form from 'react-bootstrap/Form';
+import jwt_decode from "jwt-decode";
 
 import {logout} from '../Sidebar.js';
 import Column from './Column';
@@ -30,9 +31,11 @@ export default function Dashboard(props) {
   const[project, setProject] = useState({employees:[]});
   const[cookies] = useCookies(["token", "employeeId"]);
   const[showModal, setShowModal] = useState(false);
+  const[decodedToken, setDecodedToken] = useState({});
   const[error, setError] = useState("");
 
   useLayoutEffect(() => {
+    setDecodedToken(jwt_decode(cookies.token)); 
     getTickets();    
     getProject(); 
 
@@ -107,85 +110,89 @@ export default function Dashboard(props) {
                 .find((row) => row.startsWith("project="))
                 ?.split("=")[1];
 
-    let config = {
-      headers: {
-          Authorization: 'Bearer ' + cookies.token
-      }
-    };
-
-    axios
-    .get("/project/tickets/" + currentProjectId, config)
-    .then(response => response.data)
-    .then((data) =>{
-        if(data){
-          setProject(data);
-        }                    
-    })
-    .catch((error) => {
-      let code = error.toJSON().status;
-      if(code===400 && error.response.data !== null)
-        alert(error.response.data.message);
-      else if(code===401)
-        setError('Authorization is required');
-      else if(code===403)
-        alert("Access is denied"); 
-      else alert('Internal server error');
-    });
+    if(currentProjectId != undefined){
+      let config = {
+        headers: {
+            Authorization: 'Bearer ' + cookies.token
+        }
+      };
+  
+      axios
+      .get("/project/tickets/" + currentProjectId, config)
+      .then(response => response.data)
+      .then((data) =>{
+          if(data){
+            setProject(data);
+          }                    
+      })
+      .catch((error) => {
+        let code = error.toJSON().status;
+        if(code===400 && error.response.data !== null)
+          alert(error.response.data.message);
+        else if(code===401)
+          setError('Authorization is required');
+        else if(code===403)
+          alert("Access is denied"); 
+        else alert('Internal server error');
+      });
+    }
   }
 
   function getTickets(){ 
-    data.columnOrder.map((columnName) => {
-      data.columns[columnName].taskIds = []
-    });
-    data.tasks={};
-
     let currentProjectId = document.cookie
                           .split("; ")
                           .find((row) => row.startsWith("project="))
                           ?.split("=")[1];
 
-    let config = {
-      headers: {
-          Authorization: 'Bearer ' + cookies.token
-      }
-    };
+    if(currentProjectId != undefined){
+      data.columnOrder.map((columnName) => {
+        data.columns[columnName].taskIds = []
+      });
+      data.tasks={};
 
-    axios
-    .get("/project/" + currentProjectId + "/tickets", config)
-    .then(response => response.data)
-    .then((_data) =>{
-        if(_data){
-          _data
-          .sort((a, b) => a.order > b.order ? 1 : -1)
-          .map(ticket => {
-            let ticket_id_toString = '' + ticket.id;
-            let task = {
-              id: ticket_id_toString, 
-              content: ticket.name, 
-              order: ticket.order, 
-              dueDate: ticket.dueDate,
-              severity: ticket.severity,
-              status: ticket.status,
-              assigneePhoto: ticket.assignee.photo,
-              assigneeName: ticket.assignee.user.name + " " + ticket.assignee.user.surname,
-              assigneeId: ticket.assignee.id};
-            const {tasks} = data;
-            tasks[ticket_id_toString] = task;
-            data.columns[ticket.status].taskIds.push(task.id);              
-          }) 
-          setSearchData(_data);
-        }                    
-    })
-    .catch((error) => {
-      let code = error.toJSON().status;
-      if(code===400 && error.response.data !== null)
-        alert(error.response.data.message);
-      else if(code===401)
-        setError('Authorization is required');
-      else if(code===403)
-        alert("Access is denied"); 
-      else alert('Internal server error');
-    }); 
+      let config = {
+        headers: {
+            Authorization: 'Bearer ' + cookies.token
+        }
+      };
+  
+      axios
+      .get("/project/" + currentProjectId + "/tickets", config)
+      .then(response => response.data)
+      .then((_data) =>{
+          if(_data){
+            _data
+            .sort((a, b) => a.order > b.order ? 1 : -1)
+            .map(ticket => {
+              let ticket_id_toString = '' + ticket.id;
+              let task = {
+                id: ticket_id_toString, 
+                content: ticket.name, 
+                order: ticket.order, 
+                dueDate: ticket.dueDate,
+                severity: ticket.severity,
+                status: ticket.status,
+                assigneePhoto: ticket.assignee.photo,
+                assigneeName: ticket.assignee.user.name + " " + ticket.assignee.user.surname,
+                assigneeId: ticket.assignee.id};
+              const {tasks} = data;
+              tasks[ticket_id_toString] = task;
+              data.columns[ticket.status].taskIds.push(task.id);              
+            }) 
+            setSearchData(_data);
+          }                    
+      })
+      .catch((error) => {
+        let code = error.toJSON().status;
+        if(code===400 && error.response.data !== null)
+          alert(error.response.data.message);
+        else if(code===401)
+          setError('Authorization is required');
+        else if(code===403)
+          alert("Access is denied"); 
+        else alert('Internal server error');
+      });
+    }
   }
 
   const onDragEnd = result => {
@@ -340,7 +347,8 @@ export default function Dashboard(props) {
             <option value='LOW'>LOW</option>
           </Form.Select>
           <Form.Check checked={isShowOnlyMine} onChange={e => showOnlyMine(e.target.checked)} 
-            className='col-2 filter-only-mine' type="switch" label="&nbsp;Only mine" />
+            className='col-2 filter-only-mine' style={decodedToken.role === "ROLE_CUSTOMER" ? {visibility:"hidden"} : {}} 
+            type="switch" label="&nbsp;Only mine" />
           <div className='col-3'></div> 
           <SearchBar placeholder="Ticket name" data={searchData}/>
         </div>  
@@ -360,7 +368,8 @@ export default function Dashboard(props) {
           </DragDropContext>                  
         </div>  
       </div>
-      <ProjectEmployeesModal show={showModal} onHide={()=>{setShowModal(false); clearInput()}} employees={project.employees} editMode={false}  />
+      <ProjectEmployeesModal navigate={props.navigate} show={showModal} onHide={()=>{setShowModal(false); clearInput()}} 
+        employees={project.employees} editMode={false}  />
     </div>
   );
 }

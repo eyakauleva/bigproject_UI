@@ -41,21 +41,43 @@ function Sidebar(props){
 
         let decodedToken = jwt_decode(cookies.token);
 
-        axios
-        .get("/employee/user/" + decodedToken.id, config)
-        .then(response => response.data)
-        .then((data) =>{
-            if(data.currentProjects!=null){
-                setProjects(data.currentProjects.sort((a, b) => a.id > b.id ? 1 : -1));
-            }                  
-        })
-        .catch((error) => {               
-            let code = error.toJSON().status;
-            if(code===401){
-                alert('Authorization is required');
-            }
-            else alert('Internal server error');
-        });
+        if(decodedToken.role!=="ROLE_CUSTOMER"){
+            axios
+            .get("/employee/user/" + decodedToken.id, config)
+            .then(response => response.data)
+            .then((data) =>{
+                if(data.currentProjects!=null){
+                    setProjects(data.currentProjects.sort((a, b) => a.id > b.id ? 1 : -1));
+                }                  
+            })
+            .catch((error) => {               
+                let code = error.toJSON().status;
+                if(code===401){
+                    alert('Authorization is required');
+                }
+                else alert('Internal server error');
+            });
+
+        } else {
+            axios
+            .get("/orders/" + decodedToken.id + "/project", config)
+            .then(response => response.data)
+            .then((data) =>{
+              if(data){
+                let projects = [];
+                data.orders.map(order => projects.push(order.project));
+                setProjects(projects.sort((a, b) => a.id > b.id ? 1 : -1)); 
+              } 
+                            
+            })
+            .catch((error) => {               
+                let code = error.toJSON().status;
+                if(code===401){
+                    alert('Authorization is required');
+                }
+                else alert('Internal server error');
+            });
+        }
     }
 
     logout = () => {        

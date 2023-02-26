@@ -106,7 +106,7 @@ export default function ProjectEmployeesModal(props) {
             { inputText === '' || props.editMode==false
             ? filteredEmployees(props.employees).map((employee) => 
                 <div className='item list-group-item'> 
-                    <div className='item-wrapper'>
+                    <div className='item-wrapper' onClick={() => props.navigate('profile/' + employee.id)}>
                         <div>
                             <img className="photo" src={`data:image/jpeg;base64,${employee.photo}`}/>
                         </div>
@@ -132,7 +132,7 @@ export default function ProjectEmployeesModal(props) {
                 </div> )
             : filteredEmployees(allEmployees).map((employee) => 
                 <div className='item list-group-item'> 
-                    <div className='item-wrapper'>
+                    <div className='item-wrapper' onClick={() => props.navigate('profile/' + employee.id)}>
                         <div>
                             <img className="photo" src={`data:image/jpeg;base64,${employee.photo}`}/>
                         </div>

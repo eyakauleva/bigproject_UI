@@ -1,7 +1,7 @@
 import { useState, useLayoutEffect} from 'react';
 import axios from "axios";
 import { useCookies } from 'react-cookie';
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 import Form from 'react-bootstrap/Form';
 import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
@@ -53,30 +53,32 @@ export default function CreateTask(props) {
                 .find((row) => row.startsWith("project="))
                 ?.split("=")[1];
 
-    let config = {
-      headers: {
-          Authorization: 'Bearer ' + cookies.token
-      }
-    };
-
-    axios
-    .get("/project/tickets/" + currentProjectId, config)
-    .then(response => response.data)
-    .then((data) =>{
-        if(data){
-          setProject(data);
-        }                    
-    })
-    .catch((error) => {
-      let code = error.toJSON().status;
-      if(code===400 && error.response.data !== null)
-        alert(error.response.data.message);
-      else if(code===401)
-        setError('Authorization is required');
-      else if(code===403)
-        alert("Access is denied"); 
-      else alert('Internal server error');
-    });
+    if(currentProjectId != undefined){
+        let config = {
+            headers: {
+                Authorization: 'Bearer ' + cookies.token
+            }
+        };
+    
+        axios
+        .get("/project/tickets/" + currentProjectId, config)
+        .then(response => response.data)
+        .then((data) =>{
+            if(data){
+                setProject(data);
+            }                    
+        })
+        .catch((error) => {
+            let code = error.toJSON().status;
+            if(code===400 && error.response.data !== null)
+                alert(error.response.data.message);
+            else if(code===401)
+                setError('Authorization is required');
+            else if(code===403)
+                alert("Access is denied"); 
+            else alert('Internal server error');
+        });
+    }
   }
 
   const submitCreate = () => {

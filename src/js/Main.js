@@ -32,9 +32,9 @@ export default function Main(){
 
     const getCookieCurrentProjectId = () => {
         return document.cookie
-                .split("; ")
-                .find((row) => row.startsWith("project="))
-                ?.split("=")[1];
+                        .split("; ")
+                        .find((row) => row.startsWith("project="))
+                        ?.split("=")[1];
     }
 
     const listenCookieChange = (callback, interval = 1000) => {
@@ -57,7 +57,7 @@ export default function Main(){
             <Routes>                  
                 <Route path="/*" element={<Navigate to={decodedToken.role!=="ROLE_CUSTOMER" 
                                                         ? "profile/" +  cookies.employeeId
-                                                        : "dashboard/" + getCookieCurrentProjectId()} />} />
+                                                        : "dashboard"} />} />
                 <Route path="profile/:id" element={<Profile navigate={navigate}  /> } />
                 {
                     cookies.project!==undefined

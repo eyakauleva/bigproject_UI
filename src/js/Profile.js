@@ -62,7 +62,7 @@ export default function Profile(props) {
                     setUser(data.user);
                     if(data.currentProjects != null){
                         setCurrProjects(data.currentProjects.sort((a, b) => a.id > b.id ? 1 : -1)); 
-                    }
+                    } else setCurrProjects(data.currentProjects);
                     setPosition(data.position);      
                     setDecodedToken(jwt_decode(cookies.token));
                 }                    

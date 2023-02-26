@@ -5,6 +5,10 @@
     padding: 0 20px;
 }
 
+.project-employees-modal .item-wrapper:hover{
+    cursor: pointer;
+}
+
 .project-employees-modal .wrapper{
     margin-left: 30px;
     width: 100%;

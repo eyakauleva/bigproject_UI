@@ -233,18 +233,16 @@ export default function ProjectPage(props) {
         }
       };
 
-      if(decodedToken.role==="ROLE_CLIENT"){
+      if(decodedToken.role==="ROLE_CUSTOMER"){
         axios
         .get("/orders/" + decodedToken.id + "/project", config)
         .then(response => response.data)
         .then((data) =>{
-          if(data.orders!=null){
-            data.orders.map(order => {
-              if(order.project.id==_id)
-                return true;
-            });
-            return false;
-          }                  
+          data.orders.map(order => {
+            if(order.project.id==_id)
+              return true;
+          });
+          return false;                
         })
         .catch((error) => {               
           let code = error.toJSON().status;
