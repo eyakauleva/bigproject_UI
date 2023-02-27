@@ -320,16 +320,17 @@ export default function Dashboard(props) {
               ? project.employees
                 .sort((a, b) => a.id > b.id ? 1 : -1)
                 .map((employee, idx) => {
-                  if(idx<3) return <div className="profile-img">
+                  if(idx<3) return <div className="profile-img" style={{marginLeft:1*idx + "%"}}>
                                       <img src={`data:image/jpeg;base64,${employee.photo}`} />
                                     </div>
                 })
               : ''
             }
+            {project.employees!=null?console.log(project.employees):''}
             {
-              project.employees.size > 3
-              ? <div className="profile-img">
-                  <span className='centered'>+{project.employees-3}</span>
+              project.employees.length > 3
+              ? <div className="profile-img" style={{marginLeft:"3.1%"}}>
+                  <span className='centered'>+{project.employees.length-3}</span>
                   <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="#D4DADE" class="bi bi-circle-fill" viewBox="0 0 16 16">
                     <circle cx="8" cy="8" r="8"/>
                   </svg>

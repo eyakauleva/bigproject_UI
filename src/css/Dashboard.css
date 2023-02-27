@@ -36,12 +36,17 @@
     flex-direction: row;
     margin-left: 40px;
     cursor: pointer;
+    
 }
 
-.projects .profile-img{
+.projects .profile-img:first-child{
     position: relative;
     text-align: center;
     color: white;
+}
+
+.projects .profile-img{
+    position: absolute;
 }
 
 .projects .profile-img .centered{
