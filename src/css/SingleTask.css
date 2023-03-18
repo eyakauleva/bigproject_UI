@@ -70,3 +70,137 @@
     font-size: 12px;
     color: red;
 }
+
+.comments-title{
+    margin-top: 3%;
+    text-align: left;
+}
+.comments{
+    padding: 1%;
+}
+.comment{
+    border-top: 1px solid rgb(206, 204, 204);
+    width: 100%;
+    margin-bottom: 1%;
+    border-top: 1px solid rgba(206, 204, 204, 0);
+    border-bottom: 1px solid rgba(255, 255, 255, 0);
+    border-left: 5px solid #1a94db00;
+}
+.comment:hover{
+    border-top: 1px solid rgb(206, 204, 204);
+    border-bottom: 1px solid rgb(206, 204, 204);
+    border-left: 5px solid #1a95db;
+    transition: all 0.2s ease-in-out;
+    background-color: rgba(153, 152, 152, 0.1);
+}
+.comment:hover .comment-icon{
+    visibility: visible;
+    cursor: pointer
+}
+.comment-image-container{
+    margin-left: .7%;
+}
+.comment-image-container .photo{
+    display: flex;
+    width: 25px ;
+    height: 25px;
+}
+.comment-container {
+    display: flex;
+    width: 100%;
+}
+.comment-content{
+    display: flex;
+    width: 100%;
+    margin-top: .7%;
+    margin-left: .3%;
+}
+.comment-date{
+    margin-left: 0;
+}
+.comment-text{
+    margin-left: 3%;
+    margin-top: .5%;
+    width: 96%;
+    margin-bottom: 1%;
+    word-wrap: break-word;
+}
+.comment a{
+    text-decoration:none;
+}
+.comment-actions{
+    display: flex;
+    width: 5%; 
+}
+.comment-icon{
+    visibility: hidden;
+    color:rgba(0, 0, 0, 0.59);
+    font-size: 18px;
+}
+.comment-icon:last-child{
+    margin-left: 10%;
+}
+.btn-comment{
+    float:right;
+}
+.btn-comment-form{
+    float:right;
+}
+.btn-cancel-form{
+    float:right;
+    margin-right: 1%;
+}
+.comment-form-textarea{
+    width: 100%;
+    min-height: 100px;
+}
+.comment-icon:hover{
+    color:rgb(0, 0, 0);
+}
+.comment-form{
+    display: block;
+}
+.comment-btn-group{
+    display: flow-root;
+    margin-bottom: 1%;
+}
+.comment-form-edit{
+    width: 98%;
+    margin-left: 1%;
+}
+.comment-text-non-full-view{
+    margin-top: 1.2%;
+    margin-bottom: 1.2%;
+    margin-left: 1%;
+    width: 50%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.comment-content-non-full-view{
+    display: flex;
+    margin-top: 1.2%;
+    margin-left: .3%;
+    margin-bottom: 1.2%;
+}
+.comment-image-container-non-full-view{
+    margin-top: .7%;
+    margin-left: .7%;
+}
+.comment-image-container-non-full-view .photo{
+    display: flex;
+    width: 25px ;
+    height: 25px;
+}
+.comment-arrow-icon{
+    margin-left: 1%;
+    display: flex;
+    margin-top: 1%;
+    color: rgb(94, 87, 87);
+}
+.comment-arrow-right-icon{
+    color: rgb(94, 87, 87);
+    display: flex;
+    margin-top: 1.5%;
+    margin-left: 1%;
+}

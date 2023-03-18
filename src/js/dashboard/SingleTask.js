@@ -1,4 +1,4 @@
-import { useState, useEffect} from 'react';
+import { useState, useLayoutEffect} from 'react';
 import axios from "axios";
 import { useCookies } from 'react-cookie';
 import { format, parseISO } from "date-fns";
@@ -11,6 +11,7 @@ import jwt_decode from "jwt-decode";
 import {logout} from '../Sidebar.js';
 import ChooseEmployeeModal from './ChooseEmployeeModal'
 import '../../css/SingleTask.css';
+import Comments from '../comments/Comments';
 
 export default function SingleTask(props) {
   const[cookies] = useCookies(["token", "employeeId"]);
@@ -33,7 +34,7 @@ export default function SingleTask(props) {
   const[error, setError] = useState("");
   const[projectId, setProjectId] = useState();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     getTicket();              
   }, [id]);
 
@@ -312,6 +313,11 @@ export default function SingleTask(props) {
                 {errorMessage}
             </div>
         </div>        
+        <div className="row">
+            <h5 className="comments-title">Comments</h5>
+            <hr/>
+            <Comments currentTicketId={id} /> 
+        </div>
         {
             editMode
             ?<div>
