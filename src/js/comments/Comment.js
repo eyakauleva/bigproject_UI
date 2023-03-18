@@ -29,7 +29,7 @@ import CommentForm from "./CommentForm";
                 </div>
                 {(comment.isFullView && !isEditing) && (isCanDeleteOrUpdate || isAdmin) &&
                     <div className="comment-actions">
-                        <i class="bi bi-pencil-square comment-icon" onClick={() => setActiveComment({id: comment.id, type: "editing"})}></i>
+                        <i class="bi bi-pencil-square comment-icon" onClick={() => {setActiveComment({id: comment.id, type: "editing"}); comment.isEdit = true;}}></i>
                         <i class="bi bi-trash3-fill comment-icon" onClick={() => deleteComment(comment.id)}></i>
                     </div>
                 }

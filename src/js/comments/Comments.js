@@ -77,6 +77,7 @@ const Comments = ({currentTicketId}) =>{
             .post("/comment/create/", comment, config)
             .then(response => response.data)
             .then((data) => {
+                data.isFullView = true;
                 setAllCommentsForCurentTicket(sortComments([data, ...allCommentsForCurentTicket]));
                 setShow(false);
                 setActiveComment(null);
@@ -174,7 +175,7 @@ const Comments = ({currentTicketId}) =>{
     }
 
     const updateView = (comment) => {
-        if(activeComment == null || comment.id !== activeComment.id){
+        if((activeComment == null && !comment.isEdit) || comment.id !== activeComment.id){
             var newState =  allCommentsForCurentTicket.map(com => {
                 if(com.id == comment.id){
                     com.isFullView = !com.isFullView;
