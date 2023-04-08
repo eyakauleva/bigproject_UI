@@ -14,8 +14,8 @@ import CommentForm from "./CommentForm";
         <div key={comment.id} className="comment" onClick={() => updateView(comment)}>
             <div className="comment-container">
               {comment.isFullView ?
-                                   <i class="bi bi-caret-down-fill comment-arrow-icon"></i>:
-                                   <i class="bi bi-caret-right-fill comment-arrow-right-icon"></i>
+                                   <i className="bi bi-caret-down-fill comment-arrow-icon"></i>:
+                                   <i className="bi bi-caret-right-fill comment-arrow-right-icon"></i>
               }
                 <div className={comment.isFullView ? "comment-image-container":"comment-image-container-non-full-view"}>
                    <a href={"/app/profile/"+comment.employee.id}> {comment != null && <img className="photo" src={`data:image/jpeg;base64,${comment.employee.photo}`} />}</a>
@@ -29,8 +29,8 @@ import CommentForm from "./CommentForm";
                 </div>
                 {(comment.isFullView && !isEditing) && (isCanDeleteOrUpdate || isAdmin) &&
                     <div className="comment-actions">
-                        <i class="bi bi-pencil-square comment-icon" onClick={() => {setActiveComment({id: comment.id, type: "editing"}); comment.isEdit = true;}}></i>
-                        <i class="bi bi-trash3-fill comment-icon" onClick={() => deleteComment(comment.id)}></i>
+                        <i className="bi bi-pencil-square comment-icon" onClick={() => {setActiveComment({id: comment.id, type: "editing"}); comment.isEdit = true;}}></i>
+                        <i className="bi bi-trash3-fill comment-icon" onClick={() => deleteComment(comment.id)}></i>
                     </div>
                 }
                 {!comment.isFullView && <div className="comment-text-non-full-view">{comment.comment}</div>}

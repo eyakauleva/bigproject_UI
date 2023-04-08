@@ -150,7 +150,7 @@ const Comments = ({currentTicketId}) =>{
             .then((data) => {
                 const updatedComments = allCommentsForCurentTicket.map((updatedComment) => {
                     if (updatedComment.id === commentId) {
-                      return { ...updatedComment, comment: data.comment, updatedAt:data.updatedAt };
+                      return { ...updatedComment, id:data.id, comment: data.comment, updatedAt:data.updatedAt, isFullView:true };
                     }
                     return updatedComment;
                 });
@@ -175,19 +175,18 @@ const Comments = ({currentTicketId}) =>{
     }
 
     const updateView = (comment) => {
-        if((activeComment == null && !comment.isEdit) || comment.id !== activeComment.id){
+        if(activeComment === null || !comment.isEdit || comment.id !== activeComment.id){
             var newState =  allCommentsForCurentTicket.map(com => {
-                if(com.id == comment.id){
+                if(com.id === comment.id){
                     com.isFullView = !com.isFullView;
                     return com;
                 }
                 return com;
                 
-            });
+            }); 
             setAllCommentsForCurentTicket(newState);
-       }
+        }
     }
-    console.log("allCommentsForCurentTicket",allCommentsForCurentTicket);
     return (
     <div className="comments">
         {allCommentsForCurentTicket != null && allCommentsForCurentTicket.map((mapComment) => (
@@ -203,8 +202,8 @@ const Comments = ({currentTicketId}) =>{
             />
         ))}
         <hr/>
-        {!show && <button type="button" class="btn btn-outline-primary btn-comment" onClick={() => setShow(!show)}>
-                    <i class="bi bi-chat"></i>  Comment
+        {!show && <button type="button" className="btn btn-outline-primary btn-comment" onClick={() => setShow(!show)}>
+                    <i className="bi bi-chat"></i>  Comment
                   </button>
         }
         {show && <CommentForm 
