@@ -103,6 +103,16 @@
     color: red;
 }
 
+.single-task .file-input{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.single-task .file-input button{
+    border: 0;
+}
+
 .comments-title{
     margin-top: 3%;
     text-align: left;

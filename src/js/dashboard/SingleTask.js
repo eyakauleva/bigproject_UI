@@ -22,14 +22,13 @@ export default function SingleTask(props) {
   const[estimatedTime, setEstimatedTime] = useState("");
   const[status, setStatus] = useState("");
   const[severity, setSeverity] = useState("");
-  const[type, setType] = useState("");
   const[assignee, setAssignee] = useState({});
   const[gitLink, setGitLink] = useState("");  
   const[selectedFile, setSelectedFile] = useState();
+  const[deleteInitialFile, setDeleteInitialFile] = useState(false);
   const[editMode, setEditMode] = useState(false); 
   const {id} = useParams();  
   const severities = ["LOW", "NORMAL", "HIGH", "CRITICAL"];
-  const types = ["BUG", "INFO", "TASK"];
   const columnOrder = ['OPEN', 'IN_DESIGN', 'IN_BUILD', 'READY_FOR_TEST', 'CLOSE'];
   const[showModal, setShowModal] = useState(false);
   const[errorMessage, setErrorMessage] = useState("");
@@ -85,8 +84,7 @@ export default function SingleTask(props) {
   const submitEdit = () => {
     let config = {
         headers: {
-            Authorization: 'Bearer ' + cookies.token,
-            'Content-Type': 'multipart/form-data'
+            Authorization: 'Bearer ' + cookies.token
         }
     };
 
@@ -97,10 +95,8 @@ export default function SingleTask(props) {
         estimatedTime: estimatedTime,
         status: status,
         severity: severity,
-        type: type,
         gitRef: gitLink,
-        assignee: {id: assignee.id},
-        attachment: selectedFile
+        assignee: {id: assignee.id}
     };
     
     const update = async() => {
@@ -109,9 +105,39 @@ export default function SingleTask(props) {
             ticket,
             config)
         .then(() => {
-            getTicket();
-            setEditMode(false);
-            setErrorMessage("");
+            const updateFile = async() => {
+                let fileConfig = {
+                    headers: {
+                        Authorization: 'Bearer ' + cookies.token,
+                        'Content-Type': 'multipart/form-data'
+                    }
+                };
+    
+                let file = {
+                    attachment: selectedFile
+                };
+    
+                await axios
+                .put("/project/tickets/" + id + "/file?remove=" + deleteInitialFile, 
+                    file,
+                    fileConfig)
+                .then(() => {
+                    getTicket();
+                    setEditMode(false);
+                    setErrorMessage("");
+                })
+                .catch((error) => {
+                    let code = error.toJSON().status;
+                    if(code===400 && error.response.data !== null)
+                        setErrorMessage(error.response.data.message);
+                    else if(code===401)
+                        setError('Authorization is required');
+                    else if(code===403)
+                        alert("Access is denied");     
+                    else alert('Internal server error');
+                });        
+            }      
+            updateFile();
         })
         .catch((error) => {
             let code = error.toJSON().status;
@@ -140,6 +166,8 @@ export default function SingleTask(props) {
     setSeverity(ticket.severity);
     setGitLink(ticket.gitRef);
     setAssignee(ticket.assignee);
+    setSelectedFile();
+    setDeleteInitialFile(false);
     setEditMode(true);
   }
 
@@ -362,6 +390,37 @@ export default function SingleTask(props) {
                             </li>
                         </ul>
                     </div>
+                    <div className="col-md-12">
+                        <div className="group-name">Attachment</div>
+                        <ul className="property-list col-md-12">
+                            <li className="item item-people">
+                            {
+                                editMode
+                                ? <div className='file-input'>
+                                    {selectedFile != undefined 
+                                    ? <div>{selectedFile.name}</div> 
+                                    : (
+                                        !deleteInitialFile ? <div>{ticket.fileName}</div> : ''
+                                      )
+                                    }
+                                    <input type="file" ref={hiddenFileInput} style={{display: "none"}} onChange={(e) => onFileChange(e)}/>
+                                    {selectedFile != undefined
+                                    ? <i class="bi bi-x-square" onClick={() => resetFileInput()}></i> 
+                                    : (
+                                        !deleteInitialFile && ticket.fileName != null
+                                            ? <i class="bi bi-x-square" onClick={() => setDeleteInitialFile(true)}></i> : ''
+                                      )
+                                    }
+                                    <button onClick={() => handleClick()}>Change...</button>
+                                 </div>
+                                : (ticket.fileName != null
+                                   ? <a href={"http://localhost:8080/project/" + id +"/file"}>{ticket.fileName}</a>
+                                   : '—'
+                                  )
+                            }
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>    
@@ -380,7 +439,8 @@ export default function SingleTask(props) {
                         <input type="submit" onClick={()=>{submitEdit()}} className="btn btn-outline-primary" value="Update" />
                     </div>
                     <div className="col-md-6">
-                        <button onClick={()=>{setEditMode(false); setErrorMessage("");}}  className="btn btn-outline-danger">Cancel</button>
+                        <button onClick={()=>{setEditMode(false); setErrorMessage("");}}  
+                            className="btn btn-outline-danger">Cancel</button>
                     </div>
                 </div>
             </div>

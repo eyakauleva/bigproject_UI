@@ -59,10 +59,10 @@ export default function ProjectEmployeesModal(props) {
         });   
     }
 
-    const inputHandler = (e) => {
+    let inputHandler = (e) => {
         var lowerCase = e.target.value.toLowerCase().replaceAll(' ', '');
         setInputText(lowerCase);
-    }
+    };
 
     const filteredEmployees = (employees) =>  
     Object

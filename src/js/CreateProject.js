@@ -75,17 +75,29 @@ export default function CreateProject(props) {
 
             let config = {
                 headers: {
-                    Authorization: 'Bearer ' + cookies.token,
-                    'Content-Type': 'multipart/form-data'
+                    Authorization: 'Bearer ' + cookies.token
                 }
             };
     
             let employeesId = [];
+            let isAssigneeAdded = false;
+            let isReviewerAdded = false;
             employees.forEach((employee)=>{
                 employeesId.push({id: employee.id});
+                if(employee.id == assignee.id){
+                    isAssigneeAdded = true;
+                }
+                if(employee.id == cookies.employeeId){
+                    isReviewerAdded = true;
+                }
             });
-            employeesId.push({id: assignee.id});
-            employeesId.push({id: cookies.employeeId});
+
+            if(!isAssigneeAdded){
+                employeesId.push({id: assignee.id});
+            }
+            if(!isReviewerAdded && cookies.employeeId != assignee.id){
+                employeesId.push({id: cookies.employeeId});
+            }
         
             let project = {
                 assignee: {id: assignee.id},
@@ -94,15 +106,48 @@ export default function CreateProject(props) {
                 description: description,
                 dueDate: format(dueDate, "yyyy-MM-dd 00:00"),
                 employees: employeesId,
-                gitRef: gitLink,
-                attachment: selectedFile
+                gitRef: gitLink
             };        
         
             axios
             .post("/project/create/" + id, project, config)
-            .then(() => {
-                setIsDisabled(false);
-                props.navigate("projects");
+            .then(response => response.data)
+            .then(data => {
+
+                console.log(data);
+
+                const updateFile = async() => {
+                    let fileConfig = {
+                        headers: {
+                            Authorization: 'Bearer ' + cookies.token,
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    };
+        
+                    let file = {
+                        attachment: selectedFile
+                    };
+        
+                    await axios
+                    .put("/project/tickets/" + data + "/file", 
+                        file,
+                        fileConfig)
+                    .then(() => {
+                        setIsDisabled(false);
+                        props.navigate("projects");
+                    })
+                    .catch((error) => {
+                        let code = error.toJSON().status;
+                        if(code===400 && error.response.data !== null)
+                            setErrorMessage(error.response.data.message);
+                        else if(code===401)
+                            setError('Authorization is required');
+                        else if(code===403)
+                            alert("Access is denied");     
+                        else alert('Internal server error');
+                    });        
+                }      
+                updateFile();
             })
             .catch((error) => {
                 let code = error.toJSON().status;

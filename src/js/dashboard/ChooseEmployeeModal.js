@@ -87,17 +87,21 @@ export default function ChooseEmployeeModal(props) {
     });  
   }
 
-  const inputHandler = (e) => {
-    var lowerCase = e.target.value.toLowerCase();
+  let inputHandler = (e) => {
+    var lowerCase = e.target.value.toLowerCase().replaceAll(' ', '');
     setInputText(lowerCase);
-  }
+  };
 
   const filteredUsers =  Object.values(employees).filter((employee) =>{
-    let fullName = (employee.user.name + ' ' + employee.user.surname).toLowerCase();
-    if(inputText != ''){     
-      return fullName.startsWith(inputText);
-    }
-    else return true;
+    if(inputText === ''){
+      return employee;
+    } else {
+      if(employee.user) 
+          return employee.user.name.toLowerCase().startsWith(inputText)
+              || employee.user.surname.toLowerCase().startsWith(inputText)
+              || (employee.user.name + employee.user.surname).toLowerCase().startsWith(inputText)
+              || (employee.user.surname + employee.user.name).toLowerCase().startsWith(inputText); 
+  }
   });
 
   return (

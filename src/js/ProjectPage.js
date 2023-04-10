@@ -123,9 +123,24 @@ export default function ProjectPage(props) {
       };
 
       let employeesId = [];
+      let isAssigneeAdded = false;
+      let isReviewerAdded = false;
       employees.forEach((employee)=>{
-          employeesId.push({id: employee.id});
-      });     
+        employeesId.push({id: employee.id});
+        if(employee.id == assignee.id){
+          isAssigneeAdded = true;
+        }
+        if(employee.id == cookies.employeeId){
+          isReviewerAdded = true;
+        }
+      });
+
+      if(!isAssigneeAdded){
+        employeesId.push({id: assignee.id});
+      }
+      if(!isReviewerAdded && cookies.employeeId != assignee.id){
+        employeesId.push({id: cookies.employeeId});
+      }   
 
       let project_ = {
         name: name,
@@ -162,15 +177,12 @@ export default function ProjectPage(props) {
               projectFile,
               fileConfig)
             .then(() => {
-              setDeleteInitialFile(false);
+              getProject();
+              setEditMode(false);
             })
             .catch((error) => {
               let code = error.toJSON().status;
-              if(code===400 && error.response.data !== null && error.response.data.message === "validation error"){
-                  if(Array.of(error.response.data.fieldErrors).length > 0)
-                      setErrorMessage(error.response.data.fieldErrors[0].defaultMessage);
-              }
-              else if(code===400 && error.response.data !== null)
+              if(code===400 && error.response.data !== null)
                   setErrorMessage(error.response.data.message);
               else if(code===401)
                 setError('Authorization is required');
@@ -180,10 +192,6 @@ export default function ProjectPage(props) {
             });        
           }      
           updateFile();
-        })
-        .then(() => {
-          getProject();
-          setEditMode(false);
         })
         .catch((error) => {
           let code = error.toJSON().status;
@@ -508,23 +516,23 @@ export default function ProjectPage(props) {
                       {selectedFile != undefined 
                       ? <div>{selectedFile.name}</div> 
                       : (
-                        deleteInitialFile
-                        ? ''
-                        : <div>{project.fileName}</div>
-                      )}
+                          !deleteInitialFile ? <div>{project.fileName}</div> : ''
+                        )
+                      }
                       <input type="file" ref={hiddenFileInput} style={{display: "none"}} onChange={(e) => onFileChange(e)}/>
                       {selectedFile != undefined
                       ? <i class="bi bi-x-square" onClick={() => resetFileInput()}></i> 
                       : (
-                        deleteInitialFile
-                        ? ''
-                        : <i class="bi bi-x-square" onClick={() => setDeleteInitialFile(true)}></i>
-                      )}
+                          !deleteInitialFile && project.fileName != null
+                              ? <i class="bi bi-x-square" onClick={() => setDeleteInitialFile(true)}></i> : ''
+                        )
+                      }
                       <button onClick={() => handleClick()}>Change...</button>
-                  </div>
+                    </div>
                   : (project.fileName != null
-                  ? <a href={"http://localhost:8080/project/" + id +"/file"}>{project.fileName}</a>
-                  : '—')
+                      ? <a href={"http://localhost:8080/project/" + id +"/file"}>{project.fileName}</a>
+                      : '—'
+                    )
                 }
             </div>
         </div><hr/>

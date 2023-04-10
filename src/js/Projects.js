@@ -56,7 +56,7 @@ export default function Projects(props) {
     };
 
     let inputHandler = (e) => {
-        var lowerCase = e.target.value.toLowerCase();
+        var lowerCase = e.target.value.toLowerCase().replaceAll(' ', '');
         setInputText(lowerCase);
     };
 
