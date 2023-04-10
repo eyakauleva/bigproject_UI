@@ -80,3 +80,13 @@
     font-weight: lighter;
     font-size: 24px;
 }
+
+.create-task .file-input{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.create-task .bi-x-square{
+    cursor: pointer;
+}

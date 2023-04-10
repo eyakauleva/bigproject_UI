@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from "axios";
 import { useCookies } from 'react-cookie';
-import { useState, useEffect} from 'react';
+import { useState, useEffect, useRef} from 'react';
 import { format} from "date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
@@ -25,6 +25,8 @@ export default function CreateProject(props) {
     const[errorMessage, setErrorMessage] = useState("");
     const[error, setError] = useState("");
     const[isDisabled, setIsDisabled] = useState(false);
+    const[selectedFile, setSelectedFile] = useState();
+    const hiddenFileInput = useRef(null);
 
     const displayError = () => {
         if(error!=="")
@@ -54,13 +56,27 @@ export default function CreateProject(props) {
         });
     }
 
+    const onFileChange = (e) => {
+        setSelectedFile(e.target.files[0]);
+    };
+
+    const resetFileInput = () => {
+        hiddenFileInput.current.value = null;
+        setSelectedFile();
+    }
+    
+    const handleClick = () => {
+        hiddenFileInput.current.click();
+    };
+
     const submitCreateProject = () => {
         if(assignee != null){ 
             setIsDisabled(true);
 
             let config = {
                 headers: {
-                    Authorization: 'Bearer ' + cookies.token
+                    Authorization: 'Bearer ' + cookies.token,
+                    'Content-Type': 'multipart/form-data'
                 }
             };
     
@@ -68,6 +84,8 @@ export default function CreateProject(props) {
             employees.forEach((employee)=>{
                 employeesId.push({id: employee.id});
             });
+            employeesId.push({id: assignee.id});
+            employeesId.push({id: cookies.employeeId});
         
             let project = {
                 assignee: {id: assignee.id},
@@ -76,7 +94,8 @@ export default function CreateProject(props) {
                 description: description,
                 dueDate: format(dueDate, "yyyy-MM-dd 00:00"),
                 employees: employeesId,
-                gitRef: gitLink
+                gitRef: gitLink,
+                attachment: selectedFile
             };        
         
             axios
@@ -117,7 +136,7 @@ export default function CreateProject(props) {
                 </div>
                 <div className="row">
                     <div className="col-md-1"></div>
-                    <div className="col-md-4">
+                    <div className="col-md-3">
                         <label>Name:</label>
                     </div>
                     <div className="col-md-6">
@@ -126,7 +145,7 @@ export default function CreateProject(props) {
                 </div><hr/>
                 <div className="row">
                     <div className="col-md-1"></div>
-                    <div className="col-md-4">
+                    <div className="col-md-3">
                         <label>Description:</label>              
                     </div>
                     <div className="col-md-6">
@@ -135,7 +154,7 @@ export default function CreateProject(props) {
                 </div><hr/>
                 <div className="row">
                     <div className="col-md-1"></div>
-                    <div className="col-md-4">
+                    <div className="col-md-3">
                         <label>Due date:</label>
                     </div>
                     <div className="col-md-6">
@@ -146,7 +165,7 @@ export default function CreateProject(props) {
                 </div><hr/>
                 <div className="row">
                     <div className="col-md-1"></div>
-                    <div className="col-md-4">
+                    <div className="col-md-3">
                         <label>Assignee:</label>
                     </div>
                     <div className="col-md-6">  
@@ -162,7 +181,7 @@ export default function CreateProject(props) {
                 </div><hr/>
                 <div className="row">
                     <div className="col-md-1"></div>
-                    <div className="col-md-4">
+                    <div className="col-md-3">
                         <label>Employees:</label>
                     </div>
                     <div className="col-md-6">
@@ -181,15 +200,27 @@ export default function CreateProject(props) {
                 </div><hr/>          
                 <div className="row">
                     <div className="col-md-1"></div>
-                    <div className="col-md-4">
+                    <div className="col-md-3">
                         <label>Git link:</label>
                     </div>
                     <div className="col-md-6">
                         <input type="text" onChange={(e)=>setGitLink(e.target.value)} />
                     </div>
+                </div><hr/>
+                <div className="row">
+                    <div className="col-md-1"></div>
+                    <div className="col-md-3">
+                        <label>Attach file:</label>
+                    </div>
+                    <div className="col-md-6 file-input">
+                        {selectedFile != undefined ? <div>{selectedFile.name}</div> : ''}
+                        <input type="file" ref={hiddenFileInput} style={{display: "none"}} onChange={(e) => onFileChange(e)}/>
+                        {selectedFile != undefined ? <i class="bi bi-x-square" onClick={() => resetFileInput()}></i> : ''}
+                        <button onClick={() => handleClick()}>Choose...</button>  
+                    </div>
                 </div><br/>
                 <div className="row">
-                    <div className="col-md-5"></div>
+                    <div className="col-md-4"></div>
                     <div className="col-md-6 error">
                         {errorMessage}
                     </div>
@@ -197,12 +228,12 @@ export default function CreateProject(props) {
                 <div>
                     <br/>
                     <div className="row">                                            
-                            <div className="col-md-7"></div>
-                            <div className="col-md-2">
+                            <div className="col-md-8"></div>
+                            <div className="col-md-1">
                                 <input type="submit" className="profile-edit-btn" disabled={isDisabled} style={isDisabled ? {backgroundColor:"grey"} : {}}
                                         onClick={()=>{submitCreateProject()}} value="Save" />
                             </div>
-                            <div className="col-md-2">
+                            <div className="col-md-1">
                                 <button onClick={()=> props.navigate("orders")}
                                     style={isDisabled ? {backgroundColor:"grey"} : {background: '#FF6E4E'}} className="profile-edit-btn">Cancel</button>
                             </div>

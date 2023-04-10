@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect} from 'react';
+import { useState, useLayoutEffect, useRef} from 'react';
 import axios from "axios";
 import { useCookies } from 'react-cookie';
 import { format } from "date-fns";
@@ -30,6 +30,7 @@ export default function CreateTask(props) {
   const[error, setError] = useState("");
   const[isDisabled, setIsDisabled] = useState(false);
   const[selectedFile, setSelectedFile] = useState();
+  const hiddenFileInput = useRef(null);
 
   useLayoutEffect(() => {
     getProject(); 
@@ -79,7 +80,7 @@ export default function CreateTask(props) {
             else alert('Internal server error');
         });
     }
-  }
+    }
 
   const submitCreate = () => {
     if(assignee != null){
@@ -87,7 +88,8 @@ export default function CreateTask(props) {
 
         let config = {
             headers: {
-                Authorization: 'Bearer ' + cookies.token
+                Authorization: 'Bearer ' + cookies.token,
+                'Content-Type': 'multipart/form-data'
             }
         };
     
@@ -102,6 +104,7 @@ export default function CreateTask(props) {
             gitRef: gitLink,
             assignee: {id: assignee.id},
             reporter: {id: cookies.employeeId},
+            attachment: selectedFile
         };
     
         const create = async() => {
@@ -111,7 +114,7 @@ export default function CreateTask(props) {
                 config)
             .then(() => {
                 setIsDisabled(false);
-                props.navigate("dashboard/" + project.id);
+                props.navigate("dashboard");
             })
             .catch((error) => {
                 let code = error.toJSON().status;
@@ -143,16 +146,14 @@ export default function CreateTask(props) {
   const onFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
-   
-  const onFileUpload = () => {
-    const formData = new FormData();
-    
-    formData.append(
-      "myFile",
-      selectedFile
-    );
 
-    //axios.post("api/uploadfile", formData);
+  const resetFileInput = () => {
+    hiddenFileInput.current.value = null;
+    setSelectedFile();
+  }
+   
+  const handleClick = () => {
+    hiddenFileInput.current.click();
   };
 
   return (
@@ -281,12 +282,14 @@ export default function CreateTask(props) {
         </div><hr/>
         <div className="row">
             <div className="col-md-1"></div>
-           <div className="col-md-3">
+            <div className="col-md-3">
                 <label>Attach file:</label>
             </div>
-            <div className="col-md-6">
-                <input type="file" style={{display: "none"}} onChange={(e) => onFileChange(e)}/>
-                <button onClick={onFileUpload()}>Choose...</button>                  
+            <div className="col-md-8 file-input">
+                {selectedFile != undefined ? <div>{selectedFile.name}</div> : ''}
+                <input type="file" ref={hiddenFileInput} style={{display: "none"}} onChange={(e) => onFileChange(e)}/>
+                {selectedFile != undefined ? <i class="bi bi-x-square" onClick={() => resetFileInput()}></i> : ''}
+                <button onClick={() => handleClick()}>Choose...</button>  
             </div>
         </div><hr/>
         <div>
@@ -297,12 +300,12 @@ export default function CreateTask(props) {
                 </div>
             </div>
             <div className="row">                                            
-                <div className="col-md-6"></div>
-                <div className="col-md-2">
+                <div className="col-md-8"></div>
+                <div className="col-md-1">
                     <input type="submit" disabled={isDisabled} style={isDisabled ? {backgroundColor:"grey"} : {}}
                         onClick={()=>{submitCreate()}} className="profile-edit-btn" value="Save" />
                 </div>
-                <div className="col-md-2">
+                <div className="col-md-1">
                     <button onClick={()=>props.navigate("dashboard/" + project.id)} disabled={isDisabled}
                         style={isDisabled ? {backgroundColor:"grey"} : {background: '#FF6E4E'}} className="profile-edit-btn">Cancel</button>
                 </div>

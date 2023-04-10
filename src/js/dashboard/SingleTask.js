@@ -1,4 +1,4 @@
-import { useState, useEffect} from 'react';
+import { useState, useEffect, useRef} from 'react';
 import axios from "axios";
 import { useCookies } from 'react-cookie';
 import { format, parseISO } from "date-fns";
@@ -21,17 +21,22 @@ export default function SingleTask(props) {
   const[estimatedTime, setEstimatedTime] = useState("");
   const[status, setStatus] = useState("");
   const[severity, setSeverity] = useState("");
+  const[type, setType] = useState("");
   const[assignee, setAssignee] = useState({});
   const[gitLink, setGitLink] = useState("");  
+  const[selectedFile, setSelectedFile] = useState();
   const[editMode, setEditMode] = useState(false); 
   const {id} = useParams();  
   const severities = ["LOW", "NORMAL", "HIGH", "CRITICAL"];
+  const types = ["BUG", "INFO", "TASK"];
   const columnOrder = ['OPEN', 'IN_DESIGN', 'IN_BUILD', 'READY_FOR_TEST', 'CLOSE'];
   const[showModal, setShowModal] = useState(false);
   const[errorMessage, setErrorMessage] = useState("");
   const[decodedToken, setDecodedToken] = useState({});
   const[error, setError] = useState("");
   const[projectId, setProjectId] = useState();
+
+  const hiddenFileInput = useRef(null);
 
   useEffect(() => {
     getTicket();              
@@ -79,7 +84,8 @@ export default function SingleTask(props) {
   const submitEdit = () => {
     let config = {
         headers: {
-            Authorization: 'Bearer ' + cookies.token
+            Authorization: 'Bearer ' + cookies.token,
+            'Content-Type': 'multipart/form-data'
         }
     };
 
@@ -90,10 +96,12 @@ export default function SingleTask(props) {
         estimatedTime: estimatedTime,
         status: status,
         severity: severity,
+        type: type,
         gitRef: gitLink,
-        assignee: {id: assignee.id}
+        assignee: {id: assignee.id},
+        attachment: selectedFile
     };
-
+    
     const update = async() => {
         await axios
         .put("/project/tickets/" + id, 
@@ -138,6 +146,19 @@ export default function SingleTask(props) {
     setAssignee(employee);
     setShowModal(false);
   }
+
+  const onFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const resetFileInput = () => {
+    hiddenFileInput.current.value = null;
+    setSelectedFile();
+  }
+   
+  const handleClick = () => {
+    hiddenFileInput.current.click();
+  };
 
   return (
     <div className="single-task">
@@ -241,6 +262,25 @@ export default function SingleTask(props) {
         <div className="row">
             <div className="col-md-1"></div>
            <div className="col-md-3">
+                <label>Type:</label>
+            </div>
+            <div className="col-md-6">
+                {editMode 
+                ? <Form.Select onChange={e => setType(e.target.value)}>
+                    <option selected value={ticket.type}>{ticket.type}</option>                    
+                    {
+                        types.map(type_ => {
+                            if(type_ != ticket.type)
+                                return <option value={type_}>{type_}</option>;
+                        })
+                    }
+                </Form.Select>
+                : <p>{ticket.type}</p>}                    
+            </div>
+        </div><hr/>
+        <div className="row">
+            <div className="col-md-1"></div>
+           <div className="col-md-3">
                 <label>Severity:</label>
             </div>
             <div className="col-md-6">
@@ -304,6 +344,26 @@ export default function SingleTask(props) {
                 {editMode 
                 ? <input type="text" style={{width:'100%'}} defaultValue={ticket.gitRef} onChange={e => setGitLink(e.target.value)}/> 
                 : <a target="_blank" href={ticket.gitRef}>{ticket.gitRef}</a>}                    
+            </div>
+        </div><hr/>  
+        <div className="row">
+            <div className="col-md-1"></div>
+            <div className="col-md-3">
+                <label>Attachment:</label>
+            </div>
+            <div className="col-md-6 file-input">
+                {
+                    editMode
+                    ? <div className='file-input'>
+                        {selectedFile != undefined ? <div>{selectedFile.name}</div> : <div>{ticket.fileName}</div>}
+                        <input type="file" ref={hiddenFileInput} style={{display: "none"}} onChange={(e) => onFileChange(e)}/>
+                        {selectedFile != undefined ? <i class="bi bi-x-square" onClick={() => resetFileInput()}></i> : ''}
+                        <button onClick={() => handleClick()}>Change...</button>
+                    </div>
+                    : (ticket.fileName != null
+                    ? <a href={"http://localhost:8080/project/" + id +"/file"}>{ticket.fileName}</a>
+                    : '—')
+                }
             </div>
         </div>
         <div className="row">
