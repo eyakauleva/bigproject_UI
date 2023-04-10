@@ -316,17 +316,16 @@ export default function Dashboard(props) {
             <div>Project <b>{project.name}</b></div>
             <div className='project-employees' onClick={()=>setShowModal(true)}>
             {
-              project.employees!==undefined
+              project.employees != undefined
               ? project.employees
                 .sort((a, b) => a.id > b.id ? 1 : -1)
                 .map((employee, idx) => {
-                  if(idx<3) return <div className="profile-img" style={{marginLeft:1*idx + "%"}}>
-                                      <img src={`data:image/jpeg;base64,${employee.photo}`} />
+                  if(idx<3) return  <div className="profile-img" style={{marginLeft:1.5*idx + "%"}}>
+                                      <img style={{border:"2px solid #66b3ff"}} src={`data:image/jpeg;base64,${employee.photo}`} />
                                     </div>
                 })
               : ''
             }
-            {project.employees!=null?console.log(project.employees):''}
             {
               project.employees.length > 3
               ? <div className="profile-img" style={{marginLeft:"3.1%"}}>

@@ -4,7 +4,7 @@ import { FaRegCircle, FaInfoCircle } from 'react-icons/fa';
 import { IconContext } from 'react-icons';
 import { useParams } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
-import { useState, useLayoutEffect} from 'react';
+import { useState, useLayoutEffect, useRef} from 'react';
 import { format, parseISO } from "date-fns";
 import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
@@ -28,6 +28,8 @@ export default function ProjectPage(props) {
     const[severity, setSeverity] = useState("");
     const[assignee, setAssignee] = useState({});
     const[gitLink, setGitLink] = useState("");  
+    const[selectedFile, setSelectedFile] = useState();
+    const[deleteInitialFile, setDeleteInitialFile] = useState(false);
     const[editMode, setEditMode] = useState(false); 
     const{id} = useParams();  
     const severities = ["LOW", "NORMAL", "HIGH", "CRITICAL"];
@@ -38,6 +40,7 @@ export default function ProjectPage(props) {
     const[errorMessage, setErrorMessage] = useState("");
     const[decodedToken, setDecodedToken] = useState({});
     const[error, setError] = useState("");
+    const hiddenFileInput = useRef(null);
 
     useLayoutEffect(() => {
       setDecodedToken(jwt_decode(cookies.token)); 
@@ -115,7 +118,7 @@ export default function ProjectPage(props) {
     const submitEdit = () => {
       let config = {
         headers: {
-          Authorization: 'Bearer ' + cookies.token
+          Authorization: 'Bearer ' + cookies.token,
         }
       };
 
@@ -142,16 +145,49 @@ export default function ProjectPage(props) {
           project_,
           config)
         .then(() => {
+          const updateFile = async() => {
+            let fileConfig = {
+              headers: {
+                Authorization: 'Bearer ' + cookies.token,
+                'Content-Type': 'multipart/form-data'
+              }
+            };
+
+            let projectFile = {
+              attachment: selectedFile
+            };
+
+            await axios
+            .put("/project/tickets/" + id + "/file?remove=" + deleteInitialFile, 
+              projectFile,
+              fileConfig)
+            .then(() => {
+              setDeleteInitialFile(false);
+            })
+            .catch((error) => {
+              let code = error.toJSON().status;
+              if(code===400 && error.response.data !== null && error.response.data.message === "validation error"){
+                  if(Array.of(error.response.data.fieldErrors).length > 0)
+                      setErrorMessage(error.response.data.fieldErrors[0].defaultMessage);
+              }
+              else if(code===400 && error.response.data !== null)
+                  setErrorMessage(error.response.data.message);
+              else if(code===401)
+                setError('Authorization is required');
+              else if(code===403)
+                alert("Access is denied");     
+              else alert('Internal server error');
+            });        
+          }      
+          updateFile();
+        })
+        .then(() => {
           getProject();
           setEditMode(false);
         })
         .catch((error) => {
           let code = error.toJSON().status;
-          if(code===400 && error.response.data !== null && error.response.data.message === "validation error"){
-              if(Array.of(error.response.data.fieldErrors).length > 0)
-                  setErrorMessage(error.response.data.fieldErrors[0].defaultMessage);
-          }
-          else if(code===400 && error.response.data !== null)
+          if(code===400 && error.response.data !== null)
               setErrorMessage(error.response.data.message);
           else if(code===401)
             setError('Authorization is required');
@@ -225,6 +261,21 @@ export default function ProjectPage(props) {
       setAssignee(employee);
       setShowModalAssignee(false);
     }
+
+    const onFileChange = (e) => {
+      setSelectedFile(e.target.files[0]);
+    };
+  
+    const resetFileInput = () => {
+      hiddenFileInput.current.value = null;
+      setSelectedFile();
+    }
+     
+    const handleClick = () => {
+      console.log(selectedFile);
+      setDeleteInitialFile(false);
+      hiddenFileInput.current.click();
+    };
 
     const isUsersCurrentProject = (_id) => {
       let config = {
@@ -446,6 +497,38 @@ export default function ProjectPage(props) {
             </div>
         </div><hr/>
         <div className="row">
+            <div className="col-md-1"></div>
+            <div className="col-md-4">
+                <label>Attachment:</label>
+            </div>
+            <div className="col-md-6 file-input">
+                {
+                  editMode
+                  ? <div className='file-input'>
+                      {selectedFile != undefined 
+                      ? <div>{selectedFile.name}</div> 
+                      : (
+                        deleteInitialFile
+                        ? ''
+                        : <div>{project.fileName}</div>
+                      )}
+                      <input type="file" ref={hiddenFileInput} style={{display: "none"}} onChange={(e) => onFileChange(e)}/>
+                      {selectedFile != undefined
+                      ? <i class="bi bi-x-square" onClick={() => resetFileInput()}></i> 
+                      : (
+                        deleteInitialFile
+                        ? ''
+                        : <i class="bi bi-x-square" onClick={() => setDeleteInitialFile(true)}></i>
+                      )}
+                      <button onClick={() => handleClick()}>Change...</button>
+                  </div>
+                  : (project.fileName != null
+                  ? <a href={"http://localhost:8080/project/" + id +"/file"}>{project.fileName}</a>
+                  : '—')
+                }
+            </div>
+        </div><hr/>
+        <div className="row">
           <div className="col-md-1"></div>
           <div className='col-md-10 error'>{errorMessage}</div>
         </div>
@@ -454,12 +537,12 @@ export default function ProjectPage(props) {
             ?<div>
                 <br/>
                 <div className="row">                                            
-                    <div className="col-md-7"></div>
-                    <div className="col-md-2">
+                    <div className="col-md-8"></div>
+                    <div className="col-md-1">
                         <input type="submit" onClick={()=>{submitEdit()}} className="profile-edit-btn" value="Save" />
                     </div>
-                    <div className="col-md-2">
-                        <button onClick={()=>{setEditMode(false); setErrorMessage("");}} 
+                    <div className="col-md-1">
+                        <button onClick={()=>{setEditMode(false); setErrorMessage(""); setDeleteInitialFile(false); }} 
                             style={{background: '#FF6E4E'}} className="profile-edit-btn">Cancel</button>
                     </div>
                 </div>

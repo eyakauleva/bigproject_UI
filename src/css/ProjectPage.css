@@ -81,3 +81,13 @@
     background-color: #5199FF;
     cursor: pointer;
 }
+
+.single-project .file-input{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.single-project button{
+    border: 0;
+}

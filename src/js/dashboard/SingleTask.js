@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect} from 'react';
+import { useState, useEffect, useRef} from 'react';
 import axios from "axios";
 import { useCookies } from 'react-cookie';
 import { format, parseISO } from "date-fns";
@@ -22,11 +22,14 @@ export default function SingleTask(props) {
   const[estimatedTime, setEstimatedTime] = useState("");
   const[status, setStatus] = useState("");
   const[severity, setSeverity] = useState("");
+  const[type, setType] = useState("");
   const[assignee, setAssignee] = useState({});
   const[gitLink, setGitLink] = useState("");  
+  const[selectedFile, setSelectedFile] = useState();
   const[editMode, setEditMode] = useState(false); 
   const {id} = useParams();  
   const severities = ["LOW", "NORMAL", "HIGH", "CRITICAL"];
+  const types = ["BUG", "INFO", "TASK"];
   const columnOrder = ['OPEN', 'IN_DESIGN', 'IN_BUILD', 'READY_FOR_TEST', 'CLOSE'];
   const[showModal, setShowModal] = useState(false);
   const[errorMessage, setErrorMessage] = useState("");
@@ -34,7 +37,9 @@ export default function SingleTask(props) {
   const[error, setError] = useState("");
   const[projectId, setProjectId] = useState();
 
-  useLayoutEffect(() => {
+  const hiddenFileInput = useRef(null);
+
+  useEffect(() => {
     getTicket();              
   }, [id]);
 
@@ -80,7 +85,8 @@ export default function SingleTask(props) {
   const submitEdit = () => {
     let config = {
         headers: {
-            Authorization: 'Bearer ' + cookies.token
+            Authorization: 'Bearer ' + cookies.token,
+            'Content-Type': 'multipart/form-data'
         }
     };
 
@@ -91,10 +97,12 @@ export default function SingleTask(props) {
         estimatedTime: estimatedTime,
         status: status,
         severity: severity,
+        type: type,
         gitRef: gitLink,
-        assignee: {id: assignee.id}
+        assignee: {id: assignee.id},
+        attachment: selectedFile
     };
-
+    
     const update = async() => {
         await axios
         .put("/project/tickets/" + id, 
@@ -139,7 +147,21 @@ export default function SingleTask(props) {
     setAssignee(employee);
     setShowModal(false);
   }
-  const getIconForType = (type) =>{
+
+  const onFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const resetFileInput = () => {
+    hiddenFileInput.current.value = null;
+    setSelectedFile();
+  }
+   
+  const handleClick = () => {
+    hiddenFileInput.current.click();
+  };
+
+ const getIconForType = (type) =>{
     if(type === "BUG"){
         return <i class="bi bi-circle-fill red"></i>
     } else if( type === "TASK"){
@@ -157,6 +179,7 @@ export default function SingleTask(props) {
         return "#0052cc"
     }
   }
+  
   return (
     <div className="single-task">
       {displayError()}
