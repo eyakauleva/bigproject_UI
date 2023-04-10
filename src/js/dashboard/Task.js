@@ -6,9 +6,11 @@ import '../../css/Task.css';
 
 export default class Task extends React.Component {
 
+
   isTaskOverdued() {
-    return differenceInMinutes(new Date(this.props.task.dueDate).getTime(), new Date().getTime()) % 60 < 0
-      || differenceInHours(new Date(this.props.task.dueDate).getTime(), new Date().getTime()) < 0;
+    const statusList = ['READY_FOR_TEST', 'CLOSE'];
+    return !statusList.includes(this.props.task.status) && (differenceInMinutes(new Date(this.props.task.dueDate).getTime(), new Date().getTime()) % 60 < 0
+      || differenceInHours(new Date(this.props.task.dueDate).getTime(), new Date().getTime()) < 0);
   } 
 
   render() {

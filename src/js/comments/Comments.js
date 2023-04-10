@@ -189,18 +189,20 @@ const Comments = ({currentTicketId}) =>{
     }
     return (
     <div className="comments">
-        {allCommentsForCurentTicket != null && allCommentsForCurentTicket.map((mapComment) => (
-            <Comment 
-               key={mapComment.id} 
-               comment={mapComment}
-               deleteComment={deleteComment}
-               activeComment={activeComment}
-               setActiveComment={setActiveComment}
-               updateComment={updateComment}
-               employeeId={currentUserId}
-               updateView={updateView}
-            />
-        ))}
+        {allCommentsForCurentTicket.length !== 0 ? 
+                allCommentsForCurentTicket.map((mapComment) => (
+                    <Comment 
+                    key={mapComment.id} 
+                    comment={mapComment}
+                    deleteComment={deleteComment}
+                    activeComment={activeComment}
+                    setActiveComment={setActiveComment}
+                    updateComment={updateComment}
+                    employeeId={currentUserId}
+                    updateView={updateView}
+                    />
+                ))
+       :<div>There are no comments yet on this ticket</div>}
         <hr/>
         {!show && <button type="button" className="btn btn-outline-primary btn-comment" onClick={() => setShow(!show)}>
                     <i className="bi bi-chat"></i>  Comment
