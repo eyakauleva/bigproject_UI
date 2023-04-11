@@ -24,7 +24,6 @@ export default function SingleTask(props) {
   const[severity, setSeverity] = useState("");
   const[assignee, setAssignee] = useState({});
   const[gitLink, setGitLink] = useState("");  
-  const[selectedFile, setSelectedFile] = useState();
   const[deleteInitialFile, setDeleteInitialFile] = useState(false);
   const[editMode, setEditMode] = useState(false); 
   const {id} = useParams();  
@@ -35,8 +34,9 @@ export default function SingleTask(props) {
   const[decodedToken, setDecodedToken] = useState({});
   const[error, setError] = useState("");
   const[projectId, setProjectId] = useState();
-
-  const hiddenFileInput = useRef(null);
+  const[isOver, setIsOver] = useState(false);
+  const file= useRef(null);
+  const[finalFile, setFinalFile] = useState(null);
 
   useEffect(() => {
     getTicket();              
@@ -112,30 +112,39 @@ export default function SingleTask(props) {
                         'Content-Type': 'multipart/form-data'
                     }
                 };
-    
-                let file = {
-                    attachment: selectedFile
-                };
-    
-                await axios
-                .put("/project/tickets/" + id + "/file?remove=" + deleteInitialFile, 
-                    file,
-                    fileConfig)
-                .then(() => {
-                    getTicket();
-                    setEditMode(false);
-                    setErrorMessage("");
-                })
-                .catch((error) => {
-                    let code = error.toJSON().status;
-                    if(code===400 && error.response.data !== null)
-                        setErrorMessage(error.response.data.message);
-                    else if(code===401)
-                        setError('Authorization is required');
-                    else if(code===403)
-                        alert("Access is denied");     
-                    else alert('Internal server error');
-                });        
+                let file;
+                if(deleteInitialFile !== null && finalFile === null){
+                    console.log("delete", deleteInitialFile, finalFile);
+                    file = {
+                        attachment: ticket.attachment
+                    };
+                    console.log("delete 2", deleteInitialFile, file, ticket.attachment);
+                } else {
+                    file = {
+                        attachment: finalFile
+                    };
+                }
+                if(file.attachment !== undefined && file.attachment.name !== null || deleteInitialFile){
+                    await axios
+                    .put("/project/tickets/" + id + "/file?remove=" + deleteInitialFile, 
+                        file,
+                        fileConfig)
+                    .then(() => {
+                        getTicket();
+                        setEditMode(false);
+                        setErrorMessage("");
+                    })
+                    .catch((error) => {
+                        let code = error.toJSON().status;
+                        if(code===400 && error.response.data !== null)
+                            setErrorMessage(error.response.data.message);
+                        else if(code===401)
+                            setError('Authorization is required');
+                        else if(code===403)
+                            alert("Access is denied");     
+                        else alert('Internal server error');
+                    }); 
+                }       
             }      
             updateFile();
         })
@@ -166,7 +175,7 @@ export default function SingleTask(props) {
     setSeverity(ticket.severity);
     setGitLink(ticket.gitRef);
     setAssignee(ticket.assignee);
-    setSelectedFile();
+    setFinalFile({name: ticket.fileName});
     setDeleteInitialFile(false);
     setEditMode(true);
   }
@@ -175,19 +184,6 @@ export default function SingleTask(props) {
     setAssignee(employee);
     setShowModal(false);
   }
-
-  const onFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-  };
-
-  const resetFileInput = () => {
-    hiddenFileInput.current.value = null;
-    setSelectedFile();
-  }
-   
-  const handleClick = () => {
-    hiddenFileInput.current.click();
-  };
 
  const getIconForType = (type) =>{
     if(type === "BUG"){
@@ -207,7 +203,89 @@ export default function SingleTask(props) {
         return "#0052cc"
     }
   }
-  
+  const getFileForNonEditView = (file) => {
+    if(file !== null){
+        return <div class="drop-zone" style={{textAlign:"left"}} >
+                    <a class="file-link" href={"http://localhost:8080/project/" + id +"/file"}><i className="bi bi-file-earmark-arrow-up-fill"></i> {ticket.fileName}</a>
+               </div>
+    } else {
+        return <div class="drop-zone" style={{height:"91px"}}>
+                    <div className="drop-zone-prompt-no-value">There are no file yet on this ticket<br/>Update ticket for add</div>
+               </div> 
+    }
+  }
+  const deleteAttachment = (e) => {
+    if (window.confirm("Are you sure you want to remove attachment?")) {
+        e.stopPropagation(); 
+        setDeleteInitialFile(true); 
+        setFinalFile(null)
+    }
+  }
+  const getFileForEditView = () => {
+        console.log("finalFile",finalFile)
+        return (<div
+                    className={`drop-zone ${isOver ? 'over' : ''}`}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    onClick={handleFileClick}
+                >
+                    {!(finalFile && finalFile.name) ? (
+                    <>
+                        <span className="drop-zone__prompt">Drag and drop files here or click to select</span>
+                        <input 
+                            type="file" 
+                            name="file" 
+                            ref={file}
+                            onChange={handleFileChange} 
+                            className="drop-zone__input" 
+                        />
+                    </>
+                    ) : (
+                    <>
+                        <input 
+                            type="file" 
+                            name="file" 
+                            ref={file}
+                            onChange={handleFileChange} 
+                            className="drop-zone__input" 
+                        />
+                        <p>Selected file: {finalFile.name} 
+                           <i 
+                             className="bi bi-file-earmark-x-fill delete-file-icon" 
+                             onClick={(e) => {deleteAttachment(e)}}
+                             >
+                           </i>
+                        </p>
+                    </>
+                    )}
+                </div>);
+  }
+  const handleFileClick = () => {
+    file = file.current.click();
+    setFinalFile(file);
+  };
+  const handleDragOver = e => {
+    e.preventDefault();
+    setIsOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsOver(false);
+  };
+
+  const handleDrop = e => {
+    e.preventDefault();
+    const droppedFile = e.dataTransfer.files[0];
+    setFinalFile(droppedFile);
+    setIsOver(false);
+  };
+
+  const handleFileChange = e => {
+    const selectedFile = e.target.files[0];
+    setFinalFile(selectedFile);
+  };
+
   return (
     <div className="single-task">
       {displayError()}
@@ -319,6 +397,13 @@ export default function SingleTask(props) {
                             } 
                         </div>
                     </div>
+                    <div className="col-md-12">
+                        <div className="group-name">Attachment</div>
+                            {
+                                editMode ? getFileForEditView()
+                                         : getFileForNonEditView(ticket.fileName)
+                            }   
+                    </div>
                 </div>  
             </div>
             <div className="col-md-4">
@@ -373,7 +458,7 @@ export default function SingleTask(props) {
                                             event.preventDefault();
                                             }
                                         }} /> 
-                                    : ticket.estimatedTime != 0 ? <span className="value">{ticket.estimatedTime} h</span> : '—'}  
+                                    : ticket.estimatedTime != 0 ? <span className="value">{ticket.estimatedTime} h</span> : <span className="value">{ticket.estimatedTime} h</span>}  
                                 </span>
                             </li>
                             <li className="item item-people">
@@ -387,37 +472,6 @@ export default function SingleTask(props) {
                                 <span className="value" style={{marginLeft:"27%"}}>
                                     0 h
                                 </span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div className="col-md-12">
-                        <div className="group-name">Attachment</div>
-                        <ul className="property-list col-md-12">
-                            <li className="item item-people">
-                            {
-                                editMode
-                                ? <div className='file-input'>
-                                    {selectedFile != undefined 
-                                    ? <div>{selectedFile.name}</div> 
-                                    : (
-                                        !deleteInitialFile ? <div>{ticket.fileName}</div> : ''
-                                      )
-                                    }
-                                    <input type="file" ref={hiddenFileInput} style={{display: "none"}} onChange={(e) => onFileChange(e)}/>
-                                    {selectedFile != undefined
-                                    ? <i class="bi bi-x-square" onClick={() => resetFileInput()}></i> 
-                                    : (
-                                        !deleteInitialFile && ticket.fileName != null
-                                            ? <i class="bi bi-x-square" onClick={() => setDeleteInitialFile(true)}></i> : ''
-                                      )
-                                    }
-                                    <button onClick={() => handleClick()}>Change...</button>
-                                 </div>
-                                : (ticket.fileName != null
-                                   ? <a href={"http://localhost:8080/project/" + id +"/file"}>{ticket.fileName}</a>
-                                   : '—'
-                                  )
-                            }
                             </li>
                         </ul>
                     </div>
@@ -439,7 +493,7 @@ export default function SingleTask(props) {
                         <input type="submit" onClick={()=>{submitEdit()}} className="btn btn-outline-primary" value="Update" />
                     </div>
                     <div className="col-md-6">
-                        <button onClick={()=>{setEditMode(false); setErrorMessage("");}}  
+                        <button onClick={()=>{setEditMode(false); setErrorMessage(""); setFinalFile({name: ticket.fileName});}}  
                             className="btn btn-outline-danger">Cancel</button>
                     </div>
                 </div>
