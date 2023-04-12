@@ -289,14 +289,14 @@ export default function SingleTask(props) {
   };
  const getEstimatedTime = () =>{
     if(estimatedTime < loggedTime){
-        return estimatedTime + (loggedTime - estimatedTime);
+        return parseInt(estimatedTime) + (loggedTime - estimatedTime);
     } else{
         return estimatedTime;
     }
  }
  const getEstimatedTimeView = () =>{
     if(getEstimatedTime() < 10 ){
-        return {marginLeft:"19%"};
+        return {marginLeft:"21.5%"};
     } else {
         return {marginLeft:"20%"};
     }
