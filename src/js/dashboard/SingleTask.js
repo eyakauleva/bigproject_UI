@@ -7,11 +7,12 @@ import Form from 'react-bootstrap/Form';
 import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import jwt_decode from "jwt-decode";
-
 import {logout} from '../Sidebar.js';
+
 import ChooseEmployeeModal from './ChooseEmployeeModal'
 import '../../css/SingleTask.css';
 import Comments from '../comments/Comments';
+import TimeTrackingModal from '../single_task/TimeTrackingModal.js'
 
 export default function SingleTask(props) {
   const[cookies] = useCookies(["token", "employeeId"]);
@@ -19,7 +20,6 @@ export default function SingleTask(props) {
   const[name, setName] = useState(""); 
   const[description, setDescription] = useState(""); 
   const[dueDate, setDueDate] = useState(new Date());
-  const[estimatedTime, setEstimatedTime] = useState("");
   const[status, setStatus] = useState("");
   const[severity, setSeverity] = useState("");
   const[assignee, setAssignee] = useState({});
@@ -30,6 +30,7 @@ export default function SingleTask(props) {
   const severities = ["LOW", "NORMAL", "HIGH", "CRITICAL"];
   const columnOrder = ['OPEN', 'IN_DESIGN', 'IN_BUILD', 'READY_FOR_TEST', 'CLOSE'];
   const[showModal, setShowModal] = useState(false);
+  const[showTimeModal, setShowTimeModal] = useState(false);
   const[errorMessage, setErrorMessage] = useState("");
   const[decodedToken, setDecodedToken] = useState({});
   const[error, setError] = useState("");
@@ -37,6 +38,9 @@ export default function SingleTask(props) {
   const[isOver, setIsOver] = useState(false);
   const file= useRef(null);
   const[finalFile, setFinalFile] = useState(null);
+  const[estimatedTime, setEstimatedTime] = useState(0);
+  const[loggedTime, setLoggedTime] = useState(0);  
+
 
   useEffect(() => {
     getTicket();              
@@ -65,7 +69,9 @@ export default function SingleTask(props) {
             if(data){
                 setTicket(data); 
                 setProjectId(data.ticket.id);
-                setDecodedToken(jwt_decode(cookies.token));                         
+                setDecodedToken(jwt_decode(cookies.token));
+                setEstimatedTime(data.estimatedTime);
+                setLoggedTime(data.loggedTime);                         
             }                 
         })
         .catch((error) => {
@@ -92,7 +98,7 @@ export default function SingleTask(props) {
         name: name,
         description: description,
         dueDate: format(dueDate, "yyyy-MM-dd HH:mm"),
-        estimatedTime: estimatedTime,
+        // estimatedTime: estimatedTime,
         status: status,
         severity: severity,
         gitRef: gitLink,
@@ -114,11 +120,9 @@ export default function SingleTask(props) {
                 };
                 let file;
                 if(deleteInitialFile !== null && finalFile === null){
-                    console.log("delete", deleteInitialFile, finalFile);
                     file = {
                         attachment: ticket.attachment
                     };
-                    console.log("delete 2", deleteInitialFile, file, ticket.attachment);
                 } else {
                     file = {
                         attachment: finalFile
@@ -170,7 +174,6 @@ export default function SingleTask(props) {
     setName(ticket.name);
     setDescription(ticket.description);
     setDueDate(parseISO(ticket.dueDate));
-    setEstimatedTime(ticket.estimatedTime);
     setStatus(ticket.status);
     setSeverity(ticket.severity);
     setGitLink(ticket.gitRef);
@@ -222,7 +225,6 @@ export default function SingleTask(props) {
     }
   }
   const getFileForEditView = () => {
-        console.log("finalFile",finalFile)
         return (<div
                     className={`drop-zone ${isOver ? 'over' : ''}`}
                     onDragOver={handleDragOver}
@@ -285,7 +287,49 @@ export default function SingleTask(props) {
     const selectedFile = e.target.files[0];
     setFinalFile(selectedFile);
   };
+ const getEstimatedTime = () =>{
+    if(estimatedTime < loggedTime){
+        return estimatedTime + (loggedTime - estimatedTime);
+    } else{
+        return estimatedTime;
+    }
+ }
+ const getEstimatedTimeView = () =>{
+    if(getEstimatedTime() < 10 ){
+        return {marginLeft:"19%"};
+    } else {
+        return {marginLeft:"20%"};
+    }
+ }
 
+ const getRemainingTime = () =>{
+    if(estimatedTime - loggedTime > 0){
+        return estimatedTime - loggedTime;
+    } else{
+        return 0;
+    }
+ }
+ const getRemainingTimeView = () =>{
+    if(getRemainingTime() < 10 ){
+        return {marginLeft:"20%"};
+    } else {
+        return {marginLeft:"18.2%"};
+    }
+ }
+ const getLoggedTime = () =>{
+    if(loggedTime !== null){
+        return loggedTime;
+    } else{
+        return 0;
+    }
+ }
+ const getLoggedTimeView = () =>{
+    if(getLoggedTime() < 10 ){
+        return {marginLeft:"27%"};
+    } else {
+        return {marginLeft:"25%"};
+    }
+ }
   return (
     <div className="single-task">
       {displayError()}
@@ -310,7 +354,7 @@ export default function SingleTask(props) {
                                 </button>
 
                     } 
-                    <button className="mybtn">
+                    <button className="mybtn" onClick={() => setShowTimeModal(true)}>
                         <span>Log work</span>
                     </button>
                 </div>
@@ -450,27 +494,18 @@ export default function SingleTask(props) {
                         <ul className="property-list col-md-12">
                             <li className="item item-people">
                                 <strong className="name">Estimated:</strong>
-                                <span >
-                                {editMode 
-                                    ? <input type="number" className="log-form" defaultValue={ticket.estimatedTime} min="0" onChange={e => setEstimatedTime(e.target.value)}
-                                        onKeyPress={(event) => {
-                                            if (!/[0-9]/.test(event.key)) {
-                                            event.preventDefault();
-                                            }
-                                        }} /> 
-                                    : ticket.estimatedTime != 0 ? <span className="value">{ticket.estimatedTime} h</span> : <span className="value">{ticket.estimatedTime} h</span>}  
-                                </span>
+                                <span className="value" style={getEstimatedTimeView()}>{getEstimatedTime()} h</span>
                             </li>
                             <li className="item item-people">
                                 <strong className="name">Remaining:</strong>
-                                <span className="value">
-                                   0 h
+                                <span className="value" style={getRemainingTimeView()} >
+                                    {getRemainingTime()} h
                                 </span>
                             </li>
                             <li className="item item-people">
                                 <strong className="name">Logged:</strong>
-                                <span className="value" style={{marginLeft:"27%"}}>
-                                    0 h
+                                <span className="value" style={getLoggedTimeView()}>
+                                    {getLoggedTime()} h
                                 </span>
                             </li>
                         </ul>
@@ -497,7 +532,7 @@ export default function SingleTask(props) {
                             className="btn btn-outline-danger">Cancel</button>
                     </div>
                 </div>
-            </div>
+              </div>
             : ''
         }        
         <div className="row">
@@ -506,8 +541,21 @@ export default function SingleTask(props) {
             <Comments currentTicketId={id} /> 
         </div>
       </div>  
-      <ChooseEmployeeModal show={showModal} onHide={()=>setShowModal(false)} submitChange={(employee)=>editAssignee(employee)} 
-                           assignee={ticket.assignee} reporter={ticket.reporter} projectId={projectId} />  
+      <ChooseEmployeeModal 
+         show={showModal} 
+         onHide={()=>setShowModal(false)} 
+         submitChange={(employee) => editAssignee(employee)}                   
+         assignee={ticket.assignee} 
+         reporter={ticket.reporter} 
+         projectId={projectId} 
+      />  
+      <TimeTrackingModal
+        show={showTimeModal} 
+        onHide={()=>setShowTimeModal(false)}
+        close={setShowTimeModal}
+        ticket={ticket}
+        submitChange={(estTime,logTime) => {setEstimatedTime(estTime); setLoggedTime(logTime);}}
+      />
     </div>
   );  
 }

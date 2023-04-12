@@ -315,11 +315,9 @@
     display: inline-block;
     margin-left: 16%;
 }
-.single-task .log-form {
-    width: 20%;
-    display: inline-block;
-    margin-left: 15%;
-    text-align: center;
+.log-form {
+    width: 25% !important;
+    float: right;
 }
 .drop-zone {
     border: 2px dashed #ccc;
@@ -365,4 +363,7 @@
   }
   .delete-file-icon:hover{
     color:rgba(246, 88, 88, 0.505);
+  }
+  .time-modal-item{
+    margin-top: 5%;
   }
