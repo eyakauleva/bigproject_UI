@@ -98,7 +98,6 @@ export default function SingleTask(props) {
         name: name,
         description: description,
         dueDate: format(dueDate, "yyyy-MM-dd HH:mm"),
-        // estimatedTime: estimatedTime,
         status: status,
         severity: severity,
         gitRef: gitLink,
@@ -128,6 +127,7 @@ export default function SingleTask(props) {
                         attachment: finalFile
                     };
                 }
+                console.log("file", file);
                 if(file.attachment !== undefined && file.attachment.name !== null || deleteInitialFile){
                     await axios
                     .put("/project/tickets/" + id + "/file?remove=" + deleteInitialFile, 
@@ -178,7 +178,6 @@ export default function SingleTask(props) {
     setSeverity(ticket.severity);
     setGitLink(ticket.gitRef);
     setAssignee(ticket.assignee);
-    setFinalFile({name: ticket.fileName});
     setDeleteInitialFile(false);
     setEditMode(true);
   }
@@ -225,6 +224,7 @@ export default function SingleTask(props) {
     }
   }
   const getFileForEditView = () => {
+    console.log("f",finalFile);
         return (<div
                     className={`drop-zone ${isOver ? 'over' : ''}`}
                     onDragOver={handleDragOver}
@@ -232,7 +232,7 @@ export default function SingleTask(props) {
                     onDrop={handleDrop}
                     onClick={handleFileClick}
                 >
-                    {!(finalFile && finalFile.name) ? (
+                    {(ticket.fileName === null && finalFile === null) || (finalFile === null && deleteInitialFile)  ? (
                     <>
                         <span className="drop-zone__prompt">Drag and drop files here or click to select</span>
                         <input 
@@ -252,7 +252,7 @@ export default function SingleTask(props) {
                             onChange={handleFileChange} 
                             className="drop-zone__input" 
                         />
-                        <p>Selected file: {finalFile.name} 
+                        <p>Selected file: {finalFile !== null ? finalFile.name : ticket.fileName} 
                            <i 
                              className="bi bi-file-earmark-x-fill delete-file-icon" 
                              onClick={(e) => {deleteAttachment(e)}}
