@@ -29,8 +29,10 @@ export default function CreateTask(props) {
   const[errorMessage, setErrorMessage] = useState("");
   const[error, setError] = useState("");
   const[isDisabled, setIsDisabled] = useState(false);
-  const[selectedFile, setSelectedFile] = useState();
-  const hiddenFileInput = useRef(null);
+  const[deleteInitialFile, setDeleteInitialFile] = useState(false);
+  const[isOver, setIsOver] = useState(false);
+  const file= useRef(null);
+  const[finalFile, setFinalFile] = useState(null);
 
   useLayoutEffect(() => {
     getProject(); 
@@ -80,7 +82,7 @@ export default function CreateTask(props) {
             else alert('Internal server error');
         });
     }
-    }
+   }
 
   const submitCreate = () => {
     if(assignee != null){
@@ -88,8 +90,7 @@ export default function CreateTask(props) {
 
         let config = {
             headers: {
-                Authorization: 'Bearer ' + cookies.token,
-                'Content-Type': 'multipart/form-data'
+                Authorization: 'Bearer ' + cookies.token
             }
         };
     
@@ -103,8 +104,7 @@ export default function CreateTask(props) {
             severity: severity,
             gitRef: gitLink,
             assignee: {id: assignee.id},
-            reporter: {id: cookies.employeeId},
-            attachment: selectedFile
+            reporter: {id: cookies.employeeId}
         };
     
         const create = async() => {
@@ -112,9 +112,44 @@ export default function CreateTask(props) {
             .post("/project/" + project.id + "/tickets/",
                 ticket,
                 config)
-            .then(() => {
-                setIsDisabled(false);
-                props.navigate("dashboard");
+            .then(response => response.data)
+            .then(data => {
+                const updateFile = async() => {
+                    let fileConfig = {
+                        headers: {
+                            Authorization: 'Bearer ' + cookies.token,
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    };
+        
+                    let file;
+                    if(!deleteInitialFile && finalFile !== null){
+                        file = {
+                            attachment: finalFile
+                        };
+                    }
+        
+                    await axios
+                    .put("/project/tickets/" + data + "/file", 
+                        file,
+                        fileConfig)
+                    .then(() => {
+                        setIsDisabled(false);
+                        props.navigate("dashboard");
+                    })
+                    .catch((error) => {
+                        setIsDisabled(false);
+                        let code = error.toJSON().status;
+                        if(code===400 && error.response.data !== null)
+                            setErrorMessage(error.response.data.message);
+                        else if(code===401)
+                            setError('Authorization is required');
+                        else if(code===403)
+                            alert("Access is denied");     
+                        else alert('Internal server error');
+                    });        
+                }      
+                updateFile();
             })
             .catch((error) => {
                 let code = error.toJSON().status;
@@ -143,177 +178,232 @@ export default function CreateTask(props) {
     setShowModal(false);
   }
 
-  const onFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
+  const deleteAttachment = (e) => {
+    if (window.confirm("Are you sure you want to remove attachment?")) {
+        e.stopPropagation(); 
+        setDeleteInitialFile(true); 
+        setFinalFile(null)
+    }
+  }
+  const getFileForEditView = () => {
+        return (<div
+                    className={`drop-zone ${isOver ? 'over' : ''}`}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    onClick={handleFileClick}
+                >
+                    {finalFile === null || (finalFile === null && deleteInitialFile)  ? (
+                    <>
+                        <span className="drop-zone__prompt">Drag and drop files here or click to select</span>
+                        <input 
+                            type="file" 
+                            name="file" 
+                            ref={file}
+                            onChange={handleFileChange} 
+                            className="drop-zone__input" 
+                        />
+                    </>
+                    ) : (
+                    <>
+                        <input 
+                            type="file" 
+                            name="file" 
+                            ref={file}
+                            onChange={handleFileChange} 
+                            className="drop-zone__input" 
+                        />
+                        <p>Selected file: {finalFile !== null ? finalFile.name : ''} 
+                           <i 
+                             className="bi bi-file-earmark-x-fill delete-file-icon" 
+                             onClick={(e) => {deleteAttachment(e)}}
+                             >
+                           </i>
+                        </p>
+                    </>
+                    )}
+                </div>);
+  }
+  const handleFileClick = () => {
+    file = file.current.click();
+    setFinalFile(file);
+  };
+  const handleDragOver = e => {
+    e.preventDefault();
+    setIsOver(true);
   };
 
-  const resetFileInput = () => {
-    hiddenFileInput.current.value = null;
-    setSelectedFile();
-  }
-   
-  const handleClick = () => {
-    hiddenFileInput.current.click();
+  const handleDragLeave = () => {
+    setIsOver(false);
+  };
+
+  const handleDrop = e => {
+    e.preventDefault();
+    const droppedFile = e.dataTransfer.files[0];
+    setFinalFile(droppedFile);
+    setIsOver(false);
+  };
+
+  const handleFileChange = e => {
+    const selectedFile = e.target.files[0];
+    setFinalFile(selectedFile);
   };
 
   return (
-    <div className="create-task">
-        {displayError()}
-      <div className="container emp-profile">        
+    <div className="single-task">
+      {displayError()}
+      <div className="container emp-profile">
         <div className="row">
-        <div className="col-md-1"></div>
-           <div className="col-md-3"></div>
-            <div className="col-md-5">
-                <h3><span className='project-name'>[{project.name}]</span>&nbsp;&nbsp;Create new ticket:</h3>              
+            <div className="col-md-4">
+                <h3><span className='project-name'>[{project.name}]</span>&nbsp;&nbsp;New ticket:</h3>
+            </div>
+            <div className="col-md-6">
+                <input type="text" className='name' onChange={e => setName(e.target.value)}/>                  
             </div>
         </div>
         <div className="row">
-        <div className="col-md-1"></div>
-           <div className="col-md-3">
-                <label>Name:</label>
-            </div>
-            <div className="col-md-6">
-                <input type="text" style={{fontSize:'22px', width:'100%'}} onChange={e => setName(e.target.value)}/>                 
-            </div>
-        </div>
-        <div className="row">
-            <div className="col-md-1"></div>
-           <div className="col-md-3">
-                <label>Description:</label>
-            </div>
-            <div className="col-md-6">
-                <textarea className='textarea' onChange={e => setDescription(e.target.value)} cols="80" rows="6"/>
-            </div>
-        </div><hr/>
-        <div className="row">
-            <div className="col-md-1"></div>
-           <div className="col-md-3">
-                <label>Due time:</label>
-            </div>
-            <div className="col-md-6">
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <DateTimePicker style={{width:'100%'}} value={dueDate} onChange={setDueDate} format="do MMMM Y HH:mm" />
-                </MuiPickersUtilsProvider>                   
-            </div>
-        </div><hr/>
-        <div className="row">
-            <div className="col-md-1"></div>
-           <div className="col-md-3">
-                <label>Estimated time:</label>
-            </div>
-            <div className="col-md-6">
-                <input type="number" min="0" onChange={e => setEstimatedTime(e.target.value)}
-                    onKeyPress={(event) => {
-                        if (!/[0-9]/.test(event.key)) {
-                        event.preventDefault();
-                        }
-                    }} />                  
-            </div>
-        </div><hr/>
-        <div className="row">
-            <div className="col-md-1"></div>
-           <div className="col-md-3">
-                <label>Status:</label>
-            </div>
-            <div className="col-md-6">
-                <Form.Select onChange={e => setStatus(e.target.value)}>                
-                    {
-                        columnOrder.map(column => {
-                            return <option value={column}>{column}</option>;
-                        })
-                    }
-                </Form.Select>                    
-            </div>
-        </div><hr/>
-        <div className="row">
-            <div className="col-md-1"></div>
-           <div className="col-md-3">
-                <label>Type:</label>
-            </div>
-            <div className="col-md-6">
-                <Form.Select onChange={e => setType(e.target.value)}>                
-                    {
-                        types.map(type => {
-                            return <option value={type}>{type}</option>;
-                        })
-                    }
-                </Form.Select>                    
-            </div>
-        </div><hr/>
-        <div className="row">
-            <div className="col-md-1"></div>
-           <div className="col-md-3">
-                <label>Severity:</label>
-            </div>
-            <div className="col-md-6">
-                <Form.Select onChange={e => setSeverity(e.target.value)}>                  
-                    {
-                        severities.map(severity => {
-                            return <option value={severity}>{severity}</option>;
-                        })
-                    }
-                </Form.Select>                  
-            </div>
-        </div><hr/>
-        <div className="row">
-            <div className="col-md-1"></div>
-           <div className="col-md-3">
-                <label>Assignee:</label>
-            </div>
-            <div className="col-md-6">
-                {
-                    assignee != null
-                    ? <div className='pretty-select' onClick={()=>setShowModal(true)} >
-                        <img className="photo" src={`data:image/jpeg;base64,${assignee.photo}`} />
-                        &nbsp;&nbsp;{assignee.user.name+' '+ assignee.user.surname}
+            <div className="col-md-8">
+                <div className="row">
+                    <div className="col-md-12">
+                        <div className="group-name">Details</div>
+                        <ul className="property-list">
+                            <li className="item">
+                                <strong className="name">Type:</strong>
+                                <span>
+                                    <Form.Select className="type-form" onChange={e => setType(e.target.value)}>       
+                                        {
+                                            types.map(type => {
+                                                return <option value={type}>{type}</option>;
+                                            })
+                                        }
+                                    </Form.Select>
+                                </span>
+                            </li>
+                            <li className="item item-right">
+                                <strong className="name">Status:</strong>
+                                <span>
+                                    <Form.Select className="status-form" onChange={e => setStatus(e.target.value)}>       
+                                        {
+                                            columnOrder.map(column => {
+                                                return <option value={column}>{column}</option>;
+                                            })
+                                        }
+                                    </Form.Select>
+                                </span>
+                            </li>
+                            <li className="item">
+                                <strong className="name">Priority:</strong>
+                                <span>
+                                    <Form.Select className="priority-form" onChange={e => setSeverity(e.target.value)}>       
+                                        {
+                                            severities.map(severity => {
+                                                return <option value={severity}>{severity}</option>;
+                                            })
+                                        }
+                                    </Form.Select>
+                                </span>
+                            </li>
+                            <li className="item item-right">
+                                <strong className="name">Git link:</strong>
+                                <span >
+                                    <input type="text" className="git-form" onChange={e => setGitLink(e.target.value)}/> 
+                                </span>
+                            </li>
+                        </ul>
                     </div>
-                    : <button onClick={()=>setShowModal(true)}>Choose...</button>
-                }          
+                    <div className="col-md-12">
+                        <div className="group-name">Dates</div>
+                        <ul className="property-list">
+                            <li className="item">
+                                <strong className="name">Due time:</strong>
+                                <span>
+                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                        <DateTimePicker className="date-form" value={dueDate} onChange={setDueDate} format="do MMMM Y HH:mm" />
+                                    </MuiPickersUtilsProvider>
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div className="col-md-12">
+                        <div className="group-name">Description</div>
+                        <div>
+                            <textarea className='textarea' onChange={e => setDescription(e.target.value)} cols="80" rows="6"/>
+                        </div>
+                    </div>
+                    <div className="col-md-12">
+                        <div className="group-name">Attachment</div>
+                            {getFileForEditView()} 
+                    </div>
+                </div>  
             </div>
-        </div><hr/>    
+            <div className="col-md-4">
+                <div className="row">
+                    <div className="col-md-12">
+                        <div className="group-name">People</div>
+                        <ul className="property-list col-md-12">
+                            <li className="item item-people">
+                                <strong className="name">Assignee:</strong>
+                                <span className="value" style={{marginLeft:"15%"}}>
+                                    {
+                                        assignee != null
+                                        ? <span className='pretty-select' onClick={()=>setShowModal(true)} >
+                                            <img className="photo" src={`data:image/jpeg;base64,${assignee.photo}`} />
+                                            &nbsp;{assignee.user.name+' '+ assignee.user.surname}
+                                        </span>
+                                        : <button onClick={()=>setShowModal(true)}>Choose...</button>
+                                    }
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div className="col-md-12">
+                        <div className="group-name">Time Tracking</div>
+                        <ul className="property-list col-md-12">
+                            <li className="item item-people">
+                                <strong className="name">Estimated:</strong>
+                                <input type="number" min="0" onChange={e => setEstimatedTime(e.target.value)}
+                                    onKeyPress={(event) => {
+                                        if (!/[0-9]/.test(event.key)) {
+                                            event.preventDefault();
+                                        }
+                                    }} />     
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>    
         <div className="row">
-            <div className="col-md-1"></div>
-           <div className="col-md-3">
-                <label>Git link:</label>
-            </div>
-            <div className="col-md-6">
-                <input type="text" style={{width:'100%'}} onChange={e => setGitLink(e.target.value)}/>                  
-            </div>
-        </div><hr/>
-        <div className="row">
-            <div className="col-md-1"></div>
-            <div className="col-md-3">
-                <label>Attach file:</label>
-            </div>
-            <div className="col-md-8 file-input">
-                {selectedFile != undefined ? <div>{selectedFile.name}</div> : ''}
-                <input type="file" ref={hiddenFileInput} style={{display: "none"}} onChange={(e) => onFileChange(e)}/>
-                {selectedFile != undefined ? <i class="bi bi-x-square" onClick={() => resetFileInput()}></i> : ''}
-                <button onClick={() => handleClick()}>Choose...</button>  
-            </div>
-        </div><hr/>
-        <div>
-            <div className="row">
-                <div className="col-md-4"></div>
-                <div className="col-md-6 error">
-                    {errorMessage}
-                </div>
-            </div>
-            <div className="row">                                            
-                <div className="col-md-8"></div>
-                <div className="col-md-1">
-                    <input type="submit" disabled={isDisabled} style={isDisabled ? {backgroundColor:"grey"} : {}}
-                        onClick={()=>{submitCreate()}} className="profile-edit-btn" value="Save" />
-                </div>
-                <div className="col-md-1">
-                    <button onClick={()=>props.navigate("dashboard/" + project.id)} disabled={isDisabled}
-                        style={isDisabled ? {backgroundColor:"grey"} : {background: '#FF6E4E'}} className="profile-edit-btn">Cancel</button>
-                </div>
+            <div className="col-md-10"></div>
+            <div className="col-md-2 error">
+                {errorMessage}
             </div>
         </div>
+        {
+            <div style={{overflow:"auto"}}>
+                <hr/>
+                <div className="row" style={{float:"right"}}>                                            
+                    <div className="col-md-6">
+                        <input type="submit" disabled={isDisabled} style={isDisabled ? {backgroundColor:"grey"} : {}}
+                            onClick={()=>{submitCreate()}} className="btn btn-outline-primary" value="Save" />
+                    </div>
+                    <div className="col-md-6">
+                        <button onClick={()=>props.navigate("dashboard/" + project.id)} disabled={isDisabled}
+                            style={isDisabled ? {backgroundColor:"grey"} : {}}
+                            className="btn btn-outline-danger">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        }
       </div>  
-      <ChooseEmployeeModal show={showModal} onHide={()=>setShowModal(false)} submitChange={(employee)=>editAssignee(employee)} 
-                           assignee={assignee} reporter={assignee} projectId={project.id} />  
+      <ChooseEmployeeModal 
+         show={showModal} 
+         onHide={()=>setShowModal(false)} 
+         submitChange={(employee) => editAssignee(employee)}                   
+         assignee={assignee} 
+         reporter={assignee} 
+         projectId={project.id} 
+      />
     </div>
-  );  
+  );   
 }

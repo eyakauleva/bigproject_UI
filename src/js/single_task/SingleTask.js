@@ -9,10 +9,10 @@ import DateFnsUtils from '@date-io/date-fns';
 import jwt_decode from "jwt-decode";
 import {logout} from '../Sidebar.js';
 
-import ChooseEmployeeModal from './ChooseEmployeeModal'
+import ChooseEmployeeModal from '../dashboard/ChooseEmployeeModal.js'
 import '../../css/SingleTask.css';
-import Comments from '../comments/Comments';
-import TimeTrackingModal from '../single_task/TimeTrackingModal.js'
+import Comments from '../comments/Comments.js';
+import TimeTrackingModal from './TimeTrackingModal.js'
 
 export default function SingleTask(props) {
   const[cookies] = useCookies(["token", "employeeId"]);
@@ -23,8 +23,7 @@ export default function SingleTask(props) {
   const[status, setStatus] = useState("");
   const[severity, setSeverity] = useState("");
   const[assignee, setAssignee] = useState({});
-  const[gitLink, setGitLink] = useState("");  
-  const[deleteInitialFile, setDeleteInitialFile] = useState(false);
+  const[gitLink, setGitLink] = useState(""); 
   const[editMode, setEditMode] = useState(false); 
   const {id} = useParams();  
   const severities = ["LOW", "NORMAL", "HIGH", "CRITICAL"];
@@ -35,6 +34,7 @@ export default function SingleTask(props) {
   const[decodedToken, setDecodedToken] = useState({});
   const[error, setError] = useState("");
   const[projectId, setProjectId] = useState();
+  const[deleteInitialFile, setDeleteInitialFile] = useState(false);
   const[isOver, setIsOver] = useState(false);
   const file= useRef(null);
   const[finalFile, setFinalFile] = useState(null);
@@ -127,7 +127,6 @@ export default function SingleTask(props) {
                         attachment: finalFile
                     };
                 }
-                console.log("file", file);
                 if(file.attachment !== undefined && file.attachment.name !== null || deleteInitialFile){
                     await axios
                     .put("/project/tickets/" + id + "/file?remove=" + deleteInitialFile, 
@@ -224,7 +223,6 @@ export default function SingleTask(props) {
     }
   }
   const getFileForEditView = () => {
-    console.log("f",finalFile);
         return (<div
                     className={`drop-zone ${isOver ? 'over' : ''}`}
                     onDragOver={handleDragOver}

@@ -5,13 +5,14 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Profile from './Profile';
 import Dashboard from './dashboard/Dashboard';
-import SingleTask from './dashboard/SingleTask';
+import SingleTask from './single_task/SingleTask';
 import Projects from './Projects';
 import Orders from './Orders';
 import Users from './Users';
 import ProjectPage from './ProjectPage';
 import CreateProject from './CreateProject';
 import CreateTask from './dashboard/CreateTask';
+import Statistics from './Statistics';
 import jwt_decode from "jwt-decode";
 
 const OnlyManagerAdminRoute = ({ redirectPath = '/', children }) => {
@@ -68,6 +69,7 @@ export default function Main(){
                 <Route path="projects" element={<Projects navigate={navigate}  /> } />                
                 <Route path="users" element={<Users navigate={navigate}  /> } />
                 <Route path="project/:id" element={<ProjectPage navigate={navigate} /> } />
+                <Route path="statistics" element={<Statistics navigate={navigate}  /> } />
 
                 <Route path="orders" element={
                     <OnlyManagerAdminRoute>

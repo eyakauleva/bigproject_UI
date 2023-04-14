@@ -148,7 +148,11 @@ function Sidebar(props){
                     <span>Orders</span>
                  </a>  
                 : ''
-            }            
+            }
+            <a href='/app/statistics' className='action'>
+                <i className="bi bi-graph-up-arrow"></i>    
+                <span>Statistics</span>
+            </a>            
             <hr/>
             <a onClick={logout} className='action'>
                 <i className="bi bi-box-arrow-left"></i>

@@ -113,9 +113,6 @@ export default function CreateProject(props) {
             .post("/project/create/" + id, project, config)
             .then(response => response.data)
             .then(data => {
-
-                console.log(data);
-
                 const updateFile = async() => {
                     let fileConfig = {
                         headers: {
@@ -137,6 +134,7 @@ export default function CreateProject(props) {
                         props.navigate("projects");
                     })
                     .catch((error) => {
+                        setIsDisabled(false);
                         let code = error.toJSON().status;
                         if(code===400 && error.response.data !== null)
                             setErrorMessage(error.response.data.message);
