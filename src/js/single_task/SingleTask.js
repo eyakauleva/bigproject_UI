@@ -39,8 +39,7 @@ export default function SingleTask(props) {
   const file= useRef(null);
   const[finalFile, setFinalFile] = useState(null);
   const[estimatedTime, setEstimatedTime] = useState(0);
-  const[loggedTime, setLoggedTime] = useState(0);  
-
+  const[loggedTime, setLoggedTime] = useState(0.0);  
 
   useEffect(() => {
     getTicket();              
@@ -70,9 +69,18 @@ export default function SingleTask(props) {
                 setTicket(data); 
                 setProjectId(data.ticket.id);
                 setDecodedToken(jwt_decode(cookies.token));
-                setEstimatedTime(data.estimatedTime);
-                setLoggedTime(data.loggedTime);                         
-            }                 
+                setEstimatedTime(data.estimatedTime);                  
+            }             
+        })
+        .then(() => {
+            axios
+            .get("/time/ticket/" + id, config)
+            .then(response => response.data)
+            .then(data =>{
+                if(data){
+                    setLoggedTime(data);                 
+                }
+            })  
         })
         .catch((error) => {
             let code = error.toJSON().status;
@@ -302,7 +310,7 @@ export default function SingleTask(props) {
 
  const getRemainingTime = () =>{
     if(estimatedTime - loggedTime > 0){
-        return estimatedTime - loggedTime;
+        return (estimatedTime - loggedTime).toFixed(1);
     } else{
         return 0;
     }
@@ -552,7 +560,8 @@ export default function SingleTask(props) {
         onHide={()=>setShowTimeModal(false)}
         close={setShowTimeModal}
         ticket={ticket}
-        submitChange={(estTime,logTime) => {setEstimatedTime(estTime); setLoggedTime(logTime);}}
+        loggedTime={loggedTime}
+        submitChange={(estTime,logTime) => {setEstimatedTime(estTime); setLoggedTime((parseFloat(loggedTime) + parseFloat(logTime)).toFixed(1));}}
       />
     </div>
   );  

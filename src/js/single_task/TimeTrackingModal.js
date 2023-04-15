@@ -11,36 +11,48 @@ const TimeTrackingModal = (props) =>{
 
     useLayoutEffect(() => {
         setEstimatedTime(props.ticket.estimatedTime);
-        setLoggedTime(props.ticket.loggedTime);   
-      }, [props.ticket.estimatedTime, props.ticket.loggedTime]);
-      useLayoutEffect(() => {
         setTicket(props.ticket);
-      }, [props.ticket]);
+    }, [props]);
+
     const updateTimeOfTicket = () => {
         let config = {
             headers: {
                 Authorization: 'Bearer ' + cookies.token
             }
         };
+
         if(estimatedTime === undefined) {
             setEstimatedTime(props.ticket.estimatedTime);
         }
+
         let time = {
             estimatedTime: estimatedTime,
-            loggedTime: loggedTime
+            loggedTime: loggedTime,
+            ticketId: props.ticket.id
         }; 
-        let newTicketState = ticket;
-        newTicketState.estimatedTime = estimatedTime;
-        newTicketState.loggedTime = loggedTime;
-        setTicket(newTicketState);
+
+        let employeeId = document.cookie
+                        .split("; ")
+                        .find((row) => row.startsWith("employeeId="))
+                        ?.split("=")[1]
         axios
-          .put("/project/tickets/" + props.ticket.id + "/time", time, config)
+          .post("/time/" + employeeId, time, config)
           .then(() => {
+            let newTicketState = ticket;
+            newTicketState.estimatedTime = estimatedTime;
+            setTicket(newTicketState);
+            setLoggedTime(0);
+
             props.close(false);
             props.submitChange(estimatedTime, loggedTime);
         })
           .catch((error) => {
-            console.log(error);
+            let code = error.status;
+            if(code===401)
+                alert('Authorization is required');
+            else if(code===403)
+                alert("Access is denied");
+            else alert('Internal server error');
         }); 
     }
     return (
@@ -64,9 +76,9 @@ const TimeTrackingModal = (props) =>{
                 </div>
                 <div className="time-modal-item">
                     <span>Logged time:</span>
-                    <input type="number" className="log-form" defaultValue="" min="0" onChange={e => setLoggedTime(ticket.loggedTime + parseInt(e.target.value))}
+                    <input type="number" className="log-form" defaultValue="" min="0" onChange={e => setLoggedTime(e.target.value)}
                                             onKeyPress={(event) => {
-                                                if (!/[0-9]/.test(event.key)) {
+                                                if (!/[0-9.]/.test(event.key)) {
                                                 event.preventDefault();
                                                 }
                                             }}
@@ -80,7 +92,7 @@ const TimeTrackingModal = (props) =>{
                 <div>
                     <input 
                       type="button" 
-                      onClick={() => {props.close(false); setEstimatedTime(ticket.estimatedTime); setLoggedTime(ticket.loggedTime);}}
+                      onClick={() => {props.close(false); setEstimatedTime(ticket.estimatedTime); setLoggedTime(0); }}
                       className="btn btn-outline-danger" 
                       value="Cancel" 
                     />

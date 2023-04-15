@@ -328,7 +328,7 @@ export default function Dashboard(props) {
             }
             {
               project.employees.length > 3
-              ? <div className="profile-img" style={{marginLeft:"3.1%"}}>
+              ? <div className="profile-img" style={{marginLeft:"4.2%"}}>
                   <span className='centered'>+{project.employees.length-3}</span>
                   <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="#D4DADE" class="bi bi-circle-fill" viewBox="0 0 16 16">
                     <circle cx="8" cy="8" r="8"/>

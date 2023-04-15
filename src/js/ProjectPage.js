@@ -45,7 +45,6 @@ export default function ProjectPage(props) {
     useLayoutEffect(() => {
       setDecodedToken(jwt_decode(cookies.token)); 
       getProject(); 
-      getTickets();   
     }, []);
 
     const displayError = () => {
@@ -73,34 +72,25 @@ export default function ProjectPage(props) {
               setEmployees(data.employees); 
             }                 
         })
-        .catch((error) => {
-          let code = error.toJSON().status;
-          if(code===400 && error.response.data !== null)
-              setErrorMessage(error.response.data.message);
-          else if(code===401)
-            setError('Authorization is required');
-          else if(code===403)
-            alert("Access is denied");            
-          else alert('Internal server error');
-        });   
-      }
-    }
-
-    const getTickets = () => {
-      if(id){
-        let config = {
-          headers: {
-              Authorization: 'Bearer ' + cookies.token
-          }
-        };
-
-        axios
-        .get("/project/" + id + "/tickets", config)
-        .then(response => response.data)
-        .then(data =>{
-            if(data){
-                setTickets(data);                
-            }                 
+        .then(() => {
+          axios
+          .get("/project/" + id + "/tickets", config)
+          .then(response => response.data)
+          .then(data =>{
+              if(data){
+                  setTickets(data);                
+              }                 
+          })
+          .catch((error) => {
+            let code = error.toJSON().status;
+            if(code===400 && error.response.data !== null)
+                setErrorMessage(error.response.data.message);
+            else if(code===401)
+              setError('Authorization is required');
+            else if(code===403)
+              alert("Access is denied");            
+            else alert('Internal server error');
+          });   
         })
         .catch((error) => {
           let code = error.toJSON().status;
