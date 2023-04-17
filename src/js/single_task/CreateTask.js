@@ -7,7 +7,7 @@ import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 
 import {logout} from '../Sidebar.js';
-import ChooseEmployeeModal from './ChooseEmployeeModal';
+import ChooseEmployeeModal from '../dashboard/ChooseEmployeeModal.js';
 import '../../css/CreateTask.css';
 
 export default function CreateTask(props) {

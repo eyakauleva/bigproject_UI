@@ -27,9 +27,12 @@ function Sidebar(props){
     const goToProfile = () => {
         let decodedToken = jwt_decode(cookies.token);
         setClientId(decodedToken.id);
-        if(decodedToken.role==="ROLE_CUSTOMER")
+        if(decodedToken.role==="ROLE_CUSTOMER"){
             setShowModal(true);
-        else props.navigate('profile/' + cookies.employeeId); 
+        }
+        else {
+            props.navigate('profile/' + cookies.employeeId); 
+        }
     }
 
     const getCurrentProjects = () => {

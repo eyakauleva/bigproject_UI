@@ -158,7 +158,10 @@ export default function SingleTask(props) {
                 }       
             }      
             updateFile();
-        }).then(() => setEditMode(false))
+        }).then(() =>{
+            setEditMode(false);
+            getTicket();
+        })
         .catch((error) => {
             let code = error.toJSON().status;
             if(code===400 && error.response.data !== null && error.response.data.message === "validation error"){

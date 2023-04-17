@@ -1,16 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useCookies } from 'react-cookie';
-import Tab from 'react-bootstrap/Tab';
-import Tabs from 'react-bootstrap/Tabs';
-// import Chart from 'chart.js/auto';
-import { Bar } from 'react-chartjs-2';
 import { format } from "date-fns";
 import axios from "axios";
-import jwt_decode from "jwt-decode";
 
-import {logout} from './Sidebar.js';
-import '.././css/Profile.css';
+import {logout} from '../Sidebar.js';
 
+import { Bar } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 import { LinearScale, CategoryScale } from 'chart.js';
 Chart.register(LinearScale, CategoryScale);

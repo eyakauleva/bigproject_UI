@@ -11,8 +11,8 @@ import Orders from './Orders';
 import Users from './Users';
 import ProjectPage from './ProjectPage';
 import CreateProject from './CreateProject';
-import CreateTask from './dashboard/CreateTask';
-import Statistics from './Statistics';
+import CreateTask from './single_task/CreateTask';
+import Statistics from './statistics/Statistics';
 import jwt_decode from "jwt-decode";
 
 const OnlyManagerAdminRoute = ({ redirectPath = '/', children }) => {
