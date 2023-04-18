@@ -38,7 +38,7 @@ export default function SingleTask(props) {
   const[isOver, setIsOver] = useState(false);
   const file= useRef(null);
   const[finalFile, setFinalFile] = useState(null);
-  const[estimatedTime, setEstimatedTime] = useState(0);
+  const[estimatedTime, setEstimatedTime] = useState(0.0);
   const[loggedTime, setLoggedTime] = useState(0.0);  
 
   useEffect(() => {
@@ -295,9 +295,9 @@ export default function SingleTask(props) {
   };
  const getEstimatedTime = () =>{
     if(estimatedTime < loggedTime){
-        return parseInt(estimatedTime) + (loggedTime - estimatedTime);
+        return parseFloat(estimatedTime + (loggedTime - estimatedTime)).toFixed(1);
     } else{
-        return estimatedTime;
+        return parseFloat(estimatedTime).toFixed(1);
     }
  }
  const getEstimatedTimeView = () =>{
@@ -312,7 +312,7 @@ export default function SingleTask(props) {
     if(estimatedTime - loggedTime > 0){
         return (estimatedTime - loggedTime).toFixed(1);
     } else{
-        return 0;
+        return 0.0;
     }
  }
  const getRemainingTimeView = () =>{
@@ -324,9 +324,9 @@ export default function SingleTask(props) {
  }
  const getLoggedTime = () =>{
     if(loggedTime !== null){
-        return loggedTime;
+        return loggedTime.toFixed(1);
     } else{
-        return 0;
+        return 0.0;
     }
  }
  const getLoggedTimeView = () =>{
@@ -561,7 +561,7 @@ export default function SingleTask(props) {
         close={setShowTimeModal}
         ticket={ticket}
         loggedTime={loggedTime}
-        submitChange={(estTime,logTime) => {setEstimatedTime(estTime); setLoggedTime((parseFloat(loggedTime) + parseFloat(logTime)).toFixed(1));}}
+        submitChange={(estTime,logTime) => {setEstimatedTime(parseFloat(estTime).toFixed(1)); setLoggedTime((parseFloat(loggedTime) + parseFloat(logTime)).toFixed(1));}}
       />
     </div>
   );  

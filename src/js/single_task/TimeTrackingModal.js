@@ -4,7 +4,7 @@ import { useCookies } from 'react-cookie';
 import axios from "axios";
 
 const TimeTrackingModal = (props) =>{
-    const[estimatedTime, setEstimatedTime] = useState(0);
+    const[estimatedTime, setEstimatedTime] = useState(0.0);
     const[loggedTime, setLoggedTime] = useState(0);
     const[ticket, setTicket] = useState({});
     const[cookies] = useCookies(["token"]);
