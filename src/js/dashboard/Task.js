@@ -9,15 +9,17 @@ export default class Task extends React.Component {
 
   isTaskOverdued() {
     const statusList = ['READY_FOR_TEST', 'CLOSE'];
-    return !statusList.includes(this.props.task.status) && (differenceInMinutes(new Date(this.props.task.dueDate).getTime(), new Date().getTime()) % 60 < 0
-      || differenceInHours(new Date(this.props.task.dueDate).getTime(), new Date().getTime()) < 0);
+    return this.props.task.dueDate !== null && 
+           !statusList.includes(this.props.task.status) && 
+           (differenceInMinutes(new Date(this.props.task.dueDate).getTime(), new Date().getTime()) % 60 < 0 || 
+           differenceInHours(new Date(this.props.task.dueDate).getTime(), new Date().getTime()) < 0);
   } 
 
   render() {
     return (
       <Draggable draggableId={this.props.task.id} index={this.props.index} >
         {provided => (
-          <div className={this.isTaskOverdued() == true ? 'task-container overdue-task' : 'task-container'}
+          <div className={this.isTaskOverdued() === true ? 'task-container overdue-task' : 'task-container'}
             {...provided.draggableProps}
             {...provided.dragHandleProps}
             ref={provided.innerRef}>
@@ -25,7 +27,7 @@ export default class Task extends React.Component {
             <div className='due-date'>{this.props.task.dueDate != null ? <p>{format(parseISO(this.props.task.dueDate), "do MMMM Y")}</p> : ''}</div>
             <div className='icon-panel'>
               {
-                this.props.task.severity == "CRITICAL"
+                this.props.task.severity === "CRITICAL"
                 ? <div>
                     <div className='severity' style={this.isTaskOverdued() ? {fontSize:'14px', color:'white'} : {fontSize:'14px', color:'#FF0000'}}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-octagon-fill" viewBox="0 0 16 16">
@@ -38,7 +40,7 @@ export default class Task extends React.Component {
                       {differenceInMinutes(new Date(this.props.task.dueDate).getTime(), new Date().getTime()) % 60}m
                     </div>
                   </div>
-                : this.props.task.severity == "HIGH"
+                : this.props.task.severity === "HIGH"
                 ? <div> 
                     <div className='severity' style={this.isTaskOverdued() ? {fontSize:'14px', color:'white'} : {fontSize:'14px', color:'#FF7A2F'}}> 
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
@@ -52,7 +54,7 @@ export default class Task extends React.Component {
                       {differenceInMinutes(new Date(this.props.task.dueDate).getTime(), new Date().getTime()) % 60}m
                     </div>
                   </div>
-                : this.props.task.severity == 'NORMAL'
+                : this.props.task.severity === 'NORMAL'
                 ? <div> 
                     <div className='severity' style={{color:'#17F1D7'}}> 
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle-square" viewBox="0 0 16 16">
@@ -62,7 +64,7 @@ export default class Task extends React.Component {
                       &nbsp;{this.props.task.severity}
                     </div>
                   </div>  
-                : this.props.task.severity == 'LOW'   
+                : this.props.task.severity === 'LOW'   
                 ? <div> 
                     <div style={{color:'#00DC7D', fontSize:'14px', fontWeight:'bold'}}> 
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-app-indicator" viewBox="0 0 16 16">
@@ -75,7 +77,7 @@ export default class Task extends React.Component {
                 : ''      
               }
               <img className="assignee-pic" src={`data:image/jpeg;base64,${this.props.task.assigneePhoto}`} 
-                  onClick={() => this.props.navigate("profile/"+this.props.task.assigneeId)} title={this.props.task.assigneeName} />
+                  onClick={() => this.props.navigate("profile/"+this.props.task.assigneeId)} title={this.props.task.assigneeName} alt="" />
             </div>
           </div>
         )}

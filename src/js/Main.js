@@ -11,7 +11,6 @@ import Orders from './Orders';
 import Users from './Users';
 import ProjectPage from './ProjectPage';
 import CreateProject from './CreateProject';
-import CreateTask from './single_task/CreateTask';
 import Statistics from './statistics/Statistics';
 import jwt_decode from "jwt-decode";
 
@@ -82,12 +81,6 @@ export default function Main(){
                         <CreateProject navigate={navigate} />
                     </OnlyManagerAdminRoute>
                 }/>
-
-                {
-                    decodedToken.role!=="ROLE_CUSTOMER" && cookies.project!==undefined
-                    ? <Route path="ticket_new" element={<CreateTask navigate={navigate} listenCookieChange={listenCookieChange}  /> } />
-                    : ''
-                }
             </Routes> 
         </div>               
     );

@@ -135,7 +135,7 @@ export default function SingleTask(props) {
                         attachment: finalFile
                     };
                 }
-                if(file.attachment !== undefined && file.attachment.name !== null || deleteInitialFile){
+                if((file.attachment !== undefined && file.attachment.name !== null) || deleteInitialFile){
                     await axios
                     .put("/project/tickets/" + id + "/file?remove=" + deleteInitialFile, 
                         file,
@@ -354,8 +354,8 @@ export default function SingleTask(props) {
         <div className="row">
                 <div className="ticket-btn-group col-md-12">
                     {
-                        !editMode && ticket.reporter!=undefined 
-                            && (cookies.employeeId==ticket.reporter.id || decodedToken.role==="ROLE_ADMIN" || decodedToken.role==="ROLE_MANAGER")
+                        !editMode && ticket.reporter !== undefined 
+                            && (cookies.employeeId === ticket.reporter.id || decodedToken.role === "ROLE_ADMIN" || decodedToken.role === "ROLE_MANAGER")
                         && 
                                 <button onClick={() => editTicketOnUI()} className="mybtn">
                                     <span><i className="bi bi-pencil-square ticket-icon" ></i></span>
@@ -384,7 +384,7 @@ export default function SingleTask(props) {
                                         <option selected value={ticket.status}>{ticket.status}</option>                    
                                         {
                                             columnOrder.map(column => {
-                                                if(column != ticket.status)
+                                                if(column !== ticket.status)
                                                     return <option value={column}>{column}</option>;
                                             })
                                         }
@@ -400,8 +400,9 @@ export default function SingleTask(props) {
                                             <option selected value={ticket.severity}>{ticket.severity}</option>                    
                                             {
                                                 severities.map(severity => {
-                                                    if(severity != ticket.severity)
+                                                    if(severity !== ticket.severity)
                                                         return <option value={severity}>{severity}</option>;
+                                                    return;
                                                 })
                                             }
                                             </Form.Select>
@@ -413,7 +414,7 @@ export default function SingleTask(props) {
                                 <span >
                                 {editMode 
                                     ? <input type="text" className="git-form" defaultValue={ticket.gitRef} onChange={e => setGitLink(e.target.value)}/> 
-                                    : <a className="value" style={{marginLeft:"18%"}} target="_blank" href={ticket.gitRef}>{ticket.gitRef}</a>}   
+                                    : <a className="value" style={{marginLeft:"18%"}} target="_blank" rel="noreferrer" href={ticket.gitRef}>{ticket.gitRef}</a>}   
                                 </span>
                             </li>
                         </ul>
@@ -472,14 +473,14 @@ export default function SingleTask(props) {
                                         ? (
                                             assignee != null
                                             ? <span className='pretty-select' onClick={editMode ? ()=>setShowModal(true) : {}} >
-                                                <img className="photo" src={`data:image/jpeg;base64,${assignee.photo}`} />
+                                                <img className="photo" src={`data:image/jpeg;base64,${assignee.photo}`} alt=""/>
                                                 &nbsp;{assignee.user.name+' '+ assignee.user.surname}
                                             </span>
                                             : ''
                                         )
                                         : ticket.assignee != null
                                         ? <span className='pretty-select-non-edit' >
-                                            <img className="photo" src={`data:image/jpeg;base64,${ticket.assignee.photo}`} />
+                                            <img className="photo" src={`data:image/jpeg;base64,${ticket.assignee.photo}`} alt=""/>
                                             &nbsp;{ticket.assignee.user.name+' '+ticket.assignee.user.surname}
                                         </span>
                                         : "" } 
@@ -490,7 +491,7 @@ export default function SingleTask(props) {
                                 <span className="value" style={{marginLeft:"16%"}}>
                                     {ticket.reporter != null
                                     ? <span className='pretty-select-non-edit'>
-                                        <img className="photo" src={`data:image/jpeg;base64,${ticket.reporter.photo}`} />
+                                        <img className="photo" src={`data:image/jpeg;base64,${ticket.reporter.photo}`} alt=""/>
                                         &nbsp;{ticket.reporter.user.name + ' ' + ticket.reporter.user.surname}
                                     </span>
                                     : "" }  

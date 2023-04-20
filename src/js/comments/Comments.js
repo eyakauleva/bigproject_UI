@@ -62,7 +62,7 @@ const Comments = ({currentTicketId}) =>{
         return comments;
     }
     const addComment = (text) =>{
-        if(text != null){
+        if(text != null && text !=""){
             let config = {
                 headers: {
                     Authorization: 'Bearer ' + token

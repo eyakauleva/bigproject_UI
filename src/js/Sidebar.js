@@ -8,6 +8,7 @@ import Form from 'react-bootstrap/Form';
 import ClientProfileModal, {clearErrorMessage, noEditMode} from './ClientProfileModal.js';
 import ChangePasswordModal from './ChangePasswordModal';
 import '.././css/Sidebar.css';
+import CreateTask from './single_task/CreateTask.js';
 
 var logout;
 export {logout}
@@ -18,6 +19,7 @@ function Sidebar(props){
     const[showChangePasswordModal, setShowChangePasswordModal] = useState(true);
     const[decodedToken, setDecodedToken] = useState({});
     const[projects, setProjects] = useState([]);
+    const[showCTModal, setShowCTModal] = useState(false);
 
     useLayoutEffect(() => {        
         setDecodedToken(jwt_decode(cookies.token));
@@ -116,10 +118,10 @@ function Sidebar(props){
                         </div>
                     </div><hr/>
                     <div>
-                        <a href='/app/ticket_new' className='action'>
+                        <button onClick={() => setShowCTModal(true)} className='action'>
                             <i className="bi bi-plus-square"></i>
-                            <b>NEW TICKET</b>
-                        </a><hr/>
+                            <b> NEW TICKET</b>
+                        </button><hr/>
                     </div>
                 </div>
                 : ''
@@ -168,6 +170,12 @@ function Sidebar(props){
                 ? <ChangePasswordModal show={showChangePasswordModal} onHide={()=>setShowChangePasswordModal(false)} backdrop="static" navigate={props.navigate}/>
                 : ''
             }
+            <CreateTask
+                show={showCTModal} 
+                onHide={()=>setShowCTModal(false)}
+                close={setShowCTModal}
+                navigate={props.navigate}
+            />
         </div>               
     );
 }
