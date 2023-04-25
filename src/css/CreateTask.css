@@ -1,6 +1,32 @@
-
-.single-task .type-form{
-    width: 38%;
-    display: inline-block;
-    margin-left: 23%;
+.create-task .label-create{
+    text-align: right;
+    font-weight: 500;
+    color: #5c6778;
+}
+.create-task .item{
+    width: 40%;
+}
+.create-task .item-name{
+    width: 80%;
+    height: 95%;
+}
+.create-task .first-item{
+    margin-top: 2%;
+}
+.create-task .main-item{
+    margin-top: 1.7%;
+}
+.create-task .item-name-numer{
+    height: 95%;
+    width: 15%;
+}
+.create-task .textarea:hover, .item-name-numer:hover, .item-name:hover{
+    background-color: #5c677815;
+    transition: all 0.2s ease-in-out;
+}
+.create-task .drop-zone{
+    margin: 0;
+    height: auto;
+    padding: 8px 0;
+    width: 80%; 
 }
