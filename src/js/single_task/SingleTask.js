@@ -19,7 +19,7 @@ export default function SingleTask(props) {
   const[ticket, setTicket] = useState({}); 
   const[name, setName] = useState(""); 
   const[description, setDescription] = useState(""); 
-  const[dueDate, setDueDate] = useState(new Date());
+  const[dueDate, setDueDate] = useState(null);
   const[status, setStatus] = useState("");
   const[severity, setSeverity] = useState("");
   const[assignee, setAssignee] = useState({});
@@ -105,7 +105,7 @@ export default function SingleTask(props) {
     let ticket = {
         name: name,
         description: description,
-        dueDate: format(dueDate, "yyyy-MM-dd HH:mm"),
+        dueDate: dueDate != null ? format(dueDate, "yyyy-MM-dd HH:mm") : null,
         status: status,
         severity: severity,
         gitRef: gitLink,
@@ -190,11 +190,14 @@ export default function SingleTask(props) {
   const editTicketOnUI = () => {
     setName(ticket.name);
     setDescription(ticket.description);
-    setDueDate(parseISO(ticket.dueDate));
+    if(ticket.dueDate != null) {
+        setDueDate(parseISO(ticket.dueDate));
+    }
     setStatus(ticket.status);
     setSeverity(ticket.severity);
     setGitLink(ticket.gitRef);
     setAssignee(ticket.assignee);
+    setFinalFile(null);
     setDeleteInitialFile(false);
     setEditMode(true);
   }
@@ -229,7 +232,7 @@ export default function SingleTask(props) {
                </div>
     } else {
         return <div class="drop-zone" style={{height:"91px"}}>
-                    <div className="drop-zone-prompt-no-value">There are no file yet on this ticket<br/>Update ticket for add</div>
+                    <div className="drop-zone-prompt-no-value">There are no file yet on this ticket<br/>Update ticket to add</div>
                </div> 
     }
   }
@@ -321,8 +324,8 @@ export default function SingleTask(props) {
  const getRemainingTime = () =>{
     if(estimatedTime - loggedTime > 0){
         return (estimatedTime - loggedTime).toFixed(1);
-    } else{
-        return 0.0;
+    } else {
+        return "0.0";
     }
  }
  const getRemainingTimeView = () =>{
@@ -334,7 +337,7 @@ export default function SingleTask(props) {
  }
  const getLoggedTime = () =>{
     if(loggedTime !== null){
-        return loggedTime.toFixed(1);
+        return Number(loggedTime).toFixed(1);
     } else{
         return 0.0;
     }
@@ -439,7 +442,7 @@ export default function SingleTask(props) {
                                 {editMode 
                                     ? <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                         <DateTimePicker className="date-form" value={dueDate} onChange={setDueDate} format="do MMMM Y HH:mm" />
-                                    </MuiPickersUtilsProvider> 
+                                    </MuiPickersUtilsProvider>
                                     : ticket.dueDate != null 
                                     ? <span className="value" style={{marginLeft:"18%"}}>{format(parseISO(ticket.dueDate), "do MMMM Y HH:mm")}</span> 
                                     : ''} 
@@ -531,7 +534,7 @@ export default function SingleTask(props) {
             </div>
         </div>    
         <div className="row">
-            <div className="col-md-4"></div>
+            <div className="col-md-6"></div>
             <div className="col-md-6 error">
                 {errorMessage}
             </div>

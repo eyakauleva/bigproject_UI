@@ -37,9 +37,9 @@ const CreateTask = (props) =>{
     const [projects, setProjects] = useState([]);
     const [cookies] = useCookies(["token", "project", "employeeId"]);
     const file = useRef(null);
-    const[isOver, setIsOver] = useState(false);
-    const[finalFile, setFinalFile] = useState(null);
-    const[errorMessage, setErrorMessage] = useState("");
+    const [isOver, setIsOver] = useState(false);
+    const [finalFile, setFinalFile] = useState(null);
+    const [errorMessage, setErrorMessage] = useState("");
     const [validated, setValidated] = useState(false);
 
     useLayoutEffect(() => {        
@@ -48,25 +48,25 @@ const CreateTask = (props) =>{
 
     useEffect(() => {        
         if(selectedProjectOption !== undefined && selectedProjectOption !== null) {
-            console.log("ss", selectedProjectOption);
             getEmployees(); 
-          } else {
+        } else {
             getAllEmployees();
-          }
+        }
     }, [selectedProjectOption]);
+
     useEffect(() => {
-        console.log("projects", projects );
         projects.map((project) => {
-            console.log(project.id, cookies.project , project.id === cookies.project)
             if(project.id === parseInt(cookies.project)){
                 setSelectedProjectOption({value: project, label: project.name});
             }
             return;
         });
     }, [projects]);
+
     const handleSelectChange = (selectedOption) => {
         setSelectedProjectOption(selectedOption);
     };
+
     const getProjects = () => {
         let config = {
             headers: {
@@ -119,7 +119,6 @@ const CreateTask = (props) =>{
                 newStateOptions = [...newStateOptions, newOption];
                 return;
             });
-            console.log("eee", newStateOptions);
             setEmployeeOptions(newStateOptions);
           }                    
         })
@@ -133,9 +132,9 @@ const CreateTask = (props) =>{
               alert("Access is denied");
           else alert('Internal server error');
         });  
-      }
+    }
     
-      const getEmployees = () => {
+    const getEmployees = () => {
         let config = {
           headers: {
             Authorization: 'Bearer ' + cookies.token
@@ -156,7 +155,6 @@ const CreateTask = (props) =>{
                 newStateOptions = [...newStateOptions, newOption];
                 return;
             });
-            console.log("eee", newStateOptions);
             setEmployeeOptions(newStateOptions);
           }                    
         })
@@ -170,8 +168,9 @@ const CreateTask = (props) =>{
               alert("Access is denied");
           else alert('Internal server error');
         });  
-      }
-      const getFileForEditView = () => {
+    }
+
+    const getFileForEditView = () => {
         return (<div
                     className={`drop-zone ${isOver ? 'over' : ''}`}
                     onDragOver={handleDragOver}
@@ -209,15 +208,17 @@ const CreateTask = (props) =>{
                     </>
                     )}
                 </div>);
-        }
-        const handleFileClick = () => {
-            file = file.current.click();
-            setFinalFile(file);
-        };
-        const handleDragOver = e => {
-            e.preventDefault();
-            setIsOver(true);
-        };
+    }
+
+    const handleFileClick = () => {
+        file = file.current.click();
+        setFinalFile(file);
+    };
+
+    const handleDragOver = e => {
+        e.preventDefault();
+        setIsOver(true);
+    };
 
         const handleDragLeave = () => {
             setIsOver(false);
@@ -238,7 +239,8 @@ const CreateTask = (props) =>{
         const deleteAttachment = (e) => {
             e.stopPropagation(); 
             setFinalFile(null)
-          }
+        }
+
         const submitCreate = (event) => {
             validateTicket(event);
             if(selectedEmployeeOption !== null){
@@ -248,7 +250,6 @@ const CreateTask = (props) =>{
                         Authorization: 'Bearer ' + cookies.token
                     }
                 };
-                console.log("d", dueDate);
                 let ticket = {
                     name: ticketName,
                     description: description,
@@ -261,7 +262,6 @@ const CreateTask = (props) =>{
                     assignee: {id: (selectedProjectOption !== undefined && selectedProjectOption !== null) ? selectedEmployeeOption.value.id : cookies.employeeId},
                     reporter: {id: cookies.employeeId}
                 };
-                console.log("t", ticket);
             
                 const create = async() => {
                     await axios
@@ -284,7 +284,6 @@ const CreateTask = (props) =>{
                                     attachment: finalFile
                                 };
                             } else{
-                                console.log("close");
                                 props.close(false);
                                 props.navigate("ticket/" + data);
                                 return;
@@ -328,9 +327,9 @@ const CreateTask = (props) =>{
                 }      
                 create();
             }  
-          }
+        }
           
-          const clearView = () => {
+        const clearView = () => {
             setSelectedEmployeeOption(null);
             setSelectedPriorityOption(null);
             setSelectedTtOption(null);
@@ -338,21 +337,18 @@ const CreateTask = (props) =>{
             setValidated(false);
             setErrorMessage("")
             props.close(false);
-          }
+        }
 
-          const validateTicket = (event) => {
+        const validateTicket = (event) => {
             if(selectedTtOption === null || 
                 selectedPriorityOption === null ||
                 selectedTtOption === null ||
-                ticketName === "" ||
-                dueDate === null ||
-                gitLink === "" ||
-                description === ""){
-                event.stopPropagation();
-                setValidated(true);
-                return;
+                ticketName === ""){
+                    event.stopPropagation();
+                    setValidated(true);
+                    return;
             }
-          }
+        }
 
     return (<Modal  
         {...props} 
@@ -444,14 +440,11 @@ const CreateTask = (props) =>{
                     </div>
                     <div className="form-group row main-item">
                         <div className="col-sm-3 label-create">
-                            <label for="project" className="col-form-label">Git Link<span className="text-danger">*</span></label>
+                            <label for="project" className="col-form-label">Git Link</label>
                         </div>
                         <div className="col-sm-9">
                             <Form.Group controlId="ttForm.SelectCustom">
-                                <Form.Control className={validated && !gitLink ? "is-invalid item-name" : "item-name"} type="text" placeholder="" onChange={(e) => setGitLink(e.target.value)}/>
-                                <Form.Control.Feedback type="invalid">
-                                    Git link can't be empty
-                                </Form.Control.Feedback>
+                                <Form.Control className="item-name" type="text" placeholder="" onChange={(e) => setGitLink(e.target.value)}/>
                             </Form.Group>
                         </div>
                     </div>
@@ -475,15 +468,11 @@ const CreateTask = (props) =>{
                     </div>
                     <div className="form-group row main-item">
                         <div className="col-sm-3 label-create">
-                            <label for="project" className="col-form-label">Description<span className="text-danger">*</span></label>
+                            <label for="project" className="col-form-label">Description</label>
                         </div>
                         <div className="col-sm-9">
                             <Form.Group controlId="ttForm.SelectCustom">
-                                <textarea className={validated && !description ? "is-invalid textarea" : "textarea"}
-                                        defaultValue="" onChange={e => setDescription(e.target.value)} cols="80" rows="6"/>
-                                <Form.Control.Feedback type="invalid">
-                                    Description can't be empty
-                                </Form.Control.Feedback>
+                                <textarea className="textarea" defaultValue="" onChange={e => setDescription(e.target.value)} cols="80" rows="6"/>
                             </Form.Group>
                         </div>
                     </div>
