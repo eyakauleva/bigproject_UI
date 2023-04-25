@@ -146,19 +146,26 @@ export default function SingleTask(props) {
                         setErrorMessage("");
                     })
                     .catch((error) => {
+                        setFinalFile(null);
                         let code = error.toJSON().status;
-                        if(code===400 && error.response.data !== null)
+                        if(code===400 && error.response.data !== null && error.response.data.message === "validation error"){
+                            if(Array.of(error.response.data.fieldErrors).length > 0)
+                                setErrorMessage(error.response.data.fieldErrors[0].defaultMessage);
+                        }
+                        else if(code===400 && error.response.data !== null)
                             setErrorMessage(error.response.data.message);
                         else if(code===401)
                             setError('Authorization is required');
                         else if(code===403)
-                            alert("Access is denied");     
+                            alert("Access is denied");
                         else alert('Internal server error');
+                        return;
                     }); 
                 }       
             }      
             updateFile();
         }).then(() =>{
+            setErrorMessage("");
             setEditMode(false);
             getTicket();
         })
@@ -230,7 +237,7 @@ export default function SingleTask(props) {
     if (window.confirm("Are you sure you want to remove attachment?")) {
         e.stopPropagation(); 
         setDeleteInitialFile(true); 
-        setFinalFile(null)
+        setFinalFile(null);
     }
   }
   const getFileForEditView = () => {
