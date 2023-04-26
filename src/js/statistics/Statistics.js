@@ -10,6 +10,7 @@ import jwt_decode from "jwt-decode";
 import {logout} from '../Sidebar.js';
 import TimeChart from './TimeChart.js';
 import TicketsChart from './TicketsChart.js';
+import ClosureChart from './ClosureChart.js';
 import '../../css/Profile.css';
 
 export default function Statistics(props) {
@@ -117,14 +118,14 @@ export default function Statistics(props) {
                 const today = new Date();
 
                 let expiredTickets = leftTickets
-                                        .filter((ticket)=>{
-                                            let dueDate = new Date(ticket.dueDate);
-                                            return  (dueDate.getDate() < today.getDate() 
-                                                        && dueDate.getMonth() === today.getMonth()
-                                                        && dueDate.getFullYear() === today.getFullYear()) ||
-                                                    dueDate.getMonth() < today.getMonth() ||
-                                                    dueDate.getFullYear() < today.getFullYear();
-                                        });
+                                    .filter((ticket)=>{
+                                        let dueDate = new Date(ticket.dueDate);
+                                        return  (dueDate.getDate() < today.getDate() 
+                                                    && dueDate.getMonth() === today.getMonth()
+                                                    && dueDate.getFullYear() === today.getFullYear()) ||
+                                                dueDate.getMonth() < today.getMonth() ||
+                                                dueDate.getFullYear() < today.getFullYear();
+                                    });
                 setExpiredCount(expiredTickets.length);
 
                 const tomorrow = new Date();
@@ -185,8 +186,8 @@ export default function Statistics(props) {
                 <Tabs
                     defaultActiveKey="my" className="mb-3">
                     <Tab eventKey="my" title="My">
-                        <div style={{display:"flex", flexDirection:"row"}}>
-                            <div>
+                        <div className="row">
+                            <div className="col-md-4">
                                 <div>Week activity</div>
                                 <div style={{display: 'flex', flexDirection: 'row'}}>
                                     <div onClick={()=>changeWeek(true)}>
@@ -196,23 +197,22 @@ export default function Statistics(props) {
                                         <i class="bi bi-caret-right"></i>{dates.length == 7 ? format(new Date(dates[6]), 'dd.MM.yyyy') : ''}
                                     </div>
                                 </div>
-                                <div style={{height: '400px', width: '600px'}}>
+                                <div>
                                     <TimeChart dates={dates} labels={labels} />
                                 </div>
                             </div>
-                            <div>
+                            <div className="col-md-2"></div>
+                            <div className="col-md-4">
+                                <div><b>Total tickets left:</b>{leftCount}</div>
+                                <div><b>Expired tickets count:</b>{expiredCount}</div>
                                 <div>
-                                    <div><b>Total tickets left:</b>{leftCount}</div>
-                                    <div><b>Expired tickets count:</b>{expiredCount}</div>
-                                    <div>
-                                        <b>Upcoming deadline:</b>
-                                        {upcomingDeadline.map((ticket)=>
-                                            <div>
-                                                <a href={'/app/ticket/' + ticket.id}>{ticket.name}</a>
-                                                {format(new Date(ticket.dueDate), 'dd.MM.yyyy')}
-                                            </div>
-                                        )} 
-                                    </div>
+                                    <b>Upcoming deadline:</b>
+                                    {upcomingDeadline.map((ticket)=>
+                                        <div>
+                                            <a href={'/app/ticket/' + ticket.id}>{ticket.name}</a>
+                                            {format(new Date(ticket.dueDate), 'dd.MM.yyyy')}
+                                        </div>
+                                    )} 
                                 </div>
                             </div>
                         </div>
@@ -222,9 +222,24 @@ export default function Statistics(props) {
                             return  <Tab eventKey={project.name} title={project.name}>
                                         <div className="tab-panel">
                                             <div className="row">
-                                                <div className="col-md-3">
+                                                <div className="col-md-4">
                                                     Current date state
                                                     <TicketsChart projectId={project.id} />
+                                                </div>
+                                                <div className="col-md-2"></div>
+                                                <div className="col-md-4">
+                                                    <div>Tickets closure</div>
+                                                    <div style={{display: 'flex', flexDirection: 'row'}}>
+                                                        <div onClick={()=>changeWeek(true)}>
+                                                            {dates.length == 7 ? format(new Date(dates[0]), 'dd.MM.yyyy') : ''}<i class="bi bi-caret-left"></i>
+                                                        </div>
+                                                        <div onClick={()=>changeWeek(false)}>
+                                                            <i class="bi bi-caret-right"></i>{dates.length == 7 ? format(new Date(dates[6]), 'dd.MM.yyyy') : ''}
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <ClosureChart dates={dates} projectId={project.id} labels={labels} />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
