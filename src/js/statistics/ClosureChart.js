@@ -43,8 +43,8 @@ export default function ClosureChart(props) {
             label: 'Closed tckets',
             data: values,
             borderWidth: 1.5,
-            borderColor: '#64C7FF',
-            backgroundColor: '#1771F1',
+            borderColor: 'rgba(2, 96, 232, 0.7)',
+            backgroundColor: 'rgba(2, 96, 232, 0.7)',
           },
         ],
     };

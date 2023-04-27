@@ -101,14 +101,14 @@ export default function TicketsChart(props) {
 
     return (
         <div>
-            <div><b>Total count:</b>{totalCount}</div>
-            <div>
+            <div style={{marginTop: "10%"}}>
             {
                 totalCount > 0
                 ? <Pie options={options} data={data} />
                 : ''
             }
             </div>
+            <div style={{marginTop: "10%", textAlign: "center"}}>Total count:&nbsp;<b>{totalCount}</b></div>
         </div> 
     );
 }
