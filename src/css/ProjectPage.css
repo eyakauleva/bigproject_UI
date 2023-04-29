@@ -6,6 +6,7 @@
 .single-project .emp-profile{
     padding: 3%;
     margin-top: 1%;
+    padding-left: 3.5%;
     margin-bottom: 3%;
     border-radius: 0.5rem;
     background: #fff; 
@@ -22,11 +23,14 @@
 
 .single-project .pretty-link{
     padding: 8px 0 8px 0;
+    margin-left: 2%;
+    border: 1px solid transparent;
     border-bottom: 1px solid rgb(206, 204, 204);
 }
 .single-project .pretty-link a{
    text-decoration: none;
    color: black;
+   margin-left: 1%;
 }
 .single-project .pretty-link a:hover{
     color: black;
@@ -39,16 +43,15 @@
 
 .single-project .textarea{
     resize:both;
-    max-width:700px;
-    max-height:600px;
-    min-width:200px; 
-    min-height:100px;
+    width: 99%;
     outline: none;
+    margin-left: 2%;
+    margin-top: 1%;
 }
 
 .single-project .name{
-    font-weight: bold;
-    font-size: 25px;
+    font-size: 22px;
+    width: 100%;
 }
 
 .single-project .employees{
@@ -88,6 +91,154 @@
     gap: 10px;
 }
 
-.single-project button{
-    border: 0;
+.single-project .mybtn{
+    margin-left: .5%;
+    font-size: 16px; 
+    color:#64C7FF;
+    background-color: transparent;
+    border: 1px solid #64C7FF;
+    padding: 4px 14px; 
+    font-weight: 500;
+    text-transform: none;
+    display: inline-block;
+}
+.single-project .mybtn:first-child{
+    margin-left: 0%;
+}
+.single-project .mybtn:hover{
+    transition: none;
+    background-color: #64C7FF;
+    color:white;
+}
+.single-project .mybtn::after{
+    background: transparent;
+    -webkit-transition:none;
+    transition: none;
+    -webkit-transform: none;
+    transform: none;
+}
+.single-project .green{
+    color: rgb(2, 180, 2);
+}
+.single-project .item .name{
+    font-size: 17px;
+    font-weight: 400;
+}
+.single-project .item{
+    margin-top: 1%;
+    clear: left;
+    float: left;
+    width: 50%;
+}
+.single-project .item .value{
+    font-size: 17px;
+    font-weight: 400;
+    margin-left: 20%;
+}
+.single-project .item-right{
+    clear: right;
+    float: right;
+    width: 50%;
+}
+.single-project .git-form {
+    width: 50%;
+    display: inline-block;
+    margin-left: 8%;
+}
+.single-project .row {
+    margin: 10px 0;
+}
+.single-project .git-value{
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+    width: 70%;
+    display: inline-block;
+    margin-left: 5% !important;
+    vertical-align:text-bottom;
+}
+.single-project .item-people{
+    width: 100%;
+}
+.item-people .photo{
+    width: 25px;
+    height: 25px;
+}
+.single-project .pretty-select-non-edit{
+    padding-left: 5%;
+}
+.single-project .status-form {
+    width: 50%;
+    display: inline-block;
+    margin-left: 10%;
+}
+.single-project .priority-form {
+    width: 38%;
+    display: inline-block;
+    margin-left: 18%;
+}
+.single-project .git-form {
+    width: 50%;
+    display: inline-block;
+    margin-left: 8%;
+    padding: 1.5% 0;
+}
+.single-project .date-form {
+    width: 50%;
+    display: inline-block;
+    margin-left: 16%;
+}
+.single-project .pretty-select{
+    cursor: pointer;
+    padding-left: 5%;
+    padding-right: 5%;
+    padding-bottom: 3%;
+    border-bottom: 1px solid rgb(165, 165, 165);
+}
+.single-project .pretty-select:hover{
+    background-color: rgba(129, 129, 129, 0.205);
+    padding-right: 4%;
+    padding-bottom: 3%;
+    padding-top: 2%;
+    border-radius: 20px;
+    border-bottom:none;
+    cursor: pointer;
+}
+.single-project .log-form {
+    width: 20% !important;
+    margin-left: 18%;
+    float: none;
+}
+.single-project .project-employees{
+    display: inline-flex;
+    flex-direction: row;
+    cursor: pointer;
+    
+}
+.single-project .profile-img:first-child{
+    position: relative;
+    text-align: center;
+    color: white;
+}
+
+.single-project .profile-img{
+    position: absolute;
+}
+
+.single-project .profile-img .centered{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 17px;
+}
+
+.single-project .profile-img img{
+    width: 34px;
+    height: 34px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+.rel-ticket-group{
+    margin-top: 1%;
 }

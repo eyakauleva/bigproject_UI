@@ -41,7 +41,8 @@ const CreateTask = (props) =>{
     const [finalFile, setFinalFile] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
     const [validated, setValidated] = useState(false);
-
+    const [ticketNameErrMessage, setTicketNameErrMessage] = useState("");
+ 
     useLayoutEffect(() => {        
         getProjects();
     }, []);
@@ -242,7 +243,9 @@ const CreateTask = (props) =>{
         }
 
         const submitCreate = (event) => {
-            validateTicket(event);
+            if(validateTicket(event)){
+                return;
+            }
             if(selectedEmployeeOption !== null){
         
                 let config = {
@@ -335,19 +338,38 @@ const CreateTask = (props) =>{
             setSelectedTtOption(null);
             setDueDate(null);
             setValidated(false);
-            setErrorMessage("")
+            setErrorMessage("");
+            setTicketNameErrMessage("");
+            setTicketName("");
+            setDescription("");
+            setGitLink("");
             props.close(false);
         }
 
         const validateTicket = (event) => {
+            let isValidated = false;
             if(selectedTtOption === null || 
                 selectedPriorityOption === null ||
-                selectedTtOption === null ||
-                ticketName === ""){
-                    event.stopPropagation();
-                    setValidated(true);
-                    return;
+                selectedTtOption === null){
+                isValidated = true;
             }
+            if (ticketName === '') {
+                isValidated = true;
+                setTicketNameErrMessage("Summary can't be empty");
+            } else if (ticketName.length > 100 ){
+                isValidated = true;
+                setTicketNameErrMessage("Summary max length is 100 symbols");
+            }
+            if((!gitLink && gitLink.length > 200) ||
+                !description && description.length > 1000){
+                isValidated = true;
+            }
+            if(isValidated){
+                event.stopPropagation();
+                setValidated(true);
+            }
+            return isValidated;
+            
         }
 
     return (<Modal  
@@ -358,9 +380,9 @@ const CreateTask = (props) =>{
             </Modal.Header>
             <Modal.Body>
                 <div className="create-task">
-                    <div className="col-md-12 error">
+                    {errorMessage && <div className="col-md-12 alert alert-danger" role="alert">
                         {errorMessage}
-                    </div>
+                    </div>}
                     <div className="form-group row first-item">
                         <div className="col-sm-3 label-create">
                             <label for="project" className="col-form-label">Project<span className="text-danger">*</span></label>
@@ -409,9 +431,20 @@ const CreateTask = (props) =>{
                         </div>
                         <div className="col-sm-9">
                             <Form.Group controlId="ttForm.SelectCustom">
-                                <Form.Control className={validated && !ticketName ? "is-invalid item-name" : "item-name"} type="text" placeholder="" onChange={(e) => setTicketName(e.target.value)}/>
+                                <Form.Control 
+                                   className={validated && ticketNameErrMessage ? "is-invalid item-name" : "item-name"} 
+                                   type="text" 
+                                   placeholder=""
+                                   onChange={(e) => {
+                                      setTicketName(e.target.value);
+                                      if(e.target.value.length <= 100){
+                                        setTicketNameErrMessage("");
+                                      }
+                                     }
+                                    }
+                                />
                                 <Form.Control.Feedback type="invalid">
-                                    Summary can't be empty
+                                    {ticketNameErrMessage}
                                 </Form.Control.Feedback>
                             </Form.Group>
                         </div>
@@ -444,7 +477,10 @@ const CreateTask = (props) =>{
                         </div>
                         <div className="col-sm-9">
                             <Form.Group controlId="ttForm.SelectCustom">
-                                <Form.Control className="item-name" type="text" placeholder="" onChange={(e) => setGitLink(e.target.value)}/>
+                                <Form.Control className={validated && gitLink.length > 200 ? "is-invalid item-name" : "item-name"} type="text" placeholder="" onChange={(e) => setGitLink(e.target.value)}/>
+                                <Form.Control.Feedback type="invalid">
+                                    Git link max length is 200 symbols
+                                </Form.Control.Feedback>
                             </Form.Group>
                         </div>
                     </div>
@@ -472,7 +508,10 @@ const CreateTask = (props) =>{
                         </div>
                         <div className="col-sm-9">
                             <Form.Group controlId="ttForm.SelectCustom">
-                                <textarea className="textarea" defaultValue="" onChange={e => setDescription(e.target.value)} cols="80" rows="6"/>
+                                <textarea className={validated && description.length > 1000 ? "is-invalid textarea" : "textarea"} defaultValue="" onChange={e => setDescription(e.target.value)} cols="80" rows="6"/>
+                                <Form.Control.Feedback type="invalid">
+                                    Description max length is 1000 symbols
+                                </Form.Control.Feedback>
                             </Form.Group>
                         </div>
                     </div>

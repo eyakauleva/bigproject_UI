@@ -548,7 +548,12 @@ export default function SingleTask(props) {
                         <input type="submit" onClick={()=>{submitEdit()}} className="btn btn-outline-primary" value="Update" />
                     </div>
                     <div className="col-md-6">
-                        <button onClick={()=>{setEditMode(false); setErrorMessage(""); setFinalFile({name: ticket.fileName});}}  
+                        <button onClick={()=>
+                        {
+                            setEditMode(false); 
+                            setErrorMessage(""); 
+                            ticket.fileName !== null ? setFinalFile({name: ticket.fileName}) : setFinalFile(null);
+                        }}  
                             className="btn btn-outline-danger">Cancel</button>
                     </div>
                 </div>
