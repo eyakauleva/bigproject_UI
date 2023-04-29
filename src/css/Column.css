@@ -14,4 +14,7 @@
 
 .column-container .tasks-list{
     padding: 8px;
+    max-height: 520px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
