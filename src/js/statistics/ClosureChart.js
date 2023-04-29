@@ -5,12 +5,12 @@ import axios from "axios";
 
 import {logout} from '../Sidebar.js';
 
-import { Bar } from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 import { LinearScale, CategoryScale } from 'chart.js';
 Chart.register(LinearScale, CategoryScale);
 
-export default function TimeChart(props) {
+export default function ClosureChart(props) {
     const[cookies, setCookie] = useCookies(["token"]);
     const[values, setValues] = useState([]);
     const options = {
@@ -24,7 +24,7 @@ export default function TimeChart(props) {
                             date = format(new Date(props.dates[idx]), 'dd.MM.yyyy');
                         }
                     })
-                    return date + ' — ' + context.formattedValue + 'h';
+                    return date + ' — ' + context.formattedValue + ' closed';
                   }
                 }
             },
@@ -40,8 +40,10 @@ export default function TimeChart(props) {
         labels: props.labels,
         datasets: [
           {
-            label: 'Logged time',
+            label: 'Closed tckets',
             data: values,
+            borderWidth: 1.5,
+            borderColor: 'rgba(2, 96, 232, 0.7)',
             backgroundColor: 'rgba(2, 96, 232, 0.7)',
           },
         ],
@@ -49,39 +51,43 @@ export default function TimeChart(props) {
 
     useEffect(() => {
         if(props.dates.length > 0){
-            getWeekLoggedTime();
+            getClosedTicketsCount();
         }
     }, [props.dates]);
 
-    const getWeekLoggedTime = async () => {
+    const getClosedTicketsCount = async () => {
         let config = {
             headers: {
                 Authorization: 'Bearer ' + cookies.token
             }
         };
 
-        let employeeId = document.cookie
-                        .split("; ")
-                        .find((row) => row.startsWith("employeeId="))
-                        ?.split("=")[1];
-
-        await axios
-        .get("/time/employee/" + employeeId + "?weekFirstDate=" + props.dates[0]
-            + "&weekLastDate=" + props.dates[6], config)
-        .then(response => response.data)
-        .then((data_) =>{
-            if(data_){
-                setValues(data_);
-            }                    
-        })
-        .catch((error) => {           
-            console.log(error);
-        });
+        if(props.projectId != undefined){
+            axios
+            .get("/project/closedCount/" + props.projectId + "?weekFirstDate=" + props.dates[0]
+                + "&weekLastDate=" + props.dates[6], config)
+            .then(response => response.data)
+            .then((_data) =>{
+                if(_data){
+                    setValues(_data);
+                }                    
+            })
+            .catch((error) => {
+                let code = error.toJSON().status;
+                if(code===400 && error.response.data !== null)
+                alert(error.response.data.message);
+                else if(code===401)
+                alert('Authorization is required');
+                else if(code===403)
+                alert("Access is denied"); 
+                else alert('Internal server error');
+            });
+        }
     }
 
     return (
         <div>
-            <Bar options={options} data={data} />
+            <Line options={options} data={data} />
         </div> 
     );
 }

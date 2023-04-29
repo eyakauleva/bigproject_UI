@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import { useCookies } from 'react-cookie';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
-import { Bar } from 'react-chartjs-2';
 import { format } from "date-fns";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
@@ -10,7 +9,8 @@ import jwt_decode from "jwt-decode";
 import {logout} from '../Sidebar.js';
 import TimeChart from './TimeChart.js';
 import TicketsChart from './TicketsChart.js';
-import '../../css/Profile.css';
+import ClosureChart from './ClosureChart.js';
+import '../../css/Statistics.css';
 
 export default function Statistics(props) {
     const[cookies, setCookie] = useCookies(["token", "employeeId"]);
@@ -117,14 +117,15 @@ export default function Statistics(props) {
                 const today = new Date();
 
                 let expiredTickets = leftTickets
-                                        .filter((ticket)=>{
-                                            let dueDate = new Date(ticket.dueDate);
-                                            return  (dueDate.getDate() < today.getDate() 
-                                                        && dueDate.getMonth() === today.getMonth()
-                                                        && dueDate.getFullYear() === today.getFullYear()) ||
-                                                    dueDate.getMonth() < today.getMonth() ||
-                                                    dueDate.getFullYear() < today.getFullYear();
-                                        });
+                                    .filter((ticket)=>{
+                                        let dueDate = new Date(ticket.dueDate);
+                                        return  (dueDate.getDate() < today.getDate() 
+                                                    && dueDate.getMonth() === today.getMonth()
+                                                    && dueDate.getFullYear() === today.getFullYear()) ||
+                                                (dueDate.getMonth() < today.getMonth()
+                                                    && dueDate.getFullYear() === today.getFullYear()) ||
+                                                dueDate.getFullYear() < today.getFullYear();
+                                    });
                 setExpiredCount(expiredTickets.length);
 
                 const tomorrow = new Date();
@@ -140,7 +141,12 @@ export default function Statistics(props) {
                                                     dueDate.getMonth() === today.getMonth() &&
                                                     dueDate.getFullYear() === today.getFullYear());
                                         });
-                setUpcomingDeadline(upcomingDeadlineTickets);
+                setUpcomingDeadline(
+                    expiredTickets.concat(upcomingDeadlineTickets)
+                                    .sort(function(t1, t2){
+                                        return new Date(t1.dueDate) - new Date(t2.dueDate);
+                                    })
+                );
               }                    
           })
           .catch((error) => {
@@ -178,53 +184,112 @@ export default function Statistics(props) {
         setDates(newDates);
     }
 
+    const getColor = (count) => {
+        if (count == 0) {
+            return "#BEF761";
+        } else if (count < 3) {
+            return "#FFF851";
+        } else {
+            return "#F85C50";
+        }
+    }
+
     return (
-        <div className="profile">
+        <div className="profile statistics">
             {displayError()}
             <div className="container emp-profile">
                 <Tabs
                     defaultActiveKey="my" className="mb-3">
                     <Tab eventKey="my" title="My">
-                        <div style={{display:"flex", flexDirection:"row"}}>
-                            <div>
-                                <div>Week activity</div>
-                                <div style={{display: 'flex', flexDirection: 'row'}}>
+                        <div className="row">
+                            <div className="col-md-6 wrapper">
+                                <div className="title">My logged time throughout the week:</div>
+                                <div className="dates-swicther">
                                     <div onClick={()=>changeWeek(true)}>
-                                        {dates.length == 7 ? format(new Date(dates[0]), 'dd.MM.yyyy') : ''}<i class="bi bi-caret-left"></i>
+                                        {dates.length == 7 
+                                        ? <div className="date-switcher-el">
+                                            <div className="date">{format(new Date(dates[0]), 'dd.MM.yyyy')}</div>
+                                            <div><i class="bi bi-caret-left-square"></i></div>
+                                        </div>
+                                        : ''}
                                     </div>
                                     <div onClick={()=>changeWeek(false)}>
-                                        <i class="bi bi-caret-right"></i>{dates.length == 7 ? format(new Date(dates[6]), 'dd.MM.yyyy') : ''}
+                                        {dates.length == 7 
+                                        ? <div className="date-switcher-el">
+                                            <div><i class="bi bi-caret-right-square"></i></div>
+                                            <div className="date">{format(new Date(dates[6]), 'dd.MM.yyyy')}</div>
+                                        </div> 
+                                        : ''}
                                     </div>
                                 </div>
-                                <div style={{height: '400px', width: '600px'}}>
+                                <div>
                                     <TimeChart dates={dates} labels={labels} />
                                 </div>
                             </div>
-                            <div>
-                                <div>
-                                    <div><b>Total tickets left:</b>{leftCount}</div>
-                                    <div><b>Expired tickets count:</b>{expiredCount}</div>
-                                    <div>
-                                        <b>Upcoming deadline:</b>
-                                        {upcomingDeadline.map((ticket)=>
-                                            <div>
-                                                <a href={'/app/ticket/' + ticket.id}>{ticket.name}</a>
-                                                {format(new Date(ticket.dueDate), 'dd.MM.yyyy')}
-                                            </div>
-                                        )} 
-                                    </div>
-                                </div>
+                            <div className="col-md-1"></div>
+                            <div className="col-md-4 wrapper">
+                                <table className="wrapper-table">
+                                    <tr>
+                                        <td><div>Total tickets left:</div></td>
+                                        <td><div className="number-circle" style={{background: getColor(leftCount)}}>
+                                            {leftCount}
+                                        </div></td>
+                                    </tr>
+                                    <tr>
+                                        <td><div>Expired tickets count:</div></td>
+                                        <td><div className="number-circle" style={{background: getColor(expiredCount)}}>
+                                            {expiredCount}
+                                        </div></td>
+                                    </tr>
+                                </table>
+                                <br/>
+                                <table className="wrapper-table-tickets">
+                                    <tr><td style={{fontSize: "14px"}}><i>Upcoming deadlines:</i></td></tr>
+                                    <tr>
+                                        <th>Ticket</th>
+                                        <th>Date</th>
+                                    </tr>
+                                    {upcomingDeadline.map((ticket)=>
+                                        <tr>
+                                            <td><a href={'/app/ticket/' + ticket.id}>{ticket.name}</a></td>
+                                            <td>{format(new Date(ticket.dueDate), 'dd.MM.yyyy')}</td>
+                                        </tr>
+                                    )} 
+                                </table>
                             </div>
                         </div>
                     </Tab>
                     {
                         projects.map(project => {
                             return  <Tab eventKey={project.name} title={project.name}>
-                                        <div className="tab-panel">
-                                            <div className="row">
-                                                <div className="col-md-3">
-                                                    Current date state
-                                                    <TicketsChart projectId={project.id} />
+                                        <div className="row">
+                                            <div className="col-md-3 wrapper">
+                                                <div className="title"><i>Today's tickets state</i></div>
+                                                <TicketsChart projectId={project.id} />
+                                            </div>
+                                            <div className="col-md-2"></div>
+                                            <div className="col-md-6 wrapper">
+                                                <div className="title">Tickets closure throughout the week:</div>
+                                                <div className="dates-swicther">
+                                                    <div onClick={()=>changeWeek(true)}>
+                                                        {dates.length == 7 
+                                                        ? <div className="date-switcher-el">
+                                                            <div className="date">{format(new Date(dates[0]), 'dd.MM.yyyy')}</div>
+                                                            <div><i class="bi bi-caret-left-square"></i></div>
+                                                        </div>
+                                                        : ''}
+                                                    </div>
+                                                    <div onClick={()=>changeWeek(false)}>
+                                                        {dates.length == 7 
+                                                        ? <div className="date-switcher-el">
+                                                            <div><i class="bi bi-caret-right-square"></i></div>
+                                                            <div className="date">{format(new Date(dates[6]), 'dd.MM.yyyy')}</div>
+                                                        </div> 
+                                                        : ''}
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <ClosureChart dates={dates} projectId={project.id} labels={labels} />
                                                 </div>
                                             </div>
                                         </div>
