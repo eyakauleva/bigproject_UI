@@ -313,7 +313,7 @@ export default function Dashboard(props) {
       <div className="container" style={{fontFamily:"sans-serif"}}>
         <div className="well well-sm row">
           <div className="project-info">
-            <div>Project <b>{project.name}</b></div>
+            <div>Project: <b>{project.name}</b></div>
             <div className='project-employees' onClick={()=>setShowModal(true)}>
             {
               project.employees != undefined
