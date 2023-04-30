@@ -6,7 +6,8 @@
 }
 
 .overdue-task{
-    background: #F6522E;
+    border: 1.5px ridge #B40A1B;
+    background-color: #f7cdcd;
 }
 
 .task-container .name{
