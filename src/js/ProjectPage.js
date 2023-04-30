@@ -29,7 +29,6 @@ export default function ProjectPage(props) {
     const[severity, setSeverity] = useState("");
     const[assignee, setAssignee] = useState({});
     const[gitLink, setGitLink] = useState("");  
-    const[selectedFile, setSelectedFile] = useState();
     const[deleteInitialFile, setDeleteInitialFile] = useState(false);
     const[editMode, setEditMode] = useState(false); 
     const{id} = useParams();  
@@ -41,7 +40,6 @@ export default function ProjectPage(props) {
     const[errorMessage, setErrorMessage] = useState("");
     const[decodedToken, setDecodedToken] = useState({});
     const[error, setError] = useState("");
-    const hiddenFileInput = useRef(null);
     const[isOver, setIsOver] = useState(false);
     const file= useRef(null);
     const[finalFile, setFinalFile] = useState(null);
@@ -72,8 +70,13 @@ export default function ProjectPage(props) {
         .then(response => response.data)
         .then(data =>{
             if(data){
-              setProject(data);                  
-              setEmployees(data.employees); 
+              if(data.type == 'PROJECT') {
+                setProject(data);                  
+                setEmployees(data.employees); 
+              } else {
+                alert('Project does not exist');
+                props.navigate("/app/projects");
+              }
             }                 
         })
         .then(() => {
@@ -171,10 +174,7 @@ export default function ProjectPage(props) {
                     attachment: finalFile
                 };
             }
-            if((file != null && file.attachment != undefined && file.attachment != null && 
-                  file.attachment.name !== null
-                ) 
-                  || deleteInitialFile){
+            if((file.attachment !== undefined && file.attachment.name !== null) || deleteInitialFile){
                 await axios
                 .put("/project/tickets/" + id + "/file?remove=" + deleteInitialFile, 
                   file,
@@ -185,6 +185,7 @@ export default function ProjectPage(props) {
                   setEditMode(false);
                 })
                 .catch((error) => {
+                  setFinalFile(null);
                   let code = error.toJSON().status;
                   if(code===400 && error.response.data !== null)
                       setErrorMessage(error.response.data.message);
@@ -272,6 +273,8 @@ export default function ProjectPage(props) {
       setGitLink(project.gitRef);
       setAssignee(project.assignee);
       setEmployees(project.employees);
+      setFinalFile(null);
+      setDeleteInitialFile(false);
       setEditMode(true);
     }
 
@@ -280,53 +283,6 @@ export default function ProjectPage(props) {
       setShowModalAssignee(false);
     }
 
-    const isUsersCurrentProject = (_id) => {
-      let config = {
-        headers: {
-            Authorization: 'Bearer ' + cookies.token
-        }
-      };
-
-      if(decodedToken.role==="ROLE_CUSTOMER"){
-        axios
-        .get("/orders/" + decodedToken.id + "/project", config)
-        .then(response => response.data)
-        .then((data) =>{
-          data.orders.map(order => {
-            if(order.project.id==_id)
-              return true;
-          });
-          return false;                
-        })
-        .catch((error) => {               
-          let code = error.toJSON().status;
-          if(code===401){
-              alert('Authorization is required');
-          }
-          else alert('Internal server error');
-        });
-      } else if(decodedToken.id != undefined) {
-        axios
-        .get("/employee/" + decodedToken.id, config)
-        .then(response => response.data)
-        .then((data) =>{
-          if(data.currentProjects!=null){
-            data.currentProjects.map(project => {
-              if(project.id==_id)
-                return true;
-            });
-            return false;
-          }                  
-        })
-        .catch((error) => {               
-          let code = error.toJSON().status;
-          if(code===401){
-              alert('Authorization is required');
-          }
-          else alert('Internal server error');
-        });
-      }
-    }
     const getColorForStatus = (status) =>{
       if(status === "OPEN"){
           return "#42526e"
@@ -681,7 +637,7 @@ export default function ProjectPage(props) {
               </div>
             </div>
           </div>
-        </div>
+        </div><br/>
         <div className="row">
             <h5 className="comments-title">Comments</h5>
             <hr/>
