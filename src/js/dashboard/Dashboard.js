@@ -338,29 +338,29 @@ export default function Dashboard(props) {
       <div className="container" style={{ fontFamily: "sans-serif" }}>
         <div className="well well-sm row">
           <div className="project-info">
-            <div>Project <b>{project.name}</b></div>
-            <div className='project-employees' onClick={() => setShowModal(true)}>
-              {
-                project.employees != undefined
-                  ? project.employees
-                    .sort((a, b) => a.id > b.id ? 1 : -1)
-                    .map((employee, idx) => {
-                      if (idx < 3) return <div className="profile-img" style={{ marginLeft: 1.5 * idx + "%" }}>
-                        <img style={{ border: "2px solid #66b3ff" }} src={`data:image/jpeg;base64,${employee.photo}`} />
-                      </div>
-                    })
-                  : ''
-              }
-              {
-                project.employees.length > 3
-                  ? <div className="profile-img" style={{ marginLeft: "4.2%" }}>
-                    <span className='centered'>+{project.employees.length - 3}</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="#D4DADE" class="bi bi-circle-fill" viewBox="0 0 16 16">
-                      <circle cx="8" cy="8" r="8" />
-                    </svg>
-                  </div>
-                  : ''
-              }
+            <div>Project: <b>{project.name}</b></div>
+            <div className='project-employees' onClick={()=>setShowModal(true)}>
+            {
+              project.employees != undefined
+              ? project.employees
+                .sort((a, b) => a.id > b.id ? 1 : -1)
+                .map((employee, idx) => {
+                  if(idx<3) return  <div className="profile-img" style={{marginLeft:1.5*idx + "%"}}>
+                                      <img style={{border:"2px solid #66b3ff"}} src={`data:image/jpeg;base64,${employee.photo}`} />
+                                    </div>
+                })
+              : ''
+            }
+            {
+              project.employees.length > 3
+              ? <div className="profile-img" style={{marginLeft:"4.2%"}}>
+                  <span className='centered'>+{project.employees.length-3}</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="#D4DADE" class="bi bi-circle-fill" viewBox="0 0 16 16">
+                    <circle cx="8" cy="8" r="8"/>
+                  </svg>
+                </div>
+              : ''
+            }
             </div>
           </div>
           <div className='col-1 filter-title'>Show first</div>

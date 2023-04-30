@@ -15,6 +15,7 @@ import {logout} from './Sidebar.js';
 import ProjectEmployeesModal, {clearInput} from './ProjectEmployeesModal.js';
 import ChooseEmployeeModal from './dashboard/ChooseEmployeeModal.js'
 import '../css/ProjectPage.css';
+import Comments from './comments/Comments.js';
 
 export default function ProjectPage(props) {
     const[cookies] = useCookies(["token", "employeeId", "project"]);
@@ -549,22 +550,6 @@ export default function ProjectPage(props) {
                                   : getFileForNonEditView(project.fileName)
                       }   
                 </div>
-                <div className="col-md-12">
-                  <div className="group-name">Related tickets</div>
-                  <div className="rel-ticket-group">
-                    {
-                      tickets.length > 0
-                      ? tickets.map((ticket) =>
-                      ticket.status !== "CLOSE"
-                      ? <div className='pretty-link' style={{cursor:'pointer'}} onClick={() => props.navigate("ticket/" + ticket.id)}>
-                        {showNecessaryIcon(ticket.type)}
-                        <a style={{fontWeight:"normal"}} onClick={() => props.navigate("ticket/" + ticket.id)}>{ticket.name}</a>
-                      </div>
-                      : "")
-                      : "There are no comments yet on this ticket"
-                    }
-                 </div>
-                </div>
               </div>
             </div>
             <div className="col-md-4">
@@ -676,7 +661,32 @@ export default function ProjectPage(props) {
                     </div>
                 </div>
               </div>
-        }      
+        }
+        <div className="row">
+          <div className="col-md-8">
+            <div className="col-md-12">
+              <div className="group-name">Related tickets</div>
+              <div className="rel-ticket-group">
+                {
+                  tickets.length > 0
+                  ? tickets.map((ticket) =>
+                  ticket.status !== "CLOSE"
+                  ? <div className='pretty-link' style={{cursor:'pointer'}} onClick={() => props.navigate("ticket/" + ticket.id)}>
+                    {showNecessaryIcon(ticket.type)}
+                    <a style={{fontWeight:"normal"}} onClick={() => props.navigate("ticket/" + ticket.id)}>{ticket.name}</a>
+                  </div>
+                  : "")
+                  : "There are no comments yet on this ticket"
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="row">
+            <h5 className="comments-title">Comments</h5>
+            <hr/>
+            <Comments currentTicketId={id} /> 
+        </div>      
       </div>   
       <ProjectEmployeesModal show={showModal} onHide={()=>{setShowModal(false); clearInput()}} 
           employees={employees} editMode={editMode}
