@@ -242,3 +242,9 @@
 .rel-ticket-group{
     margin-top: 1%;
 }
+
+.comment-image-container .photo{
+    display: flex;
+    width: 25px ;
+    height: 25px;
+}
