@@ -110,7 +110,9 @@ export default function Statistics(props) {
                 let leftTickets = Object
                                 .values(data)
                                 .filter((ticket)=>{
-                                    return ticket.status !== 'CLOSE' && ticket.type !== 'PROJECT';
+                                    return ticket.status !== 'CLOSE' 
+                                        && ticket.status !== 'READY_FOR_TEST' 
+                                        && ticket.type !== 'PROJECT';
                                 });
                 setLeftCount(leftTickets.length);
 
@@ -194,6 +196,16 @@ export default function Statistics(props) {
         }
     }
 
+    const getFontColor = (count) => {
+        if (count == 0) {
+            return "black";
+        } else if (count < 3) {
+            return "black";
+        } else {
+            return "white";
+        }
+    } 
+
     return (
         <div className="profile statistics">
             {displayError()}
@@ -231,20 +243,20 @@ export default function Statistics(props) {
                                 <table className="wrapper-table">
                                     <tr>
                                         <td><div>Total tickets left:</div></td>
-                                        <td><div className="number-circle" style={{background: getColor(leftCount)}}>
+                                        <td><div className="number-circle" style={{background: getColor(leftCount), color: getFontColor(leftCount)}}>
                                             {leftCount}
                                         </div></td>
                                     </tr>
                                     <tr>
                                         <td><div>Expired tickets count:</div></td>
-                                        <td><div className="number-circle" style={{background: getColor(expiredCount)}}>
+                                        <td><div className="number-circle" style={{background: getColor(expiredCount), color: getFontColor(expiredCount)}}>
                                             {expiredCount}
                                         </div></td>
                                     </tr>
                                 </table>
                                 <br/>
                                 <table className="wrapper-table-tickets">
-                                    <tr><td style={{fontSize: "14px"}}><i>Upcoming deadlines:</i></td></tr>
+                                    <tr><td className="subtitle">Upcoming deadlines:</td></tr>
                                     <tr>
                                         <th>Ticket</th>
                                         <th>Date</th>
@@ -264,7 +276,7 @@ export default function Statistics(props) {
                             return  <Tab eventKey={project.name} title={project.name}>
                                         <div className="row">
                                             <div className="col-md-3 wrapper">
-                                                <div className="title"><i>Today's tickets state</i></div>
+                                                <div className="title">Today's tickets state</div>
                                                 <TicketsChart projectId={project.id} />
                                             </div>
                                             <div className="col-md-2"></div>

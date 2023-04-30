@@ -22,6 +22,11 @@
     padding: 5px 10px;
 }
 
+.statistics .wrapper .wrapper-table-tickets td a{
+    text-decoration: none;
+    color: black;
+}
+
 .statistics .wrapper .wrapper-table-tickets tr:nth-child(even){
     background-color: #f2f2f2;
     border-top: 0.5px solid #BCBEC0;
@@ -31,6 +36,13 @@
 .statistics .title{
     color: #2F3538;
     text-align: center;
+    background-color: #F7F7F2;
+}
+
+.statistics .subtitle{
+    font-size: 14px;
+    background-color: #F7F7F2;
+    padding: 5px;
 }
 
 .statistics .dates-swicther{
@@ -54,8 +66,9 @@
     font-weight: bold;
 }
 
-.statistics .dates-swicther .date-switcher-el .date:hover{
-    color: #0062cc;
+.statistics .dates-swicther .date-switcher-el .date:hover,
+.statistics .wrapper .wrapper-table-tickets td a:hover{
+    color: #6e7073;
 }
 
 .statistics .wrapper .number-circle{
