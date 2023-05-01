@@ -75,14 +75,11 @@ export default function CreateProject(props) {
     }
 
     const submitCreateProject = (event) => {
-        console.log("cr1");
         if(validateTicket(event)){
-            console.log("cr");
             return;
         }
         if(selectedEmployeeOption != null){ 
             setIsDisabled(true);
-            console.log("cr2");
             let config = {
                 headers: {
                     Authorization: 'Bearer ' + cookies.token
