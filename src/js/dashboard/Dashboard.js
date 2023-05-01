@@ -10,7 +10,7 @@ import Column from './Column';
 import SearchBar from "./SearchBar";
 import '../../css/Dashboard.css';
 import '../../css/Projects.css';
-import ProjectEmployeesModal, { clearInput } from '../ProjectEmployeesModal.js';
+import ProjectEmployeesModal, { clearInput } from '../project/ProjectEmployeesModal.js';
 
 export default function Dashboard(props) {
   const initialData = {

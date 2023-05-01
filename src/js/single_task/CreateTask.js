@@ -221,156 +221,156 @@ const CreateTask = (props) =>{
         setIsOver(true);
     };
 
-        const handleDragLeave = () => {
-            setIsOver(false);
-        };
+    const handleDragLeave = () => {
+        setIsOver(false);
+    };
 
-        const handleDrop = e => {
-            e.preventDefault();
-            const droppedFile = e.dataTransfer.files[0];
-            setFinalFile(droppedFile);
-            setIsOver(false);
-        };
+    const handleDrop = e => {
+        e.preventDefault();
+        const droppedFile = e.dataTransfer.files[0];
+        setFinalFile(droppedFile);
+        setIsOver(false);
+    };
 
-        const handleFileChange = e => {
-            const selectedFile = e.target.files[0];
-            setFinalFile(selectedFile);
-        };
+    const handleFileChange = e => {
+        const selectedFile = e.target.files[0];
+        setFinalFile(selectedFile);
+    };
 
-        const deleteAttachment = (e) => {
-            e.stopPropagation(); 
-            setFinalFile(null)
+    const deleteAttachment = (e) => {
+        e.stopPropagation(); 
+        setFinalFile(null)
+    }
+
+    const submitCreate = (event) => {
+        if(validateTicket(event)){
+            return;
         }
-
-        const submitCreate = (event) => {
-            if(validateTicket(event)){
-                return;
-            }
-            if(selectedEmployeeOption !== null){
+        if(selectedEmployeeOption !== null){
+    
+            let config = {
+                headers: {
+                    Authorization: 'Bearer ' + cookies.token
+                }
+            };
+            let ticket = {
+                name: ticketName,
+                description: description,
+                dueDate: dueDate !== null ? format(dueDate, "yyyy-MM-dd HH:mm") : null,
+                estimatedTime: estimatedTime,
+                status: "OPEN",
+                type: selectedTtOption.value,
+                severity: selectedPriorityOption.value,
+                gitRef: gitLink,
+                assignee: {id: (selectedProjectOption !== undefined && selectedProjectOption !== null) ? selectedEmployeeOption.value.id : cookies.employeeId},
+                reporter: {id: cookies.employeeId}
+            };
         
-                let config = {
-                    headers: {
-                        Authorization: 'Bearer ' + cookies.token
-                    }
-                };
-                let ticket = {
-                    name: ticketName,
-                    description: description,
-                    dueDate: dueDate !== null ? format(dueDate, "yyyy-MM-dd HH:mm") : null,
-                    estimatedTime: estimatedTime,
-                    status: "OPEN",
-                    type: selectedTtOption.value,
-                    severity: selectedPriorityOption.value,
-                    gitRef: gitLink,
-                    assignee: {id: (selectedProjectOption !== undefined && selectedProjectOption !== null) ? selectedEmployeeOption.value.id : cookies.employeeId},
-                    reporter: {id: cookies.employeeId}
-                };
-            
-                const create = async() => {
-                    await axios
-                    .post("/project/" + selectedProjectOption.value.id + "/tickets/",
-                        ticket,
-                        config)
-                    .then(response => response.data)
-                    .then(data => {
-                        const updateFile = async() => {
-                            let fileConfig = {
-                                headers: {
-                                    Authorization: 'Bearer ' + cookies.token,
-                                    'Content-Type': 'multipart/form-data'
-                                }
-                            };
-                
-                            let file;
-                            if(finalFile !== null){
-                                file = {
-                                    attachment: finalFile
-                                };
-                            } else{
-                                props.close(false);
-                                props.navigate("ticket/" + data);
-                                return;
+            const create = async() => {
+                await axios
+                .post("/project/" + selectedProjectOption.value.id + "/tickets/",
+                    ticket,
+                    config)
+                .then(response => response.data)
+                .then(data => {
+                    const updateFile = async() => {
+                        let fileConfig = {
+                            headers: {
+                                Authorization: 'Bearer ' + cookies.token,
+                                'Content-Type': 'multipart/form-data'
                             }
-                
-                            await axios
-                            .put("/project/tickets/" + data + "/file", 
-                                file,
-                                fileConfig)
-                            .then(() => {
-                                props.close(false);
-                                props.navigate("ticket/" + data);
-                            })
-                            .catch((error) => {
-                                let code = error.toJSON().status;
-                                if(code===400 && error.response.data !== null)
-                                    setErrorMessage(error.response.data.message);
-                                else if(code===401)
-                                    setError('Authorization is required');
-                                else if(code===403)
-                                    alert("Access is denied");     
-                                else alert('Internal server error');
-                            });        
-                        }      
-                        updateFile();
-                    })
-                    .catch((error) => {
-                        let code = error.toJSON().status;
-                        if(code===400 && error.response.data !== null && error.response.data.message === "validation error"){
-                            if(Array.of(error.response.data.fieldErrors).length > 0)
-                                setErrorMessage(error.response.data.fieldErrors[0].defaultMessage);
-                        }
-                        else if(code===400 && error.response.data !== null)
-                            setErrorMessage(error.response.data.message);
-                        else if(code===401)
-                            setError('Authorization is required');
-                        else if(code===403)
-                            alert("Access is denied");  
-                        else alert('Internal server error');
-                    });        
-                }      
-                create();
-            }  
-        }
-          
-        const clearView = () => {
-            setSelectedEmployeeOption(null);
-            setSelectedPriorityOption(null);
-            setSelectedTtOption(null);
-            setDueDate(null);
-            setValidated(false);
-            setErrorMessage("");
-            setTicketNameErrMessage("");
-            setTicketName("");
-            setDescription("");
-            setGitLink("");
-            props.close(false);
-        }
-
-        const validateTicket = (event) => {
-            let isValidated = false;
-            if(selectedTtOption === null || 
-                selectedPriorityOption === null ||
-                selectedTtOption === null){
-                isValidated = true;
-            }
-            if (ticketName === '') {
-                isValidated = true;
-                setTicketNameErrMessage("Summary can't be empty");
-            } else if (ticketName.length > 100 ){
-                isValidated = true;
-                setTicketNameErrMessage("Summary max length is 100 symbols");
-            }
-            if((!gitLink && gitLink.length > 200) ||
-                !description && description.length > 1000){
-                isValidated = true;
-            }
-            if(isValidated){
-                event.stopPropagation();
-                setValidated(true);
-            }
-            return isValidated;
+                        };
             
+                        let file;
+                        if(finalFile !== null){
+                            file = {
+                                attachment: finalFile
+                            };
+                        } else{
+                            props.close(false);
+                            props.navigate("ticket/" + data);
+                            return;
+                        }
+            
+                        await axios
+                        .put("/project/tickets/" + data + "/file", 
+                            file,
+                            fileConfig)
+                        .then(() => {
+                            props.close(false);
+                            props.navigate("ticket/" + data);
+                        })
+                        .catch((error) => {
+                            let code = error.toJSON().status;
+                            if(code===400 && error.response.data !== null)
+                                setErrorMessage(error.response.data.message);
+                            else if(code===401)
+                                setError('Authorization is required');
+                            else if(code===403)
+                                alert("Access is denied");     
+                            else alert('Internal server error');
+                        });        
+                    }      
+                    updateFile();
+                })
+                .catch((error) => {
+                    let code = error.toJSON().status;
+                    if(code===400 && error.response.data !== null && error.response.data.message === "validation error"){
+                        if(Array.of(error.response.data.fieldErrors).length > 0)
+                            setErrorMessage(error.response.data.fieldErrors[0].defaultMessage);
+                    }
+                    else if(code===400 && error.response.data !== null)
+                        setErrorMessage(error.response.data.message);
+                    else if(code===401)
+                        setError('Authorization is required');
+                    else if(code===403)
+                        alert("Access is denied");  
+                    else alert('Internal server error');
+                });        
+            }      
+            create();
+        }  
+    }
+          
+    const clearView = () => {
+        setSelectedEmployeeOption(null);
+        setSelectedPriorityOption(null);
+        setSelectedTtOption(null);
+        setDueDate(null);
+        setValidated(false);
+        setErrorMessage("");
+        setTicketNameErrMessage("");
+        setTicketName("");
+        setDescription("");
+        setGitLink("");
+        props.close(false);
+    }
+
+    const validateTicket = (event) => {
+        let isValidated = false;
+        if(selectedTtOption === null || 
+            selectedPriorityOption === null ||
+            selectedTtOption === null){
+            isValidated = true;
         }
+        if (ticketName === '') {
+            isValidated = true;
+            setTicketNameErrMessage("Summary can't be empty");
+        } else if (ticketName.length > 100 ){
+            isValidated = true;
+            setTicketNameErrMessage("Summary max length is 100 symbols");
+        }
+        if((!gitLink && gitLink.length > 200) ||
+            !description && description.length > 1000){
+            isValidated = true;
+        }
+        if(isValidated){
+            event.stopPropagation();
+            setValidated(true);
+        }
+        return isValidated;
+        
+    }
 
     return (<Modal  
         {...props} 

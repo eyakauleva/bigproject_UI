@@ -42,7 +42,7 @@
 }
 
 .single-project .textarea{
-    resize:both;
+    resize:vertical;
     width: 99%;
     outline: none;
     margin-left: 2%;

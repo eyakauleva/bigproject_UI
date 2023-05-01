@@ -6,8 +6,8 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import axios from "axios";
 
-import {logout} from './Sidebar.js';
-import '.././css/Projects.css';
+import {logout} from '../Sidebar.js';
+import '../../css/Projects.css';
 
 export default function Projects(props) {
     const[cookies] = useCookies(["token"]);

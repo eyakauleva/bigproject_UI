@@ -5,8 +5,8 @@ import axios from "axios";
 import { useCookies } from 'react-cookie';
 import InputGroup from 'react-bootstrap/InputGroup';
 
-import {logout} from './Sidebar.js';
-import '.././css/ProjectEmployeesModal.css';
+import {logout} from '../Sidebar.js';
+import '../../css/ProjectEmployeesModal.css';
 
 var clearInput;
 export {clearInput}

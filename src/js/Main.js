@@ -6,11 +6,11 @@ import Sidebar from './Sidebar';
 import Profile from './Profile';
 import Dashboard from './dashboard/Dashboard';
 import SingleTask from './single_task/SingleTask';
-import Projects from './Projects';
+import Projects from './project/Projects';
 import Orders from './Orders';
 import Users from './Users';
-import ProjectPage from './ProjectPage';
-import CreateProject from './CreateProject';
+import ProjectPage from './project/ProjectPage';
+import CreateProject from './project/CreateProject';
 import Statistics from './statistics/Statistics';
 import jwt_decode from "jwt-decode";
 

@@ -11,11 +11,11 @@ import DateFnsUtils from '@date-io/date-fns';
 import Form from 'react-bootstrap/Form';
 import jwt_decode from "jwt-decode";
 
-import {logout} from './Sidebar.js';
+import {logout} from '../Sidebar.js';
 import ProjectEmployeesModal, {clearInput} from './ProjectEmployeesModal.js';
-import ChooseEmployeeModal from './dashboard/ChooseEmployeeModal.js'
-import '../css/ProjectPage.css';
-import Comments from './comments/Comments.js';
+import ChooseEmployeeModal from '../dashboard/ChooseEmployeeModal.js'
+import '../../css/ProjectPage.css';
+import Comments from '../comments/Comments.js';
 
 export default function ProjectPage(props) {
     const[cookies] = useCookies(["token", "employeeId", "project"]);
@@ -490,7 +490,7 @@ export default function ProjectPage(props) {
                 </div>
                 <div className="col-md-12">
                   <div className="group-name">Description</div>
-                  <div>
+                  <div className="col-md-12">
                       {
                           editMode 
                           ?<textarea className='textarea'
@@ -632,7 +632,7 @@ export default function ProjectPage(props) {
                     <a style={{fontWeight:"normal"}} onClick={() => props.navigate("ticket/" + ticket.id)}>{ticket.name}</a>
                   </div>
                   : "")
-                  : "There are no comments yet on this ticket"
+                  : <div style={{marginLeft:'2%'}}>There are no related tickets yet on this project</div>
                 }
               </div>
             </div>

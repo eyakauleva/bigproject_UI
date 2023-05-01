@@ -16,16 +16,15 @@
     border: 1px solid rgb(206, 204, 204);
     border-radius: 5px;
     padding-left: 5px;
-    width: 100%;
 }
 
-.create-project button{
-    border: 0;
+.create-project .emp-btn{
+    padding-left: 4%;
+    padding-right: 4%;
 }
-
 .create-project .photo{
-    width: 40px;
-    height: 40px;
+    width: 25px;
+    height: 25px;
     object-fit: cover;
     border-radius: 50%;
     cursor: pointer;
@@ -35,6 +34,7 @@
 .create-project .remove-employee{
     padding: 2px;
     cursor: pointer;
+    vertical-align: middle;
 }
 
 .create-project .error{
@@ -50,4 +50,62 @@
 
 .create-project .file-input button{
     border: 0;
+}
+.create-project .title-create-project{
+    font-weight: 500;
+    border-bottom: 1px solid rgba(33, 37, 41, 0.25);
+    padding-bottom: 1%;
+    padding-left: 5%;
+}
+.create-project .item-name{
+    text-align: right;
+    font-weight: 500;
+    color: #5c6778;
+    font-size: 17px;
+}
+.create-project .item-value {
+    padding-bottom: 1.5%;
+}
+.create-project .item-input{
+    width: 60%;
+    margin-left: 1%;
+    padding: 0.7% 0;
+}
+.create-project .item-select-input{
+    width: 60%;
+    margin-left: 1%;
+}
+.create-project 
+  .item-input:hover, 
+  .item-select-input:hover, 
+  .textarea:hover, 
+  .item-dd-input:hover{
+    background-color: #5c677815;
+    transition: all 0.2s ease-in-out;
+}
+.create-project .item-name{
+    background-color: transparent;
+}
+.create-project .textarea{
+    margin-left: 1%;
+}
+.item-dd-input{
+    width: 60%;
+}
+.create-project .item{
+    width: 60%;
+}
+.create-project .emp-name{
+    margin: .5%;
+    font-size: 17px;
+    vertical-align:middle;
+}
+.create-project .pretty-select{
+    margin-top: 2%;
+}
+.create-project .items{
+    margin-top: 1%;
+}
+.create-project .drop-zone{
+    margin: 0;
 }
