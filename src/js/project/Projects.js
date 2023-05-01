@@ -125,7 +125,7 @@ export default function Projects(props) {
                                         <div className="col-xs-12 col-md-6">
                                         </div>
                                         <div className="col-xs-12 col-md-6">
-                                            <a className={isList ? 'btn-custom-2' : 'btn-custom-2 btn-grid'} onClick={() => props.navigate("project/" + project.id)}>
+                                            <a className={isList ? 'btn-custom-2' : 'btn-custom-2 btn-grid'} href={"/app/project/" + project.id}>
                                                 <span>More</span>
                                             </a>
                                         </div>

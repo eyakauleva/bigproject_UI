@@ -140,11 +140,11 @@
 }
 .item.list-group-item .thumbnail
 {
-    margin-bottom: 0px;
+  margin-bottom: 0px;
 }
 .item.list-group-item .caption
 {
-    padding: 9px 9px 0px 9px;
+  padding: 9px 9px 0px 9px;
 }
 .item.list-group-item:nth-of-type(odd)
 {
@@ -223,15 +223,22 @@
     -webkit-transform: translateX(-9%) translateY(-25%) rotate(45deg);
     transform: translateX(-9%) translateY(-25%) rotate(45deg);
   }
+
   .list-group-item-heading:first-letter {
     text-transform: uppercase;
   }
   .list-group-item-heading {
     word-wrap: break-word;
+    white-space: nowrap;
+    overflow: hidden; 
+    text-overflow: ellipsis; 
     margin-left: 5%;
     margin-top: 2%;
+    min-height: 30px;
+    max-height: 30px;
   }
   .list-group-item-heading-list {
+    word-wrap: break-word;
     margin-left: 2%;
     margin-top: 0%;
   }
@@ -244,9 +251,16 @@
   }
   .list-group-item-text {
     margin: 2% 2% 10%;
+    word-wrap: break-word;
+    min-height: 100px;
+    max-height: 100px;
+    white-space: nowrap;
+    overflow: hidden; 
+    text-overflow: ellipsis; 
   }
   .list-group-item-text-list {
     margin: 2% 0% 3%;
+    word-wrap: break-word;
   }
   .container-custom {
     padding: 0 2%;
