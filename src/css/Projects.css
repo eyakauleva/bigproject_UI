@@ -239,27 +239,20 @@
   }
   .list-group-item-heading-list {
     word-wrap: break-word;
-    margin-left: 2%;
+    margin-left: 1.5%;
     margin-top: 0%;
   }
   .line {
-    margin: 5% 1% 5% 1%;
     border-top: 2.1px solid rgb(0, 0, 0);
   }
-  .line-list {
-    margin: 2% 0% 2% 0%;
-  }
+  
   .list-group-item-text {
     margin: 2% 2% 10%;
-    word-wrap: break-word;
     min-height: 100px;
     max-height: 100px;
-    white-space: nowrap;
-    overflow: hidden; 
-    text-overflow: ellipsis; 
   }
   .list-group-item-text-list {
-    margin: 2% 0% 3%;
+    margin: 1%;
     word-wrap: break-word;
   }
   .container-custom {
