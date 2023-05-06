@@ -72,9 +72,12 @@ function Authorization(props){
           if(code===400 && error.response.data !== null)
               setErrorMessage(error.response.data.message);
           else if(code===401){
-              alert('Authorization is required');
+              document.cookie = "expired=true; path=/";
           }
-          else alert('Internal server error');
+          else if(code===403)
+              alert("Access is denied"); 
+          else if(code!==undefined && code!==null) 
+              alert('Internal server error');
         });
         
       } else{
@@ -101,9 +104,12 @@ function Authorization(props){
           if(code===400 && error.response.data !== null)
               setErrorMessage(error.response.data.message);
           else if(code===401){
-              alert('Authorization is required');
+            document.cookie = "expired=true; path=/";
           }
-          else alert('Internal server error');
+          else if(code===403)
+              alert("Access is denied"); 
+          else if(code!==undefined && code!==null) 
+              alert('Internal server error');
         });
       }
 
@@ -113,7 +119,7 @@ function Authorization(props){
       if(code===401) setErrorMessage("Bad credentials");
       else if(code===423) setErrorMessage("Account is locked");
       else if(code===400 && error.response.data !== null) setErrorMessage(error.response.data.message);
-      else alert('Internal server error');
+      else if(code!==undefined && code!==null) alert('Internal server error');
     });
 
   }

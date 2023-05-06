@@ -40,9 +40,10 @@ export default function SingleTask(props) {
   const[finalFile, setFinalFile] = useState(null);
   const[estimatedTime, setEstimatedTime] = useState(0.0);
   const[loggedTime, setLoggedTime] = useState(0.0);  
+  const[project, setProject] = useState({ employees: [] });
 
   useEffect(() => {
-    getTicket();              
+    getTicket();             
   }, [id]);
 
   const displayError = () => {
@@ -69,7 +70,28 @@ export default function SingleTask(props) {
                 setTicket(data); 
                 setProjectId(data.ticket.id);
                 setDecodedToken(jwt_decode(cookies.token));
-                setEstimatedTime(data.estimatedTime);                  
+                setEstimatedTime(data.estimatedTime);  
+                
+                axios
+                .get("/project/tickets/" + data.ticket.id, config)
+                .then(response => response.data)
+                .then((data) => {
+                    if (data) {
+                        setProject(data);
+                    }
+                })
+                .catch((error) => {
+                    let code = error.toJSON().status;
+                    if (code === 400 && error.response.data !== null)
+                        alert(error.response.data.message);
+                    else if(code===401){
+                        document.cookie = "expired=true; path=/";
+                    }
+                    else if(code===403)
+                        alert("Access is denied"); 
+                    else if(code!==undefined && code!==null) 
+                        alert('Internal server error');
+                });
             }             
         })
         .then(() => {
@@ -83,14 +105,14 @@ export default function SingleTask(props) {
             })  
         })
         .catch((error) => {
-            let code = error.toJSON().status;
-            if(code===400 && error.response.data !== null)
-                setErrorMessage(error.response.data.message);
-            else if(code===401)
-                setError('Authorization is required');
+            let code = error.status;
+            if(code===401){
+                document.cookie = "expired=true; path=/";
+            }
             else if(code===403)
-                alert("Access is denied");
-            else alert('Internal server error');
+                alert("Access is denied"); 
+            else if(code!==undefined && code!==null) 
+                alert('Internal server error');
         });   
     }
   }
@@ -158,7 +180,7 @@ export default function SingleTask(props) {
                             setError('Authorization is required');
                         else if(code===403)
                             alert("Access is denied");
-                        else alert('Internal server error');
+                        else if(code!==undefined && code!==null) alert('Internal server error');
                         return;
                     }); 
                 }       
@@ -178,10 +200,11 @@ export default function SingleTask(props) {
             else if(code===400 && error.response.data !== null)
                 setErrorMessage(error.response.data.message);
             else if(code===401)
-                setError('Authorization is required');
+                document.cookie = "expired=true; path=/";
             else if(code===403)
                 alert("Access is denied");
-            else alert('Internal server error');
+            else if(code!==undefined && code!==null)
+                alert('Internal server error');
         });        
     }      
     update();
@@ -349,6 +372,23 @@ export default function SingleTask(props) {
         return {marginLeft:"25%"};
     }
  }
+ const hasRights = () => {
+    if(decodedToken.role === "ROLE_ADMIN") {
+        return true;
+    }
+
+    let isUserOnProject = false;
+    project.employees.map((employee) => {
+      if(employee.id == cookies.employeeId) {
+        isUserOnProject = true;
+      }
+    });
+    if(isUserOnProject) {
+      return true;
+    }
+
+    return false;
+ }
   return (
     <div className="single-task">
       {displayError()}
@@ -364,18 +404,21 @@ export default function SingleTask(props) {
         <div className="row">
                 <div className="ticket-btn-group col-md-12">
                     {
-                        !editMode && ticket.reporter !== undefined 
-                            && (cookies.employeeId === ticket.reporter.id || decodedToken.role === "ROLE_ADMIN" || decodedToken.role === "ROLE_MANAGER")
-                        && 
+                        !editMode && hasRights()
+                        &&
                                 <button onClick={() => editTicketOnUI()} className="mybtn">
                                     <span><i className="bi bi-pencil-square ticket-icon" ></i></span>
                                     <span> Edit</span>
                                 </button>
 
-                    } 
-                    <button className="mybtn" onClick={() => setShowTimeModal(true)}>
-                        <span>Log work</span>
-                    </button>
+                    }
+                    {
+                        hasRights()
+                        &&
+                            <button className="mybtn" onClick={() => setShowTimeModal(true)}>
+                                <span>Log work</span>
+                            </button>
+                    }
                 </div>
             <div className="col-md-8">
                 <div className="row">

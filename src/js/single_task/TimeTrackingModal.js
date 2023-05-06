@@ -48,11 +48,13 @@ const TimeTrackingModal = (props) =>{
         })
           .catch((error) => {
             let code = error.status;
-            if(code===401)
-                alert('Authorization is required');
+            if(code===401){
+                document.cookie = "expired=true; path=/";
+            }
             else if(code===403)
-                alert("Access is denied");
-            else alert('Internal server error');
+                alert("Access is denied"); 
+            else if(code!==undefined && code!==null) 
+                alert('Internal server error');
         }); 
     }
     return (

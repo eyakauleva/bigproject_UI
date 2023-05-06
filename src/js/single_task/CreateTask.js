@@ -92,13 +92,13 @@ const CreateTask = (props) =>{
         })
         .catch((error) => {
             let code = error.status;
-            if(code===400 && error.response.data !== null)
-                alert(error.response.data.message);
-            else if(code===401)
-                setError('Authorization is required');
+            if(code===401)
+                document.cookie = "expired=true; path=/";
             else if(code===403)
                 alert("Access is denied"); 
-            else alert('Internal server error');
+            else if(code!==undefined && code!==null) {
+                alert('Internal server error');
+            }
         });
     };
 
@@ -124,14 +124,14 @@ const CreateTask = (props) =>{
           }                    
         })
         .catch((error) => {
-          let code = error.status;
-          if(code===400 && error.response.data !== null)
-              alert(error.response.data.message);
-          else if(code===401)
-            setError('Authorization is required');
-          else if(code===403)
-              alert("Access is denied");
-          else alert('Internal server error');
+            let code = error.status;
+            if(code===401)
+                document.cookie = "expired=true; path=/";
+            else if(code===403)
+                alert("Access is denied"); 
+            else if(code!==undefined && code!==null){
+                alert('Internal server error');
+            }
         });  
     }
     
@@ -160,14 +160,14 @@ const CreateTask = (props) =>{
           }                    
         })
         .catch((error) => {
-          let code = error.status;
-          if(code===400 && error.response.data !== null)
-              alert(error.response.data.message);
-          else if(code===401)
-            setError('Authorization is required');
-          else if(code===403)
-              alert("Access is denied");
-          else alert('Internal server error');
+            let code = error.status;
+            if(code===401)
+                document.cookie = "expired=true; path=/";
+            else if(code===403)
+                alert("Access is denied"); 
+            else if(code!==undefined && code!==null){
+                alert('Internal server error');
+            }
         });  
     }
 
@@ -308,7 +308,7 @@ const CreateTask = (props) =>{
                                 setError('Authorization is required');
                             else if(code===403)
                                 alert("Access is denied");     
-                            else alert('Internal server error');
+                            else if(code!==undefined && code!==null) alert('Internal server error');
                         });        
                     }      
                     updateFile();
@@ -320,12 +320,13 @@ const CreateTask = (props) =>{
                             setErrorMessage(error.response.data.fieldErrors[0].defaultMessage);
                     }
                     else if(code===400 && error.response.data !== null)
-                        setErrorMessage(error.response.data.message);
+                        document.cookie = "expired=true; path=/";
                     else if(code===401)
                         setError('Authorization is required');
                     else if(code===403)
                         alert("Access is denied");  
-                    else alert('Internal server error');
+                    else if(code!==undefined && code!==null) 
+                        alert('Internal server error');
                 });        
             }      
             create();

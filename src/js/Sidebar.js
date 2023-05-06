@@ -6,7 +6,7 @@ import jwt_decode from "jwt-decode";
 import Form from 'react-bootstrap/Form';
 
 import ClientProfileModal, {clearErrorMessage, noEditMode} from './ClientProfileModal.js';
-import ChangePasswordModal from './ChangePasswordModal';
+import ChangePasswordModal from './ChangePasswordModal.js';
 import '.././css/Sidebar.css';
 import CreateTask from './single_task/CreateTask.js';
 
@@ -56,11 +56,13 @@ function Sidebar(props){
                 }                  
             })
             .catch((error) => {               
-                let code = error.toJSON().status;
+                let code = error.status;
                 if(code===401){
-                    alert('Authorization is required');
+                    document.cookie = "expired=true; path=/";
                 }
-                else alert('Internal server error');
+                else if(code!==undefined && code!==null) {
+                    alert('Internal server error');
+            }
             });
 
         } else {
@@ -70,22 +72,25 @@ function Sidebar(props){
             .then((data) =>{
               if(data){
                 let projects = [];
-                data.orders.map(order => projects.push(order.project));
+                data.map(order => projects.push(order.project));
                 setProjects(projects.sort((a, b) => a.id > b.id ? 1 : -1)); 
               } 
                             
             })
             .catch((error) => {               
-                let code = error.toJSON().status;
+                let code = error.status;
                 if(code===401){
-                    alert('Authorization is required');
+                    document.cookie = "expired=true; path=/";
                 }
-                else alert('Internal server error');
+                else if(code!==undefined && code!==null) {
+                alert('Internal server error');
+            }
             });
         }
     }
 
     logout = () => {        
+        document.cookie = "expired=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
         document.cookie = "url=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
         document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
         document.cookie = "project=;  expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
@@ -96,34 +101,32 @@ function Sidebar(props){
 
     return(    
         <div className="sidenav">
+            <div className="up-wrapper">
+                <b>Current project:</b>
+                <div style={{width:"85%"}}> 
+                    <Form.Select onChange={e => document.cookie = "project=" + e.target.value + "; path=/"}>                
+                    {
+                        projects.map(project => {
+                            let currentProjectId = document.cookie
+                                    .split("; ")
+                                    .find((row) => row.startsWith("project="))
+                                    ?.split("=")[1];
+                            if(currentProjectId != project.id)
+                                return <option value={project.id}>{project.name}</option>;
+                            else return <option selected value={project.id}>{project.name}</option>;
+                        })
+                    }
+                    </Form.Select> 
+                </div>
+            </div><hr/>
             {
                 decodedToken.role!=="ROLE_CUSTOMER" && cookies.project!==undefined
                 ? <div>
-                    <div className="up-wrapper">
-                        <b>Current project:</b>
-                        <div style={{width:"85%"}}> 
-                            <Form.Select onChange={e => document.cookie = "project=" + e.target.value + "; path=/"}>                
-                            {
-                                projects.map(project => {
-                                    let currentProjectId = document.cookie
-                                            .split("; ")
-                                            .find((row) => row.startsWith("project="))
-                                            ?.split("=")[1];
-                                    if(currentProjectId != project.id)
-                                        return <option value={project.id}>{project.name}</option>;
-                                    else return <option selected value={project.id}>{project.name}</option>;
-                                })
-                            }
-                            </Form.Select> 
-                        </div>
-                    </div><hr/>
-                    <div>
-                        <button onClick={() => setShowCTModal(true)} className='action'>
-                            <i className="bi bi-plus-square"></i>
-                            <b> NEW TICKET</b>
-                        </button><hr/>
-                    </div>
-                </div>
+                    <button onClick={() => setShowCTModal(true)} className='action'>
+                        <i className="bi bi-plus-square"></i>
+                        <b> NEW TICKET</b>
+                    </button><hr/>
+                  </div>
                 : ''
             }
             <a onClick={goToProfile} className='action'>

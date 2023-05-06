@@ -11,7 +11,7 @@ import jwt_decode from "jwt-decode";
 
 import {logout} from './Sidebar.js';
 import '.././css/Profile.css';
-import ChangePasswordModal from './ChangePasswordModal';
+import ChangePasswordModal from './ChangePasswordModal.js';
 
 export default function Profile(props) {
     const[cookies, setCookie] = useCookies(["token", "employeeId"]);
@@ -72,11 +72,14 @@ export default function Profile(props) {
                 console.log(error);
                 if(code===400 && error.response.data !== null)
                     setErrorMessage(error.response.data.message);
-                else if(code===401)
-                    setError('Authorization is required');
+                else if(code===401){
+                    document.cookie = "expired=true; path=/";
+                }
                 else if(code===403)
-                    alert("Access is denied");                
-                else alert('Internal server error');
+                    alert("Access is denied"); 
+                else if(code!==undefined && code!==null) {
+                alert('Internal server error');
+            }
             });
         }        
     };
@@ -130,11 +133,14 @@ export default function Profile(props) {
                 }
                 else if(code===400 && error.response.data !== null)
                     setErrorMessage(error.response.data.message);
-                else if(code===401)
-                    setError('Authorization is required');
+                else if(code===401){
+                    document.cookie = "expired=true; path=/";
+                }
                 else if(code===403)
-                    alert("Access is denied");    
-                else alert('Internal server error');
+                    alert("Access is denied"); 
+                else if(code!==undefined && code!==null) {
+                alert('Internal server error');
+            }
             });        
         }      
         update();
@@ -179,11 +185,14 @@ export default function Profile(props) {
                 let code = error.toJSON().status;
                 if(code===400 && error.response.data !== null)
                     setErrorMessage(error.response.data.message);
-                else if(code===401)
-                    setError('Authorization is required');
+                else if(code===401){
+                    document.cookie = "expired=true; path=/";
+                }
                 else if(code===403)
-                    alert("Access is denied");    
-                else alert('Internal server error');
+                    alert("Access is denied"); 
+                else if(code!==undefined && code!==null) {
+                alert('Internal server error');
+            }
             });   
         }        
     }
@@ -208,11 +217,14 @@ export default function Profile(props) {
                 let code = error.toJSON().status;
                 if(code===400 && error.response.data !== null)
                     setErrorMessage(error.response.data.message);
-                else if(code===401)
-                    setError('Authorization is required');
+                else if(code===401){
+                    document.cookie = "expired=true; path=/";
+                }
                 else if(code===403)
-                    alert("Access is denied");    
-                else alert('Internal server error');
+                    alert("Access is denied"); 
+                else if(code!==undefined && code!==null) {
+                alert('Internal server error');
+            }
             });  
         }        
     }
@@ -237,11 +249,14 @@ export default function Profile(props) {
                 let code = error.toJSON().status;
                 if(code===400 && error.response.data !== null)
                     setErrorMessage(error.response.data.message);
-                else if(code===401)
-                    setError('Authorization is required');
+                else if(code===401){
+                    document.cookie = "expired=true; path=/";
+                }
                 else if(code===403)
-                    alert("Access is denied");    
-                else alert('Internal server error');
+                    alert("Access is denied"); 
+                else if(code!==undefined && code!==null) {
+                alert('Internal server error');
+            }
             });  
         } 
     }
@@ -287,7 +302,7 @@ export default function Profile(props) {
                                         {
                                             decodedToken.role === "ROLE_ADMIN"
                                             ? <div className="profile-rating">
-                                                <span>Role: {decodedToken.role.split("_").pop().toLowerCase()}</span><br/>
+                                                <span>Role: {user.role.split("_").pop().toLowerCase()}</span><br/>
                                                 <span>Status: {user.status.toLowerCase()}</span>
                                               </div>
                                             : ""
@@ -296,13 +311,13 @@ export default function Profile(props) {
                                     <div className="container col-md-9" >
                                         <div className="button-group-modification">
                                             {                                    
-                                                decodedToken.role === "ROLE_ADMIN" && user.status !== "BLOCKED"
+                                                decodedToken.role === "ROLE_ADMIN" && user.status !== "BLOCKED" && decodedToken.id !== user.id 
                                                 ? 
                                                 <button onClick={blockUser} className="block-btn">
                                                     <span class="hidden_hover" style={{fontSize:"25px"}}><i className="bi bi-person-x-fill"></i></span>
                                                     <span class="hidden_span">Block User</span>
                                                 </button>
-                                                : decodedToken.role === "ROLE_ADMIN" && user.status === "BLOCKED"
+                                                : decodedToken.role === "ROLE_ADMIN" && user.status === "BLOCKED" && decodedToken.id !== user.id
                                                 ? 
                                                 <button onClick={activateUser} style={{background:"#70E852"}} className="block-btn">
                                                     <span class="hidden_hover" style={{fontSize:"25px"}}><i className="bi bi-person-check-fill"></i></span>
@@ -313,7 +328,7 @@ export default function Profile(props) {
                                         </div>
                                         <div className="button-group-modification">
                                             {                                       
-                                                decodedToken.role === "ROLE_ADMIN" && user.status !== "DEACTIVATED"
+                                                decodedToken.role === "ROLE_ADMIN" && user.status !== "DEACTIVATED" && decodedToken.id !== user.id
                                                 ?<button onClick={deactivateUser} className="deactivate-btn">
                                                         <span class="hidden_hover" style={{fontSize:"25px"}}><i className="bi bi-person-dash"></i></span>
                                                         <span class="hidden_span">Deactivate</span>

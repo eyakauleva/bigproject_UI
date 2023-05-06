@@ -30,17 +30,17 @@ export default function Main(){
         setDecodedToken(jwt_decode(cookies.token));
     }, []);
 
-    const getCookieCurrentProjectId = () => {
+    const getCookieByKey = (key) => {
         return document.cookie
                         .split("; ")
-                        .find((row) => row.startsWith("project="))
+                        .find((row) => row.startsWith(key + "="))
                         ?.split("=")[1];
     }
 
     const listenCookieChange = (callback, interval = 1000) => {
-        let lastCookie = getCookieCurrentProjectId();
+        let lastCookie = getCookieByKey("project");
         setInterval(()=> {
-            let cookie = getCookieCurrentProjectId();
+            let cookie = getCookieByKey("project");
             if (cookie !== lastCookie) {
                 try {
                     callback();
@@ -51,8 +51,23 @@ export default function Main(){
         }, interval);
     }
 
+    const handleAuthExpiration = () => {
+        setInterval(()=> {
+            let isExpired = getCookieByKey("expired");
+            if (isExpired && isExpired === "true") {
+                document.cookie = "expired=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+                document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+                document.cookie = "project=;  expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+                document.cookie = "employeeId=;  expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+                alert('Authorization is required');
+                navigate('/login'); 
+            }
+        }, 1000);
+    }
+
     return(
         <div className="main">
+            {handleAuthExpiration()}
             <Sidebar navigate={navigate} />
             <Routes>                  
                 <Route path="/*" element={<Navigate to={decodedToken.role!=="ROLE_CUSTOMER" 

@@ -23,6 +23,7 @@ export default function Statistics(props) {
     const[expiredCount, setExpiredCount] = useState(0);
     const[upcomingDeadline, setUpcomingDeadline] = useState([]);
     const[projects, setProjects] = useState([]);
+    const[decodedToken, setDecodedToken] = useState({});
 
     useLayoutEffect(() => {
         let datesBuf = [];
@@ -37,8 +38,14 @@ export default function Statistics(props) {
             });
             setDates(prevDates => [...prevDates, ...datesBuf]);
         }
+
         getCurrentProjects();
-        setStatisticsData();
+
+        let decodedToken_ = jwt_decode(cookies.token);
+        if(decodedToken_.role !== "ROLE_CUSTOMER") {
+            setStatisticsData();
+        }
+        setDecodedToken(decodedToken_);
     }, []);
 
     const getCurrentProjects = () => {
@@ -62,9 +69,9 @@ export default function Statistics(props) {
             .catch((error) => {               
                 let code = error.toJSON().status;
                 if(code===401){
-                    alert('Authorization is required');
+                    document.cookie = "expired=true; path=/";
                 }
-                else alert('Internal server error');
+                else if(code!==undefined && code!==null) alert('Internal server error');
             });
 
         } else {
@@ -74,17 +81,21 @@ export default function Statistics(props) {
             .then((data) =>{
               if(data){
                 let projects = [];
-                data.orders.map(order => projects.push(order.project));
+                data.map(order => projects.push(order.project));
                 setProjects(projects.sort((a, b) => a.id > b.id ? 1 : -1)); 
               } 
                             
             })
             .catch((error) => {               
-                let code = error.toJSON().status;
+                let code = error.status;
                 if(code===401){
-                    alert('Authorization is required');
+                    document.cookie = "expired=true; path=/";
                 }
-                else alert('Internal server error');
+                else if(code===403)
+                    alert("Access is denied"); 
+                else if(code!==undefined && code!==null) {
+                    alert('Internal server error');
+                }
             });
         }
     }
@@ -152,14 +163,14 @@ export default function Statistics(props) {
               }                    
           })
           .catch((error) => {
-            let code = error.toJSON().status;
-            if(code===400 && error.response.data !== null)
-              alert(error.response.data.message);
-            else if(code===401)
-              setError('Authorization is required');
+            let code = error.status;
+            if(code===401)
+                document.cookie = "expired=true; path=/";
             else if(code===403)
               alert("Access is denied"); 
-            else alert('Internal server error');
+            else if(code!==undefined && code!==null) {
+                alert('Internal server error');
+            }
           });
         }
     }
@@ -210,67 +221,70 @@ export default function Statistics(props) {
         <div className="profile statistics">
             {displayError()}
             <div className="container emp-profile">
-                <Tabs
-                    defaultActiveKey="my" className="mb-3">
-                    <Tab eventKey="my" title="My">
-                        <div className="row">
-                            <div className="col-md-6 wrapper">
-                                <div className="title">My logged time throughout the week:</div>
-                                <div className="dates-swicther">
-                                    <div onClick={()=>changeWeek(true)}>
-                                        {dates.length == 7 
-                                        ? <div className="date-switcher-el">
-                                            <div className="date">{format(new Date(dates[0]), 'dd.MM.yyyy')}</div>
-                                            <div><i class="bi bi-caret-left-square"></i></div>
+                <Tabs className="mb-3">
+                    {
+                        decodedToken.role !== "ROLE_CUSTOMER"
+                        ? <Tab eventKey="my" title="My">
+                            <div className="row">
+                                <div className="col-md-6 wrapper">
+                                    <div className="title">My logged time throughout the week:</div>
+                                    <div className="dates-swicther">
+                                        <div onClick={()=>changeWeek(true)}>
+                                            {dates.length == 7 
+                                            ? <div className="date-switcher-el">
+                                                <div className="date">{format(new Date(dates[0]), 'dd.MM.yyyy')}</div>
+                                                <div><i class="bi bi-caret-left-square"></i></div>
+                                            </div>
+                                            : ''}
                                         </div>
-                                        : ''}
+                                        <div onClick={()=>changeWeek(false)}>
+                                            {dates.length == 7 
+                                            ? <div className="date-switcher-el">
+                                                <div><i class="bi bi-caret-right-square"></i></div>
+                                                <div className="date">{format(new Date(dates[6]), 'dd.MM.yyyy')}</div>
+                                            </div> 
+                                            : ''}
+                                        </div>
                                     </div>
-                                    <div onClick={()=>changeWeek(false)}>
-                                        {dates.length == 7 
-                                        ? <div className="date-switcher-el">
-                                            <div><i class="bi bi-caret-right-square"></i></div>
-                                            <div className="date">{format(new Date(dates[6]), 'dd.MM.yyyy')}</div>
-                                        </div> 
-                                        : ''}
+                                    <div>
+                                        <TimeChart dates={dates} labels={labels} />
                                     </div>
                                 </div>
-                                <div>
-                                    <TimeChart dates={dates} labels={labels} />
-                                </div>
-                            </div>
-                            <div className="col-md-1"></div>
-                            <div className="col-md-4 wrapper">
-                                <table className="wrapper-table">
-                                    <tr>
-                                        <td><div>Total tickets left:</div></td>
-                                        <td><div className="number-circle" style={{background: getColor(leftCount), color: getFontColor(leftCount)}}>
-                                            {leftCount}
-                                        </div></td>
-                                    </tr>
-                                    <tr>
-                                        <td><div>Expired tickets count:</div></td>
-                                        <td><div className="number-circle" style={{background: getColor(expiredCount), color: getFontColor(expiredCount)}}>
-                                            {expiredCount}
-                                        </div></td>
-                                    </tr>
-                                </table>
-                                <br/>
-                                <table className="wrapper-table-tickets">
-                                    <tr><td className="subtitle">Upcoming deadlines:</td></tr>
-                                    <tr>
-                                        <th>Ticket</th>
-                                        <th>Date</th>
-                                    </tr>
-                                    {upcomingDeadline.map((ticket)=>
+                                <div className="col-md-1"></div>
+                                <div className="col-md-4 wrapper">
+                                    <table className="wrapper-table">
                                         <tr>
-                                            <td><a href={'/app/ticket/' + ticket.id}>{ticket.name}</a></td>
-                                            <td>{format(new Date(ticket.dueDate), 'dd.MM.yyyy')}</td>
+                                            <td><div>Total tickets left:</div></td>
+                                            <td><div className="number-circle" style={{background: getColor(leftCount), color: getFontColor(leftCount)}}>
+                                                {leftCount}
+                                            </div></td>
                                         </tr>
-                                    )} 
-                                </table>
+                                        <tr>
+                                            <td><div>Expired tickets count:</div></td>
+                                            <td><div className="number-circle" style={{background: getColor(expiredCount), color: getFontColor(expiredCount)}}>
+                                                {expiredCount}
+                                            </div></td>
+                                        </tr>
+                                    </table>
+                                    <br/>
+                                    <table className="wrapper-table-tickets">
+                                        <tr><td className="subtitle">Upcoming deadlines:</td></tr>
+                                        <tr>
+                                            <th>Ticket</th>
+                                            <th>Date</th>
+                                        </tr>
+                                        {upcomingDeadline.map((ticket)=>
+                                            <tr>
+                                                <td><a href={'/app/ticket/' + ticket.id}>{ticket.name}</a></td>
+                                                <td>{format(new Date(ticket.dueDate), 'dd.MM.yyyy')}</td>
+                                            </tr>
+                                        )} 
+                                    </table>
+                                </div>
                             </div>
-                        </div>
-                    </Tab>
+                        </Tab>
+                        : ''
+                    }
                     {
                         projects.map(project => {
                             return  <Tab eventKey={project.name} title={project.name}>

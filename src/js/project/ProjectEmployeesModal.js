@@ -51,11 +51,13 @@ export default function ProjectEmployeesModal(props) {
             let code = error.toJSON().status;
             if(code===400 && error.response.data !== null)
                 alert(error.response.data.message);
-            else if(code===401)
-                setError('Authorization is required');
+            else if(code===401){
+                document.cookie = "expired=true; path=/";
+            }
             else if(code===403)
-                alert("Access is denied");
-            else alert('Internal server error');
+                alert("Access is denied"); 
+            else if(code!==undefined && code!==null) 
+                alert('Internal server error');
         });   
     }
 

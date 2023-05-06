@@ -153,11 +153,13 @@ export default function Dashboard(props) {
           let code = error.toJSON().status;
           if (code === 400 && error.response.data !== null)
             alert(error.response.data.message);
-          else if (code === 401)
-            setError('Authorization is required');
-          else if (code === 403)
-            alert("Access is denied");
-          else alert('Internal server error');
+          else if(code===401){
+            document.cookie = "expired=true; path=/";
+          }
+          else if(code===403)
+              alert("Access is denied"); 
+          else if(code!==undefined && code!==null) 
+              alert('Internal server error');
         });
     }
   }
@@ -211,17 +213,30 @@ export default function Dashboard(props) {
           let code = error.toJSON().status;
           if (code === 400 && error.response.data !== null)
             alert(error.response.data.message);
-          else if (code === 401)
-            setError('Authorization is required');
-          else if (code === 403)
-            alert("Access is denied");
-          else alert('Internal server error');
+          else if(code===401){
+            document.cookie = "expired=true; path=/";
+          }
+          else if(code===403)
+              alert("Access is denied"); 
+          else if(code!==undefined && code!==null) 
+              alert('Internal server error');
         });
     }
   }
 
   const onDragEnd = result => {
     const { destination, source, draggableId } = result;
+
+    let isUserOnProject = false;
+    project.employees.map((employee) => {
+      if(employee.id == cookies.employeeId) {
+        isUserOnProject = true;
+      }
+    });
+    if(!isUserOnProject) {
+      alert('Acces is denied');
+      return;
+    }
 
     if (!destination) {
       return;
@@ -271,11 +286,13 @@ export default function Dashboard(props) {
           let code = error.toJSON().status;
           if (code === 400 && error.response.data !== null)
             alert(error.response.data.message);
-          else if (code === 401)
-            setError('Authorization is required');
-          else if (code === 403)
-            alert("Access is denied");
-          else alert('Internal server error');
+          else if(code===401){
+            document.cookie = "expired=true; path=/";
+          }
+          else if(code===403)
+              alert("Access is denied"); 
+          else if(code!==undefined && code!==null) 
+              alert('Internal server error');
         });
 
       setData(newState);
@@ -321,11 +338,13 @@ export default function Dashboard(props) {
         let code = error.toJSON().status;
         if (code === 400 && error.response.data !== null)
           alert(error.response.data.message);
-        else if (code === 401)
-          setError('Authorization is required');
-        else if (code === 403)
-          alert("Access is denied");
-        else alert('Internal server error');
+        else if(code===401){
+          document.cookie = "expired=true; path=/";
+        }
+        else if(code===403)
+            alert("Access is denied"); 
+        else if(code!==undefined && code!==null) 
+            alert('Internal server error');
       });
 
     setData(newState);
@@ -371,15 +390,15 @@ export default function Dashboard(props) {
             <option value='NORMAL'>NORMAL</option>
             <option value='LOW'>LOW</option>
           </Form.Select>
-          <Form.Check checked={isShowOnlyMine} onChange={e => showOnlyMine(e.target.checked)}
-            className='col-2 filter-only-mine' style={decodedToken.role === "ROLE_CUSTOMER" ? { visibility: "hidden" } : {}}
-            type="switch" label="&nbsp;Only mine" />
           <div className='col-1 filter-title'>Sort by due date</div>
           <Form.Select size="sm" value={filterDueDate} onChange={e => filterByDueDate(e.target.value)} style={{ "width": "10%" }}>
             <option value='—'>&nbsp;&nbsp;—</option>
             <option value='ASC'>UP</option>
             <option value='DESC'>DOWN</option>
           </Form.Select>
+          <Form.Check checked={isShowOnlyMine} onChange={e => showOnlyMine(e.target.checked)}
+            className='col-2 filter-only-mine' style={decodedToken.role === "ROLE_CUSTOMER" ? { visibility: "hidden" } : {}}
+            type="switch" label="&nbsp;Only mine" />
           <div className='col-1'></div>
           <SearchBar placeholder="Ticket name" data={searchData} />
         </div>
