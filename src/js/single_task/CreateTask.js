@@ -7,10 +7,11 @@ import axios from "axios";
 import Select from 'react-select';
 import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+import jwt_decode from "jwt-decode";
 import '../../css/CreateTask.css';
 
 const CreateTask = (props) =>{
-    
+    const [cookies] = useCookies(["token", "project", "employeeId"]);
     const [projectOptions, setProjectOptions] = useState([]);
     const [employeeOptions, setEmployeeOptions] = useState([]);
     const ttOptions = [
@@ -35,7 +36,6 @@ const CreateTask = (props) =>{
     const [dueDate, setDueDate] = useState(null);
     const [error, setError] = useState("");
     const [projects, setProjects] = useState([]);
-    const [cookies] = useCookies(["token", "project", "employeeId"]);
     const file = useRef(null);
     const [isOver, setIsOver] = useState(false);
     const [finalFile, setFinalFile] = useState(null);
@@ -75,19 +75,23 @@ const CreateTask = (props) =>{
             }
         };
 
+        let decodedToken = jwt_decode(cookies.token);
+
         axios
-        .get("/project/all", config)
+        .get("/employee/user/" + decodedToken.id, config)
         .then(response => response.data)
         .then((data) =>{
             if(data){
-                setProjects(data);
-                let newStateOptions = [];
-                data.map((project) => {
-                    let newOption = {value: project, label: project.name};
-                    newStateOptions = [...newStateOptions, newOption];
-                    return;
-                });
-                setProjectOptions(newStateOptions);
+                if(data.currentProjects!=null){
+                    setProjects(data.currentProjects);
+                    let newStateOptions = [];
+                    data.currentProjects.map((project) => {
+                        let newOption = {value: project, label: project.name};
+                        newStateOptions = [...newStateOptions, newOption];
+                        return;
+                    });
+                    setProjectOptions(newStateOptions);
+                }
             }                    
         })
         .catch((error) => {
