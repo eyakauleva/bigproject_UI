@@ -1,15 +1,18 @@
 import { format, parseISO } from "date-fns";
+import { useCookies } from 'react-cookie';
+import jwt_decode from "jwt-decode";
 import CommentForm from "./CommentForm";
 
-    const Comment = ({comment, deleteComment, activeComment, setActiveComment, updateComment, employeeId, updateView}) =>{
+const Comment = ({comment, deleteComment, activeComment, setActiveComment, updateComment, employeeId, updateView}) =>{
+    const[cookies] = useCookies(["token"]);
     const createdAt = format(parseISO(comment.createdAt), "dd/MMM/Y hh:mm a");
     const updatedAt = comment.updatedAt!= null && format(parseISO(comment.updatedAt), "dd/MMM/Y hh:mm a");
     const isEditing =
             activeComment &&
             activeComment.id === comment.id &&
             activeComment.type === "editing";
-    const isCanDeleteOrUpdate = employeeId === comment.employee.id;
-    const isAdmin = comment.employee.user.role === "ROLE_ADMIN";
+    const isCanDeleteOrUpdate = employeeId == comment.employee.id;
+    const isAdmin = jwt_decode(cookies.token).role === "ROLE_ADMIN";
     return (
         <div key={comment.id} className="comment" onClick={() => updateView(comment)}>
             <div className="comment-container">
