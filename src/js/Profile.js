@@ -32,6 +32,7 @@ export default function Profile(props) {
     const[errorMessage, setErrorMessage] = useState("");
     const[decodedToken, setDecodedToken] = useState({});
     const[error, setError] = useState("");
+    const[resetImage, setResetImage] = useState(false);
 
     useEffect(() => {        
         getEmployee();
@@ -153,6 +154,12 @@ export default function Profile(props) {
         reader.onload = () => {            
             setSelectedImage(reader.result);
         };
+        setResetImage(false);
+    }
+
+    const doResetImage = () => {
+        setSelectedImage(null);
+        setResetImage(true);
     }
 
     const editProfileOnUI = () => {
@@ -163,6 +170,7 @@ export default function Profile(props) {
         setBirthDate(parseISO(employee.birthDate));
         setTechnologies(employee.technologies);
         setEditmode(true);
+        setResetImage(false);
     }
 
     const blockUser = () => {
@@ -269,14 +277,21 @@ export default function Profile(props) {
                     <div className="row">
                         <div className="col-md-4">
                             <div className="profile-img">
-                                {editMode && selectedImage
-                                ? <img src={`${selectedImage}`} />
+                                {editMode
+                                ? (
+                                    resetImage || selectedImage
+                                    ? <img src={`${selectedImage}`} />
+                                    : <img src={`data:image/jpeg;base64,${employee.photo}`} />
+                                )
                                 : <img src={`data:image/jpeg;base64,${employee.photo}`} />}
                                 {editMode 
-                                ? <div className="file btn btn-lg btn-primary " id="editPhoto">
-                                    Change Photo                           
-                                    <input type="file" name="file" accept="image/*" onChange={uploadPhoto}/>
-                                </div> 
+                                ? <div>
+                                    <div className="file btn btn-lg btn-primary " id="editPhoto">
+                                        Change Photo                           
+                                        <input type="file" name="file" accept="image/*" onChange={uploadPhoto}/>
+                                    </div> 
+                                    <div id="deletePhoto" onClick={()=>doResetImage()}>Delete photo</div>
+                                 </div>
                                 : ""}
                             </div>
                             <div className="profile-work">
@@ -498,7 +513,7 @@ export default function Profile(props) {
                                                 <input onClick={()=>editProfileRequest()} type="submit" className="profile-edit-btn" value="Save" />
                                             </div>
                                             <div className="col-md-2">
-                                                <button onClick={()=>{setEditmode(false); setSelectedImage(null); setErrorMessage("")}} 
+                                                <button onClick={()=>{setEditmode(false); setSelectedImage(null); setErrorMessage(""); setResetImage(false);}} 
                                                     style={{background: '#FF6E4E'}} className="profile-edit-btn">Cancel</button>
                                             </div>
                                         </div>

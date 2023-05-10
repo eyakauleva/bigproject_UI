@@ -16,6 +16,16 @@
     background-color: #1771F1;
 }
 
+#deletePhoto{
+    font-size: 13px;
+    color: #808285;
+    cursor: pointer;
+}
+
+#deletePhoto:hover{
+    color: #1771F1;
+}
+
 .tab-panel .row label, 
 .tab-panel .row input[type="text"], 
 .tab-panel .row p, 
