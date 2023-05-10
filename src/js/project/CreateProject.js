@@ -369,6 +369,7 @@ export default function CreateProject(props) {
                     <div className="col-md-8 item-value">
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <DatePicker value={dueDate} className="item-dd-input" style={{padding:"0"}}onChange={setDueDate} format="do MMMM Y" />
+                            <i className="bi bi-x-lg reset-date" onClick={()=>setDueDate(null)}></i>
                         </MuiPickersUtilsProvider>          
                     </div>
                     <div className="col-md-3 item-name">

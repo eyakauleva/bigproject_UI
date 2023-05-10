@@ -79,6 +79,11 @@
     margin-left: 0%;
 }
 
+.single-task .reset-date{
+    cursor: pointer;
+    margin-left: 1.2%;
+}
+
 
 .single-task .mybtn:hover{
     transition: none;

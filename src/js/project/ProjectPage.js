@@ -488,6 +488,7 @@ export default function ProjectPage(props) {
                       {editMode 
                           ? <MuiPickersUtilsProvider utils={DateFnsUtils}>
                               <DateTimePicker className="date-form" value={dueDate} onChange={setDueDate} format="do MMMM Y HH:mm" />
+                              <i className="bi bi-x-lg reset-date" onClick={()=>setDueDate(null)}></i>
                           </MuiPickersUtilsProvider>
                           : project.dueDate != null 
                           ? <span className="value" style={{marginLeft:"18%"}}>{format(parseISO(project.dueDate), "do MMMM Y HH:mm")}</span> 

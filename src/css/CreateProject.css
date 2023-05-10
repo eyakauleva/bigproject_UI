@@ -109,3 +109,7 @@
 .create-project .drop-zone{
     margin: 0;
 }
+.create-project .reset-date{
+    cursor: pointer;
+    margin-left: 1.2%;
+}

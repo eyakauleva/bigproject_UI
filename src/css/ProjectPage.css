@@ -239,6 +239,12 @@
     object-fit: cover;
     border-radius: 50%;
 }
+
+.single-project .reset-date{
+    cursor: pointer;
+    margin-left: 1.2%;
+}
+
 .rel-ticket-group{
     margin-top: 1%;
 }

@@ -485,6 +485,7 @@ export default function SingleTask(props) {
                                 {editMode 
                                     ? <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                         <DateTimePicker className="date-form" value={dueDate} onChange={setDueDate} format="do MMMM Y HH:mm" />
+                                        <i className="bi bi-x-lg reset-date" onClick={()=>setDueDate(null)}></i>
                                     </MuiPickersUtilsProvider>
                                     : ticket.dueDate != null 
                                     ? <span className="value" style={{marginLeft:"18%"}}>{format(parseISO(ticket.dueDate), "do MMMM Y HH:mm")}</span> 

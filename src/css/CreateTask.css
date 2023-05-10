@@ -30,3 +30,7 @@
     padding: 8px 0;
     width: 80%; 
 }
+.create-task .reset-date{
+    cursor: pointer;
+    margin-left: 1.2%;
+}

@@ -496,6 +496,7 @@ const CreateTask = (props) =>{
                         <div className="col-sm-9">
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <DateTimePicker className="date-form" value={dueDate} onChange={setDueDate} format="do MMMM Y HH:mm" />
+                                <i className="bi bi-x-lg reset-date" onClick={()=>setDueDate(null)}></i>
                             </MuiPickersUtilsProvider> 
                         </div>
                     </div>
