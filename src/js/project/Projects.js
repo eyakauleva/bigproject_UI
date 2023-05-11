@@ -70,6 +70,13 @@ export default function Projects(props) {
             return project.name.toLowerCase().includes(inputText);
         }
     });
+    const getDescription = (description, isList) => {
+        if(description.length >= 200 && !isList){
+            return description.slice(0, 200) + "...";
+        } else {
+            return description;
+        }
+    }
 
     return(
         <div className="projects">
@@ -123,7 +130,7 @@ export default function Projects(props) {
                                         {project.name}
                                     </h4>
                                     <hr className={isList ? 'line line-list' : 'line'}/>
-                                    <p className={isList ? 'group inner list-group-item-text-list' : 'group inner list-group-item-text'}>{project.description}</p>
+                                    <p className={isList ? 'group inner list-group-item-text-list' : 'group inner list-group-item-text'}>{getDescription(project.description, isList)}</p>
                                     <div className={isList ? 'row container-custom-list' : 'row container-custom'}>
                                         <div className="col-xs-12 col-md-6">
                                         </div>

@@ -37,9 +37,8 @@ export default function Dashboard(props) {
 
   useLayoutEffect(() => {
     setDecodedToken(jwt_decode(cookies.token));
-    getTickets();
     getProject();
-
+    
     props.listenCookieChange(() => {
       setFilterSeverity("—");
       setShowOnlyMine(false);
@@ -49,9 +48,11 @@ export default function Dashboard(props) {
       });
       data.tasks = {};
       getProject();
-      getTickets();
     }, 1000);
   }, []);
+  useLayoutEffect(() => {
+    getTickets();
+  }, [project]);
 
   const filterBySeverity = (value) => {
     setFilterSeverity(value);
@@ -127,14 +128,44 @@ export default function Dashboard(props) {
       logout();
     }
   }
-
+  function getProjectByUserId() {
+    let config = {
+      headers: {
+        Authorization: 'Bearer ' + cookies.token
+      }
+    };
+    let decoded_token = jwt_decode(cookies.token);
+    let id = decoded_token.id;
+    axios
+      .get("/project/" + id + "/employee/", config)
+      .then(response => response.data)
+      .then((data) => {
+        if (data) {
+           setProject(data[0]);
+           document.cookie = "project=" + data[0].id + "; path=/";
+          //  window.location.reload();
+        }
+      })
+      .catch((error) => {
+        let code = error.toJSON().status;
+        if (code === 400 && error.response.data !== null)
+          alert(error.response.data.message);
+        else if(code===401){
+          document.cookie = "expired=true; path=/";
+        }
+        else if(code===403)
+            alert("Access is denied"); 
+        else if(code!==undefined && code!==null) 
+            alert('Internal server error');
+      });
+  }
   function getProject() {
     let currentProjectId = document.cookie
       .split("; ")
       .find((row) => row.startsWith("project="))
       ?.split("=")[1];
-
-    if (currentProjectId != undefined) {
+    let decoded_token = jwt_decode(cookies.token);
+    if (currentProjectId !== undefined) {
       let config = {
         headers: {
           Authorization: 'Bearer ' + cookies.token
@@ -146,7 +177,12 @@ export default function Dashboard(props) {
         .then(response => response.data)
         .then((data) => {
           if (data) {
-            setProject(data);
+            let user = data.employees.find(employee => employee.user.id == decoded_token.id);
+            if(user) {
+              setProject(data);
+            } else {
+              getProjectByUserId();
+            }
           }
         })
         .catch((error) => {
@@ -169,8 +205,10 @@ export default function Dashboard(props) {
       .split("; ")
       .find((row) => row.startsWith("project="))
       ?.split("=")[1];
-
-    if (currentProjectId != undefined) {
+    if(project.id != undefined && project.id != currentProjectId){
+      return;
+    }
+    if (currentProjectId !== undefined) {
       data.columnOrder.map((columnName) => {
         data.columns[columnName].taskIds = []
       });
