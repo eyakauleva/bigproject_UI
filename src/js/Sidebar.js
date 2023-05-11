@@ -12,7 +12,7 @@ import CreateTask from './single_task/CreateTask.js';
 
 var logout;
 export {logout}
-function Sidebar(props){
+export default function Sidebar(props){
     const[cookies] = useCookies(["token", "employeeId", "project"]);
     const[clientId, setClientId] = useState();
     const[showModal, setShowModal] = useState(false);
@@ -73,7 +73,7 @@ function Sidebar(props){
               if(data){
                 let projects = [];
                 data.map(order => projects.push(order.project));
-                setProjects(projects.sort((a, b) => a.id > b.id ? 1 : -1)); 
+                setProjects(projects.sort((a, b) => a.id > b.id ? 1 : -1));
               } 
                             
             })
@@ -182,5 +182,3 @@ function Sidebar(props){
         </div>               
     );
 }
-
-export default Sidebar;
