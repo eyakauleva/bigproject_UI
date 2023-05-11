@@ -98,7 +98,22 @@ export default function Sidebar(props){
         
         props.navigate('/login'); 
     }
+    const getProjects = () => {
+        const decodedToken = jwt_decode(cookies.token);
 
+        return projects.map(project => {
+            let currentProjectId = document.cookie
+                    .split("; ")
+                    .find((row) => row.startsWith("project="))
+                    ?.split("=")[1];
+            let user = project.employees.find(employee => employee.user.id == decodedToken.id);
+            if(user) {
+                if(currentProjectId != project.id)
+                    return <option value={project.id}>{project.name}</option>;
+                else return <option selected value={project.id}>{project.name}</option>;
+            }
+        })
+    }
     return(    
         <div className="sidenav">
             <div className="up-wrapper">
@@ -106,15 +121,7 @@ export default function Sidebar(props){
                 <div style={{width:"85%"}}> 
                     <Form.Select onChange={e => document.cookie = "project=" + e.target.value + "; path=/"}>                
                     {
-                        projects.map(project => {
-                            let currentProjectId = document.cookie
-                                    .split("; ")
-                                    .find((row) => row.startsWith("project="))
-                                    ?.split("=")[1];
-                            if(currentProjectId != project.id)
-                                return <option value={project.id}>{project.name}</option>;
-                            else return <option selected value={project.id}>{project.name}</option>;
-                        })
+                        getProjects()
                     }
                     </Form.Select> 
                 </div>
