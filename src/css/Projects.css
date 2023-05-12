@@ -250,6 +250,7 @@
     margin: 2% 2% 10%;
     min-height: 100px;
     max-height: 100px;
+    word-wrap: break-word;
   }
   .list-group-item-text-list {
     margin: 1%;

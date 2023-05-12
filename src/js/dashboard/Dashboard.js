@@ -128,7 +128,7 @@ export default function Dashboard(props) {
       logout();
     }
   }
-  function getProjectByUserId() {
+  function getProjectByUserId(project) {
     let config = {
       headers: {
         Authorization: 'Bearer ' + cookies.token
@@ -137,13 +137,17 @@ export default function Dashboard(props) {
     let decoded_token = jwt_decode(cookies.token);
     let id = decoded_token.id;
     axios
-      .get("/project/" + id + "/employee/", config)
+      .get("/orders/" + id + "/project/", config)
       .then(response => response.data)
       .then((data) => {
         if (data) {
-           setProject(data[0]);
-           document.cookie = "project=" + data[0].id + "; path=/";
-          //  window.location.reload();
+           let userProject = data.find((order) => order.project.id == project.id)
+           if(userProject){
+            setProject(project);
+           } else{
+            setProject(data[0].project);
+            document.cookie = "project=" + data[0].project.id + "; path=/";
+           }
         }
       })
       .catch((error) => {
@@ -159,6 +163,7 @@ export default function Dashboard(props) {
             alert('Internal server error');
       });
   }
+
   function getProject() {
     let currentProjectId = document.cookie
       .split("; ")
@@ -177,11 +182,10 @@ export default function Dashboard(props) {
         .then(response => response.data)
         .then((data) => {
           if (data) {
-            let user = data.employees.find(employee => employee.user.id == decoded_token.id);
-            if(user) {
-              setProject(data);
+            if(decoded_token.role=="ROLE_CUSTOMER") { 
+              getProjectByUserId(data);
             } else {
-              getProjectByUserId();
+              setProject(data);
             }
           }
         })
@@ -242,7 +246,9 @@ export default function Dashboard(props) {
                 };
                 const { tasks } = data;
                 tasks[ticket_id_toString] = task;
-                data.columns[ticket.status].taskIds.push(task.id);
+                if(!data.columns[ticket.status].taskIds.find(taskId => taskId == task.id)){
+                   data.columns[ticket.status].taskIds.push(task.id);
+                }
               })
             setSearchData(_data);
           }

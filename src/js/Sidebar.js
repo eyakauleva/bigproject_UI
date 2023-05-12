@@ -51,7 +51,7 @@ function Sidebar(props){
             .get("/employee/user/" + decodedToken.id, config)
             .then(response => response.data)
             .then((data) =>{
-                if(data.currentProjects!=null){
+                if(data.currentProjects != null){
                     setProjects(data.currentProjects.sort((a, b) => a.id > b.id ? 1 : -1));
                 }                  
             })
@@ -99,19 +99,14 @@ function Sidebar(props){
         props.navigate('/login'); 
     }
     const getProjects = () => {
-        const decodedToken = jwt_decode(cookies.token);
-
+        let currentProjectId = document.cookie
+                                        .split("; ")
+                                        .find((row) => row.startsWith("project="))
+                                        ?.split("=")[1];
         return projects.map(project => {
-            let currentProjectId = document.cookie
-                    .split("; ")
-                    .find((row) => row.startsWith("project="))
-                    ?.split("=")[1];
-            let user = project.employees.find(employee => employee.user.id == decodedToken.id);
-            if(user) {
-                if(currentProjectId != project.id)
-                    return <option value={project.id}>{project.name}</option>;
-                else return <option selected value={project.id}>{project.name}</option>;
-            }
+            if(currentProjectId != project.id)
+                return <option value={project.id}>{project.name}</option>;
+            else return <option selected value={project.id}>{project.name}</option>;
         })
     }
     return(    

@@ -53,7 +53,37 @@ export default function SingleTask(props) {
       logout();
     }
   }
-
+  const checkCustomer = (projectId) => {
+    let decodedToken = jwt_decode(cookies.token);
+    let config = {
+      headers: {
+          Authorization: 'Bearer ' + cookies.token
+      }
+    };
+    axios
+    .get("/orders/" + decodedToken.id + "/project", config)
+    .then(response => response.data)
+    .then((data) =>{
+        if(data){
+            let projects = [];
+            data.map(order => projects.push(order.project));
+            let project = projects.find(proj => proj.id == projectId);
+            if(project){
+              return;
+            }
+            props.navigate("/");  
+        }         
+    })
+    .catch((error) => {               
+        let code = error.status;
+        if(code===401){
+            document.cookie = "expired=true; path=/";
+        }
+        else if(code!==undefined && code!==null) {
+        alert('Internal server error');
+    }
+    });   
+  }
   const getTicket = () => {
     if(id){
         let config = {
@@ -65,19 +95,27 @@ export default function SingleTask(props) {
         axios
         .get("/project/tickets/" + id, config)
         .then(response => response.data)
-        .then(data =>{
-            if(data){
-                setTicket(data); 
-                setProjectId(data.ticket.id);
+        .then(_data => {
+            if(_data){
+                let decoded_token = jwt_decode(cookies.token);
+                if(decoded_token.role === "ROLE_CUSTOMER"){
+                    checkCustomer(_data.ticket.id);
+                } else {
+                    setTicket(_data); 
+                }
+                setProjectId(_data.ticket.id);
                 setDecodedToken(jwt_decode(cookies.token));
-                setEstimatedTime(data.estimatedTime);  
+                setEstimatedTime(_data.estimatedTime);  
                 
                 axios
-                .get("/project/tickets/" + data.ticket.id, config)
+                .get("/project/tickets/" + _data.ticket.id, config)
                 .then(response => response.data)
                 .then((data) => {
                     if (data) {
                         setProject(data);
+                        if(decoded_token.role === "ROLE_CUSTOMER"){
+                            setTicket(_data);
+                        }
                     }
                 })
                 .catch((error) => {

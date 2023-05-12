@@ -5,6 +5,7 @@ import { IconContext } from 'react-icons';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import axios from "axios";
+import jwt_decode from "jwt-decode";
 
 import {logout} from '../Sidebar.js';
 import '../../css/Projects.css';
@@ -15,9 +16,13 @@ export default function Projects(props) {
     const[projects, setProjects] = useState([]);
     const[inputText, setInputText] = useState("");
     const[error, setError] = useState("");
-
-    useLayoutEffect(() => {        
-        getProjects();
+    let decodedToken;
+    useLayoutEffect(() => {  
+        decodedToken = jwt_decode(cookies.token);
+        if(decodedToken.role!=="ROLE_CUSTOMER")      
+            getProjects();
+        else
+            getProjectsForCustomer();
     }, []);
 
     const displayError = () => {
@@ -26,6 +31,34 @@ export default function Projects(props) {
           alert(error);
           logout();
         }
+    }
+    const getProjectsForCustomer = () => {
+        let config = {
+            headers: {
+                Authorization: 'Bearer ' + cookies.token
+            }
+        };
+
+        axios
+            .get("/orders/" + decodedToken.id + "/project", config)
+            .then(response => response.data)
+            .then((data) =>{
+              if(data){
+                let projects = [];
+                data.map(order => projects.push(order.project));
+                setProjects(projects.sort((a, b) => a.id > b.id ? 1 : -1)); 
+              } 
+                            
+            })
+            .catch((error) => {               
+                let code = error.status;
+                if(code===401){
+                    document.cookie = "expired=true; path=/";
+                }
+                else if(code!==undefined && code!==null) {
+                alert('Internal server error');
+            }
+            });
     }
 
     const getProjects = () => {

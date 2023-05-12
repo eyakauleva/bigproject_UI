@@ -45,8 +45,9 @@ export default function ProjectPage(props) {
     const[finalFile, setFinalFile] = useState(null);
 
     useLayoutEffect(() => {
+      checkCustomer();
       setDecodedToken(jwt_decode(cookies.token)); 
-      getProject(); 
+      getProject();  
     }, []);
 
     const displayError = () => {
@@ -55,6 +56,37 @@ export default function ProjectPage(props) {
         alert(error);
         logout();
       }
+    }
+    const checkCustomer = () => {
+      let decodedToken = jwt_decode(cookies.token);
+      let config = {
+        headers: {
+            Authorization: 'Bearer ' + cookies.token
+        }
+      };
+      axios
+      .get("/orders/" + decodedToken.id + "/project", config)
+      .then(response => response.data)
+      .then((data) =>{
+          if(data){
+              let projects = [];
+              data.map(order => projects.push(order.project));
+              let project = projects.find(proj => proj.id == id);
+              if(project){
+                return;
+              }
+              props.navigate("/");  
+          }         
+      })
+      .catch((error) => {               
+          let code = error.status;
+          if(code===401){
+              document.cookie = "expired=true; path=/";
+          }
+          else if(code!==undefined && code!==null) {
+          alert('Internal server error');
+      }
+      });   
     }
 
     const getProject = () => {
