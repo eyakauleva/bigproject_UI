@@ -247,6 +247,9 @@
 
 .rel-ticket-group{
     margin-top: 1%;
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .comment-image-container .photo{
