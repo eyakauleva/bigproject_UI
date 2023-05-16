@@ -137,7 +137,11 @@ export default function Sidebar(props){
             </a>
             <a href='/app/users' className='action'>
                 <i className="bi bi-people"></i>
-                <span>Employees</span>
+                {
+                    decodedToken.role==="ROLE_MANAGER" || decodedToken.role==="ROLE_ADMIN"
+                    ? <span>Users</span>
+                    : <span>Employees</span>
+                }
             </a>
             {
                 cookies.project!==undefined

@@ -111,7 +111,7 @@ export default function Users(props) {
             <div className="container">
                 <div className="well well-sm row" style={{fontFamily:"sans-serif"}}>
                     <strong className="col-md-1">Display:</strong>
-                    <div className="btn-group col-md-4">
+                    <div className="btn-group col-md-1">
                        <a href="#" id="list" className="btn-custom btn-custom-default btn-sm" onClick={() => setIsList(true)}>
                            <IconContext.Provider
                                 value={{ 
@@ -134,6 +134,13 @@ export default function Users(props) {
                            </IconContext.Provider>
                             Grid
                         </a>
+                    </div>
+                    <div className="col-md-3">
+                    {
+                        decodedToken.role === "ROLE_ADMIN" || decodedToken.role === "ROLE_MANAGER"
+                        ? <button className="add-btn"><a href="/app/clients">Clients</a></button>
+                        : ''
+                    }  
                     </div>
                     <div className="col-md-3">
                     {

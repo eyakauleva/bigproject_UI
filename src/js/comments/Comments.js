@@ -2,6 +2,7 @@ import { useState, useLayoutEffect } from 'react';
 import axios from "axios";
 import Comment from './Comment';
 import CommentForm from './CommentForm';
+import jwt_decode from "jwt-decode";
 
 const Comments = ({currentTicketId}) =>{
     const[allCommentsForCurentTicket, setAllCommentsForCurentTicket] = useState([]);
@@ -12,7 +13,9 @@ const Comments = ({currentTicketId}) =>{
 
     useLayoutEffect(() => {
         getCommentsByTicketId(currentTicketId)
-    },[])
+    },[]);
+
+
     const findCookieByName = (cookieName) => {
         return document.cookie
                     .split("; ")
@@ -215,7 +218,8 @@ const Comments = ({currentTicketId}) =>{
                 ))
        :<div>There are no comments yet on this ticket</div>}
         <hr/>
-        {!show && <button type="button" className="btn btn-outline-primary btn-comment" onClick={() => setShow(!show)}>
+        {!show && jwt_decode(token).role != "ROLE_CUSTOMER"
+            && <button type="button" className="btn btn-outline-primary btn-comment" onClick={() => setShow(!show)}>
                     <i className="bi bi-chat"></i>  Comment
                   </button>
         }

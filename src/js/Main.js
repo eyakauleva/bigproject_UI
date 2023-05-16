@@ -9,6 +9,7 @@ import SingleTask from './single_task/SingleTask';
 import Projects from './project/Projects';
 import Orders from './Orders';
 import Users from './Users';
+import Clients from './Clients';
 import ProjectPage from './project/ProjectPage';
 import CreateProject from './project/CreateProject';
 import Statistics from './statistics/Statistics';
@@ -94,6 +95,12 @@ export default function Main(){
                 <Route path="orders/:id/create" element={
                     <OnlyManagerAdminRoute>
                         <CreateProject navigate={navigate} />
+                    </OnlyManagerAdminRoute>
+                }/>
+
+                <Route path="clients" element={
+                    <OnlyManagerAdminRoute>
+                        <Clients navigate={navigate} />
                     </OnlyManagerAdminRoute>
                 }/>
             </Routes> 
