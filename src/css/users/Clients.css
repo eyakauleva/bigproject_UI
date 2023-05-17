@@ -13,13 +13,15 @@
     color:black !important;
     box-shadow:none !important;
 }
-.clients .users-list{
+.clients .users-list,
+.clients .item.list-group-item:nth-of-type(odd){
     color:white;
     background: rgba(0, 0, 0, 0.12);
     box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.3) inset;
     cursor: pointer;
 }
-.clients .users-list:hover {
+.clients .users-list:hover,
+.clients .item.list-group-item:nth-of-type(odd):hover {
     padding: 10px 15px;
     transition: .3s all;
     color:white;

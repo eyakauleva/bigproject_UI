@@ -347,9 +347,9 @@ export default function ClientProfileModal(props) {
             <div className="buttons">
                 <div>
                 {
-                    decodedToken.role === "ROLE_ADMIN" && (user.status !== "BLOCKED" || props.client.status !== "BLOCKED")
+                    decodedToken.role === "ROLE_ADMIN" && user.status !== "BLOCKED"
                     ? <button onClick={()=>blockUser()} className="btn btn-outline-danger"><span>Block user</span></button>
-                    : decodedToken.role === "ROLE_ADMIN" && (user.status === "BLOCKED" || props.client.status === "BLOCKED")
+                    : decodedToken.role === "ROLE_ADMIN" && user.status === "BLOCKED"
                     ? <button onClick={activateUser}
                         className="btn btn-outline-success"><span>Activate</span></button>
                     : editMode == true && decodedToken.id === user.id

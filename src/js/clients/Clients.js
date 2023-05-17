@@ -29,8 +29,13 @@ export default function Clients(props) {
             }
         };
 
+        let url = "/user/clients";
+        if(jwt_decode(cookies.token).role==="ROLE_ADMIN"){
+            url += "?showBlocked=true";
+        }
+
         await axios
-        .get("/user/clients", config)
+        .get(url, config)
         .then(response => response.data)
         .then((data) =>{             
             if(data){
@@ -200,15 +205,19 @@ export default function Clients(props) {
                                 <div className="col-md-2">
                                     <span className="name-list-not-full">Phone</span>
                                 </div>
-                                <div className="col-md-2">
-                                    <span className="name-list-not-full">Actions</span>
-                                </div>
+                                {
+                                    decodedToken.role==="ROLE_ADMIN"
+                                    && <div className="col-md-2">
+                                        <span className="name-list-not-full">Actions</span>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
                 {
                   filteredClients.map((client) =>
-                    <div className='item list-group-item users-list' onClick={() => {setShowModal(true); setClientId(client.id); setModalClient(client);}}>  
+                    <div className='item list-group-item users-list' style={client.status == 'BLOCKED' ? {opacity: 0.33} : {}}
+                        onClick={() => {setShowModal(true); setClientId(client.id); setModalClient(client);}}>  
                             <div className="row">
                                 <div className="user-wrapper custom-text">
                                     <div className="col-md-2">
@@ -225,27 +234,30 @@ export default function Clients(props) {
                                         <i class="bi bi-phone"></i>
                                         <span className="item-content">{client.phone}</span>
                                     </div>
-                                    <div className="col-md-2">
-                                        <div className="button-group-modification">
-                                        {client.status !== "DEACTIVATED" &&
-                                            <button onClick={(event) => {deactivateUser(event, client.id)}} className="deactivate-btn-cl">
-                                                    <span style={{fontSize:"22px"}}><i className="bi bi-person-dash-fill"></i></span>
-                                            </button>
-                                        }
-                                        </div>
-                                        <div className="button-group-modification">
-                                            {client.status !== "BLOCKED" ?
-                                                <button onClick={(event) => {blockUser(event, client.id)}} className="block-btn-cl">
-                                                    <span style={{fontSize:"22px"}}><i className="bi bi-person-x-fill"></i></span>
-                                                </button>
-                                                :
-                                                <button onClick={(event) => {activateUser(event, client.id)}} className="activate-btn-cl">
-                                                    <span style={{fontSize:"22px"}}><i className="bi bi-person-dash-fill"></i></span>
+                                    {
+                                        decodedToken.role==="ROLE_ADMIN"
+                                        && <div className="col-md-2">
+                                            <div className="button-group-modification">
+                                            {client.status !== "DEACTIVATED" &&
+                                                <button onClick={(event) => {deactivateUser(event, client.id)}} className="deactivate-btn-cl">
+                                                        <span style={{fontSize:"22px"}}><i className="bi bi-person-dash-fill"></i></span>
                                                 </button>
                                             }
-                                             
+                                            </div>
+                                            <div className="button-group-modification">
+                                                {client.status !== "BLOCKED" ?
+                                                    <button onClick={(event) => {blockUser(event, client.id)}} className="block-btn-cl">
+                                                        <span style={{fontSize:"22px"}}><i className="bi bi-person-x-fill"></i></span>
+                                                    </button>
+                                                    :
+                                                    <button onClick={(event) => {activateUser(event, client.id)}} className="activate-btn-cl">
+                                                        <span style={{fontSize:"22px"}}><i className="bi bi-person-dash-fill"></i></span>
+                                                    </button>
+                                                }
+                                                
+                                            </div>
                                         </div>
-                                    </div>
+                                    }
                                 </div>
                             </div>
                     </div>)

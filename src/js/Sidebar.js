@@ -137,13 +137,9 @@ export default function Sidebar(props){
             </a>
             <a href='/app/users' className='action'>
                 <i className="bi bi-people"></i>
-                {
-                    decodedToken.role==="ROLE_MANAGER" || decodedToken.role==="ROLE_ADMIN"
-                    ? <span>Users</span>
-                    : <span>Employees</span>
-                }
+                <span>Employees</span>
             </a>
-            { decodedToken.role==="ROLE_MANAGER" || decodedToken.role==="ROLE_ADMIN" &&
+            { (decodedToken.role==="ROLE_MANAGER" || decodedToken.role==="ROLE_ADMIN") &&
             <a href='/app/clients' className='action'>
                 <i class="bi bi-person-lines-fill"></i>
                 <span>Clients</span>
