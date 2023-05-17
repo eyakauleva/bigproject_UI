@@ -10,7 +10,7 @@ import jwt_decode from "jwt-decode";
 import {logout} from '../Sidebar.js';
 
 import ChooseEmployeeModal from '../dashboard/ChooseEmployeeModal.js'
-import '../../css/SingleTask.css';
+import '../../css/task/SingleTask.css';
 import Comments from '../comments/Comments.js';
 import TimeTrackingModal from './TimeTrackingModal.js'
 

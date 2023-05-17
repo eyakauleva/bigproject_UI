@@ -8,7 +8,7 @@ import axios from "axios";
 import jwt_decode from "jwt-decode";
 
 import {logout} from '../Sidebar.js';
-import '../../css/Projects.css';
+import '../../css/project/Projects.css';
 
 export default function Projects(props) {
     const[cookies] = useCookies(["token"]);

@@ -3,7 +3,7 @@ import { Droppable } from '@hello-pangea/dnd';
 
 import Task from './Task';
 
-import '../../css/Column.css';
+import '../../css/dashboard/Column.css';
 
 export default class Column extends React.Component {
   render() {

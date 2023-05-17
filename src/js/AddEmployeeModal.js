@@ -8,7 +8,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import { format } from "date-fns";
 
 import {logout} from './Sidebar.js';
-import '.././css/Users.css';
+import '.././css/users/Users.css';
 
 export default function AddEmployeeModal(props) {
   const[cookies, setCookie, removeCookie] = useCookies(["token"]);

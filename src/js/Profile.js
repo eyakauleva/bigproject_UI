@@ -333,23 +333,20 @@ export default function Profile(props) {
                                                     <span class="hidden_span">Block User</span>
                                                 </button>
                                                 : decodedToken.role === "ROLE_ADMIN" && user.status === "BLOCKED" && decodedToken.id !== user.id
-                                                ? 
+                                                &&
                                                 <button onClick={activateUser} style={{background:"#70E852"}} className="block-btn">
                                                     <span class="hidden_hover" style={{fontSize:"25px"}}><i className="bi bi-person-check-fill"></i></span>
                                                     <span class="hidden_span">Activate user</span>
                                                 </button>
-                                                : ''
                                             }
                                         </div>
                                         <div className="button-group-modification">
                                             {                                       
                                                 decodedToken.role === "ROLE_ADMIN" && user.status !== "DEACTIVATED" && decodedToken.id !== user.id
-                                                ?<button onClick={deactivateUser} className="deactivate-btn">
+                                                &&<button onClick={deactivateUser} className="deactivate-btn">
                                                         <span class="hidden_hover" style={{fontSize:"25px"}}><i className="bi bi-person-dash"></i></span>
                                                         <span class="hidden_span">Deactivate</span>
-                                                    </button>
-                                                    
-                                                : ""
+                                                    </button>      
                                             }
                                         </div>
                                         <div className="button-group-modification">

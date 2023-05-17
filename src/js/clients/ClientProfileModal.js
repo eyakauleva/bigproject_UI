@@ -4,8 +4,8 @@ import axios from "axios";
 import { useCookies } from 'react-cookie';
 import jwt_decode from "jwt-decode";
 
-import {logout} from './Sidebar.js';
-import '.././css/ClientProfileModal.css';
+import {logout} from './../Sidebar.js';
+import '../../css/users/ClientProfileModal.css';
 
 var clearErrorMessage;
 var noEditMode;
@@ -35,7 +35,6 @@ export default function ClientProfileModal(props) {
         if(props.id !== undefined) 
             getClient();
     }, [props.id]);
-
     const displayError = () => {
         if(error!=="")
         {
@@ -91,10 +90,14 @@ export default function ClientProfileModal(props) {
                 props.onHide();
                 alert("User is blocked");
                 getClient();
-                props.getOrders();
+                console.log(typeof props.getOrders);
+                if(typeof props.getOrders === 'function'){
+                    props.getOrders();
+                }
+                props.getClients();
             })
             .catch((error) => {
-                let code = error.toJSON().status;
+                let code = error.status;
                 if(code===400 && error.response.data !== null)
                     setErrorMessage(error.response.data.message);
                 else if(code===401){
@@ -125,7 +128,11 @@ export default function ClientProfileModal(props) {
                 props.onHide();
                 alert("User is deactivated");
                 getClient();
-                props.getOrders();
+                if(typeof props.getOrders === 'function'){
+                    props.getOrders();
+                }
+                props.getClients();
+                
             })
             .catch((error) => {
                 let code = error.toJSON().status;
@@ -159,7 +166,10 @@ export default function ClientProfileModal(props) {
                 props.onHide();
                 alert("User is activated");
                 getClient();
-                props.getOrders();
+                if(typeof props.getOrders === 'function'){
+                    props.getOrders();
+                }
+                props.getClients();
             })
             .catch((error) => {
                 let code = error.toJSON().status;
@@ -246,8 +256,12 @@ export default function ClientProfileModal(props) {
             <div className="col-md-5">
             {
                 !editMode && decodedToken.id === user.id
-                ? <button onClick={()=>editProfileOnUI()} className="mybtn"><span>Edit profile</span></button>
-                : ''
+                && <div className="cl-prof-btn">
+                        <button onClick={editProfileOnUI} className="mybtn">
+                            <span className="hidden_hover" style={{fontSize:"25px"}}><i className="bi bi-pencil-square" ></i></span>
+                            <span className="hidden_span">Edit Profile</span>
+                        </button>
+                   </div>
             }
             </div>
         </div>
@@ -331,27 +345,25 @@ export default function ClientProfileModal(props) {
                 </div>
             </div>
             <div className="buttons">
-                <div className="col-md-1"></div> 
-                <div className="col-md-4">
+                <div>
                 {
-                    decodedToken.role === "ROLE_ADMIN" && user.status !== "BLOCKED"
-                    ? <button onClick={()=>blockUser()} className="block"><span>Block user</span></button>
-                    : decodedToken.role === "ROLE_ADMIN" && user.status === "BLOCKED"
-                    ? <button onClick={activateUser} style={{background:"#70E852"}}
-                        className="block"><span>Activate</span></button>
+                    decodedToken.role === "ROLE_ADMIN" && (user.status !== "BLOCKED" || props.client.status !== "BLOCKED")
+                    ? <button onClick={()=>blockUser()} className="btn btn-outline-danger"><span>Block user</span></button>
+                    : decodedToken.role === "ROLE_ADMIN" && (user.status === "BLOCKED" || props.client.status === "BLOCKED")
+                    ? <button onClick={activateUser}
+                        className="btn btn-outline-success"><span>Activate</span></button>
                     : editMode == true && decodedToken.id === user.id
-                    ? <input onClick={()=>editProfileRequest()} type="submit" className="submit-edit" value="Save" />
+                    ? <input onClick={()=>editProfileRequest()} type="submit" className="btn btn-outline-primary" value="Update" />
                     : ''
                 }
                 </div>
-                <div className="col-md-4">
+                <div>
                 {
                     decodedToken.role === "ROLE_ADMIN" && user.status !== "DEACTIVATED"
-                    ? <button onClick={()=>deactivateUser()} className="block deactivate"><span>Deactivate</span></button>
+                    ? <button onClick={()=>deactivateUser()} className="btn btn-outline-warning"><span>Deactivate</span></button>
                     : editMode == true && decodedToken.id === user.id
-                    ? <button onClick={()=>{setEditmode(false); setErrorMessage("")}} 
-                                style={{background: '#FF6E4E'}} className="submit-edit">Cancel</button>
-                    : ''
+                    && <button onClick={()=>{setEditmode(false); setErrorMessage("")}} 
+                               className="btn btn-outline-danger">Cancel</button>
                 }
                 </div>
             </div>          

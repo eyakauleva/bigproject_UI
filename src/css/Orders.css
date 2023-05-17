@@ -97,3 +97,6 @@
     cursor: pointer;
     color: #58595B;
 }
+.orders .first-item:hover{
+  background: white;
+}

@@ -5,7 +5,7 @@ import { useCookies } from 'react-cookie';
 import jwt_decode from "jwt-decode";
 import Form from 'react-bootstrap/Form';
 
-import ClientProfileModal, {clearErrorMessage, noEditMode} from './ClientProfileModal.js';
+import ClientProfileModal, {clearErrorMessage, noEditMode} from './clients/ClientProfileModal';
 import ChangePasswordModal from './ChangePasswordModal.js';
 import '.././css/Sidebar.css';
 import CreateTask from './single_task/CreateTask.js';
@@ -143,6 +143,12 @@ export default function Sidebar(props){
                     : <span>Employees</span>
                 }
             </a>
+            { decodedToken.role==="ROLE_MANAGER" || decodedToken.role==="ROLE_ADMIN" &&
+            <a href='/app/clients' className='action'>
+                <i class="bi bi-person-lines-fill"></i>
+                <span>Clients</span>
+            </a> 
+            }
             {
                 cookies.project!==undefined
                 ? <a href='/app/dashboard' className='action'>

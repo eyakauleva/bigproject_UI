@@ -14,7 +14,7 @@ import jwt_decode from "jwt-decode";
 import {logout} from '../Sidebar.js';
 import ProjectEmployeesModal, {clearInput} from './ProjectEmployeesModal.js';
 import ChooseEmployeeModal from '../dashboard/ChooseEmployeeModal.js'
-import '../../css/ProjectPage.css';
+import '../../css/project/ProjectPage.css';
 import Comments from '../comments/Comments.js';
 
 export default function ProjectPage(props) {

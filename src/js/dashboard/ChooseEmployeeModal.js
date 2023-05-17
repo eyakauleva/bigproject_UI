@@ -6,7 +6,7 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 
 import {logout} from '../Sidebar.js'
-import '../../css/ChooseEmployeeModal.css';
+import '../../css/users/ChooseEmployeeModal.css';
 
 export default function ChooseEmployeeModal(props) {
   const[cookies] = useCookies(["token"]);

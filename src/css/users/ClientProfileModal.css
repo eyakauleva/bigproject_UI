@@ -1,0 +1,46 @@
+.client-profile .footer{
+    width: 100%;
+    display: flex;
+    justify-content: end;
+}
+
+.client-profile .submit-edit{
+    border: none;
+    border-radius: 0.3rem;
+    width: 100%;
+    padding: 5px 2%;
+    font-weight: 600;
+    color: #FFFFFF;
+    background-color: #1771F1;
+    cursor: pointer;
+}
+
+.client-profile input[type="text"]{
+    border:1px solid #D5D5D5;
+    border-radius: 5px;
+    padding:2px 10px;
+    width: 90%;
+}
+
+.client-profile .error{
+    font-size: 12px;
+    color: red;
+}
+
+.client-profile .footer{
+    display: flex;
+    flex-direction: column;
+}
+
+.client-profile .buttons{
+    display: flex;
+    justify-content: right;
+    column-gap: 10px;
+}
+.client-profile  .btn-outline-warning:hover{
+    color: white;
+}
+.client-profile .cl-prof-btn{
+    margin-right: 8%;
+    float: right;
+}

@@ -6,7 +6,7 @@ import { useCookies } from 'react-cookie';
 import InputGroup from 'react-bootstrap/InputGroup';
 
 import {logout} from '../Sidebar.js';
-import '../../css/ProjectEmployeesModal.css';
+import '../../css/project/ProjectEmployeesModal.css';
 
 var clearInput;
 export {clearInput}

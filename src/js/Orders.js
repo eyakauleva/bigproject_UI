@@ -6,7 +6,7 @@ import { format, parseISO } from "date-fns";
 import jwt_decode from "jwt-decode";
 
 import {logout} from './Sidebar.js';
-import ClientProfileModal from './ClientProfileModal.js';
+import ClientProfileModal from './clients/ClientProfileModal.js';
 import '.././css/Orders.css';
 
 export default function Orders(props) {
@@ -99,7 +99,7 @@ export default function Orders(props) {
                 <div className="well well-sm row" style={{fontFamily:"sans-serif"}}>
                     {/* <div className="col-md-1">Filter by:</div> */}
                 </div> 
-                <div className='item  list-group-item'> 
+                <div className='item list-group-item first-item'> 
                     <div className='order-wrapper' style={{fontWeight:"bold"}}>
                         <div className="col-md-1"></div>                            
                         <div className="col-md-2">Create date</div>

@@ -8,7 +8,7 @@ import Select from 'react-select';
 import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import jwt_decode from "jwt-decode";
-import '../../css/CreateTask.css';
+import '../../css/task/CreateTask.css';
 
 const CreateTask = (props) =>{
     const [cookies] = useCookies(["token", "project", "employeeId"]);

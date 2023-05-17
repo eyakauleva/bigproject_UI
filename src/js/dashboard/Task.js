@@ -2,7 +2,7 @@ import React from 'react';
 import { Draggable } from '@hello-pangea/dnd';
 import { format, parseISO, differenceInHours, differenceInMinutes } from "date-fns";
 
-import '../../css/Task.css';
+import '../../css/task/Task.css';
 
 export default class Task extends React.Component {
 

@@ -8,8 +8,8 @@ import jwt_decode from "jwt-decode";
 import { logout } from '../Sidebar.js';
 import Column from './Column';
 import SearchBar from "./SearchBar";
-import '../../css/Dashboard.css';
-import '../../css/Projects.css';
+import '../../css/dashboard/Dashboard.css';
+import '../../css/project/Projects.css';
 import ProjectEmployeesModal, { clearInput } from '../project/ProjectEmployeesModal.js';
 
 export default function Dashboard(props) {

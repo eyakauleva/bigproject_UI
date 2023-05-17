@@ -11,7 +11,7 @@ import Select from 'react-select';
 
 import {logout} from '../Sidebar.js';
 import ChooseEmployeeModal from '../dashboard/ChooseEmployeeModal.js'
-import '../../css/CreateProject.css';
+import '../../css/project/CreateProject.css';
 
 export default function CreateProject(props) {
     const[cookies, setCookie, removeCookie] = useCookies(["token", "employeeId"]);

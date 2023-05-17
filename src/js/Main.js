@@ -9,7 +9,7 @@ import SingleTask from './single_task/SingleTask';
 import Projects from './project/Projects';
 import Orders from './Orders';
 import Users from './Users';
-import Clients from './Clients';
+import Clients from './clients/Clients';
 import ProjectPage from './project/ProjectPage';
 import CreateProject from './project/CreateProject';
 import Statistics from './statistics/Statistics';
