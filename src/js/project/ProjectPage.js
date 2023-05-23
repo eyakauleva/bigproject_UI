@@ -18,7 +18,7 @@ import '../../css/project/ProjectPage.css';
 import Comments from '../comments/Comments.js';
 
 export default function ProjectPage(props) {
-    const[cookies] = useCookies(["token", "employeeId", "project"]);
+    const[cookies] = useCookies(["token", "employeeId"]);
     const[project, setProject] = useState({}); 
     const[employees, setEmployees] = useState([]);
     const[name, setName] = useState(""); 

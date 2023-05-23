@@ -9,7 +9,7 @@ function Authorization(props){
   const[username, setUsername] = useState('');
   const[password, setPassword] = useState('');
   const[errorMessage, setErrorMessage] = useState('');
-  const[cookies] = useCookies(["token", "url", "employeeId", "project"]);
+  const[cookies] = useCookies(["token", "url", "employeeId"]);
 
   const handleUserInput = (e) => {
     const name = e.target.name;

@@ -169,7 +169,10 @@ export default function Dashboard(props) {
       .split("; ")
       .find((row) => row.startsWith("project="))
       ?.split("=")[1];
-    let decoded_token = jwt_decode(cookies.token);
+    let decoded_token = jwt_decode(document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("token="))
+      ?.split("=")[1]);
     if (currentProjectId !== undefined) {
       let config = {
         headers: {

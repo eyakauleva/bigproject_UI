@@ -13,19 +13,29 @@ import CreateTask from './single_task/CreateTask.js';
 var logout;
 export {logout}
 export default function Sidebar(props){
-    const[cookies] = useCookies(["token", "employeeId", "project"]);
+    const[cookies] = useCookies(["token", "employeeId"]);
     const[clientId, setClientId] = useState();
     const[showModal, setShowModal] = useState(false);
     const[showChangePasswordModal, setShowChangePasswordModal] = useState(true);
     const[decodedToken, setDecodedToken] = useState({});
+    const[userProject, setUserProject] = useState({});
     const[projects, setProjects] = useState([]);
     const[showCTModal, setShowCTModal] = useState(false);
 
     useLayoutEffect(() => {        
         setDecodedToken(jwt_decode(cookies.token));
         getCurrentProjects();
+        
     }, []);
-
+    useLayoutEffect(() => {
+        setUserProject(document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("project="))
+            ?.split("=")[1]);
+    }, [document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("project="))
+        ?.split("=")[1]]);
     const goToProfile = () => {
         let decodedToken = jwt_decode(cookies.token);
         setClientId(decodedToken.id);
@@ -122,7 +132,7 @@ export default function Sidebar(props){
                 </div>
             </div><hr/>
             {
-                decodedToken.role!=="ROLE_CUSTOMER" && cookies.project!==undefined
+                decodedToken.role!=="ROLE_CUSTOMER" && userProject!==undefined
                 ? <div>
                     <button onClick={() => setShowCTModal(true)} className='action'>
                         <i className="bi bi-plus-square"></i>
@@ -146,7 +156,7 @@ export default function Sidebar(props){
             </a> 
             }
             {
-                cookies.project!==undefined
+                userProject!==undefined
                 ? <a href='/app/dashboard' className='action'>
                     <i className="bi bi-check2-square"></i>
                     <span>Tickets</span>
