@@ -204,7 +204,7 @@ export default function Users(props) {
                                         </div>
                                         <div className="name">{employee.user.name + ' ' + employee.user.surname}</div>
                                         <div className="position"><i className="bi bi-briefcase"></i>&nbsp;{employee.position}</div>
-                                        <div className="email"><i className="bi bi-briefcase"></i>&nbsp;{employee.user.email}</div>
+                                        <div className="email"><i className="bi bi-envelope"></i>&nbsp;{employee.user.email}</div>
                                     </div>
                                     <div className="row container-custom">
                                         <div>

@@ -442,12 +442,12 @@ export default function ProjectPage(props) {
               <div className="col-md-12">
                     {
                         !editMode && project.reporter !== undefined 
-                            && (cookies.employeeId === project.reporter.id || decodedToken.role === "ROLE_ADMIN")
+                        && (cookies.employeeId == project.reporter.id || decodedToken.role === "ROLE_ADMIN")
                         && 
-                                <button onClick={() => editProjectOnUI()} className="mybtn">
-                                    <span><i className="bi bi-pencil-square ticket-icon" ></i></span>
-                                    <span> Edit</span>
-                                </button>
+                          <button onClick={() => editProjectOnUI()} className="mybtn">
+                              <span><i className="bi bi-pencil-square ticket-icon" ></i></span>
+                              <span> Edit</span>
+                          </button>
 
                     } 
                 </div>

@@ -119,7 +119,7 @@ export default function Profile(props) {
 
         const update = async() => {
             await axios
-            .put("/employee/" + id, 
+            .put("/employee/" + id + "?resetImage=" + resetImage, 
                 employee,
                 config)
             .then(() => {
